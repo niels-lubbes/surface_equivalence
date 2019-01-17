@@ -3,9 +3,13 @@ Use of this source code is governed by a MIT-style license that can be found in 
 Created on Dec 31, 2018
 @author: Niels Lubbes
 '''
+
 from surface_equivalence.class_se_tools import SETools
 
-class TestClassSETools:
+from tests.class_test_tools import TestTools
+
+
+class TestClassSETools( TestTools ):
 
 
     def test__p( self ):

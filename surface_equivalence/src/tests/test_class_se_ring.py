@@ -110,6 +110,19 @@ class TestSERing( TestTools ):
         assert mat == out
 
 
+    def test__get_matrix_P2( self ):
+        mat = '[(8, -1, 0, 1/17, 2, 0, 1, 4/15, 2, 0), (1, 1/6, -1, 1, -5/7, -3/2, -5, -78, -1, 0), (-1, 0, -3/2, -9/2, -1, -1, 1, -1, 0, -35), (-11/4, 0, 0, 0, -1, 1, 0, 1/2, -5/4, -1/2), (1/7, -7/11, -2/13, 1, -3, 1/2, -1, 1/2, 0, 1/2), (4, -1, -1, 4, 0, 7/4, 3/5, 0, 1, -35), (-1/5, 0, -2, -55/2, -1/3, 2, -2, -2/11, -1, -1/2), (-1/6, -1/2, 2, 0, 2, 2, 0, -1, -1, 8), (-1, -2/3, 5/33, 2, 0, -1/48, -1, -1/15, 1/2, 1), (0, 3/2, 0, -2, 1/5, -4/7, 1/2, 1/4, 1, 0)]'
+        mat = sage_matrix( sage_QQ, ring( mat ) )
+        mon_lst = SERing.get_mon_P2( 3 )
+        pol_lst = list( mat * sage_vector( mon_lst ) )
+        out = SERing.get_matrix_P2( pol_lst )
+        print( mat )
+        print( mon_lst )
+        print( pol_lst )
+        print( out )
+        assert mat == out
+
+
     def test__compose_aut_P1P1__1( self ):
 
         matL = '[(3,2),(7,5)]'
@@ -187,8 +200,9 @@ if __name__ == '__main__':
 #     TestSERing().test__random_matrix_QQ()
 #     TestSERing().test__get_bidegree()
 #     TestSERing().test__get_matrix_P1xP1()
-    TestSERing().test__compose_aut_P1P1__1()
-    TestSERing().test__compose_aut_P1P1__2()
+    TestSERing().test__get_matrix_P2()
+#     TestSERing().test__compose_aut_P1P1__1()
+#     TestSERing().test__compose_aut_P1P1__2()
 #     TestSERing().test__random_ZZ()
 #     TestSERing().test__random_elt()
 #     TestSERing().test__random_inv_matrix_QQ()

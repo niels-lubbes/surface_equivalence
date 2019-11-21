@@ -141,6 +141,40 @@ class SERing:
 
 
     @staticmethod
+    def get_matrix_P2( pol_lst ):
+        '''
+        Obtains the matrix M so that wrt monomial basis vector v defined 
+        by SERing.get_mon_P1xP1() we recover pol_lst as M*v.
+        
+                
+        Parameters
+        ----------        
+        pol_lst : list<SERing.R> 
+            List of homogeneous polynomials of equal bi-degree in 
+            QQ(a,b,c,d,e,f,g,h)[s,t,u,v]. 
+            
+        Returns
+        -------  
+        sage_Matrix<SERing.R> 
+            A matrix with polynomials in QQ[a,b,c,d,e,f,g,h].
+        '''
+        pol_lst = ring( pol_lst )
+        d = pol_lst[0].degree()
+        mon_lst = SERing.get_mon_P2( d )
+
+        SETools.p( 'd = ' + str( d ) )
+
+        mat = []
+        for pol in pol_lst:
+            row = []
+            for mon in mon_lst:
+                row += [ pol.coefficient( mon ) ]
+            mat += [row]
+
+        return sage_matrix( mat )
+
+
+    @staticmethod
     def compose_aut_P1P1( pol_lst, matL, matR, flip = False ):
         '''
         Precomposes map P1xP1--->X with an automorphism P1xP1.

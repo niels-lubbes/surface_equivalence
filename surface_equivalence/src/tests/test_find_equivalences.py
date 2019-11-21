@@ -184,9 +184,9 @@ if __name__ == '__main__':
     SETools.filter( None )
     SETools.start_timer()
 
-    # TestFindEquivalences().test__iso_P1xP1__1()
+    TestFindEquivalences().test__iso_P1xP1__1()
     # TestFindEquivalences().test__iso_P1xP1__2()
     # TestFindEquivalences().test__iso_P1xP1__3()
-    TestFindEquivalences().test__iso_P1xP1__random()
+    # TestFindEquivalences().test__iso_P1xP1__random()
 
     SETools.end_timer()

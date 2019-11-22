@@ -29,11 +29,11 @@ class SERing:
     Attributes
     ----------
     R : sage_PolynomialRing
-        Polynomial ring QQ[x,y,z,w,a,b,c,d,e,f,g,h,i].
+        Polynomial ring QQ[x,y,z,s,t,u,v,w,a,b,c,d,e,f,g,h,i].
     '''
 
     v1_lst = ['x', 'y', 'z']
-    v2_lst = ['s', 't', 'u', 'v']
+    v2_lst = ['s', 't', 'u', 'v', 'w']
     v3_lst = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
     R = sage_PolynomialRing( sage_QQ, v1_lst + v2_lst + v3_lst )
     R_P2 = sage_PolynomialRing( sage_QQ, v1_lst + v3_lst )

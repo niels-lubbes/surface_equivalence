@@ -19,6 +19,7 @@ from linear_series.class_linear_series import LinearSeries
 from surface_equivalence.sage_interface import sage_QQ
 from surface_equivalence.sage_interface import sage_matrix
 from surface_equivalence.sage_interface import sage_vector
+from surface_equivalence.sage_interface import sage_gcd
 
 
 def usecase_B5():
@@ -79,14 +80,12 @@ def usecase_B5():
     ls2_m4 = LinearSeries.get( [4], bp_tree )
     SETools.p( 'ls2_m4 =', ls2_m4 )
 
-
     # generators of graded ring
     s = ring( 'x' )
     t = ring( 'y' )
     u = ring( 'x+y-z' )
     v = ring( 'x*y' )
     w = ring( '(x+y-z)^2' )
-
 
     # find linear relation
     g = ring( ls2_m4.pol_lst )
@@ -102,14 +101,81 @@ def usecase_B5():
     assert kerh * sage_vector( h ) == sage_vector( [0] )
     assert h1 - h8 == 0
 
+    # construct map f
+    f = ring( ls1_m0.pol_lst )
+    SETools.p( 'f =', f )
 
-
+    # construct map g
     # sage_Permutations(10).random_element().to_matrix().rows()
     matp = [( 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ), ( 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ), ( 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ),
             ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ), ( 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ), ( 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ),
             ( 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ), ( 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ), ( 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ),
             ( 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 )]
-    f = ring( ls1_m0.pol_lst )
+    matp = sage_matrix( matp )
+    x, y, z, v, w = ring( 'x,y,z,v,w' )  # P2(x:y:z) and P1xP1(x:y;v:w)
+    g = [comp.subs( {x:x * v, y:y * v, z:y * w} ) for comp in f]
+    g = [comp / sage_gcd( g ) for comp in g]
+    g = list( matp * sage_vector( g ) )
+    SETools.p( 'g =', g )
+
+    # determine and set basepoint tree
+    ls = LinearSeries( g, PolyRing( 'x,y,v,w' ) )
+    bp_tree = ls.get_bp_tree()
+    SETools.p( 'bp_tree =', bp_tree )
+    tree_211 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
+    tree_211.add( 'xw', ( 0, 0 ), 2 ).add( 't', ( 1, 0 ), 1 )
+    tree_211.add( 'yv', ( 0, 1 ), 1 )
+
+    # 1g+0q = 4a+2b-2e1-e2-e3
+    g1m0 = LinearSeries.get( [4, 2], tree_211 )
+    SETools.p( 'g1m0 =', g1m0 )
+
+    # 1g-3q = (a+b-e1-e2-e3) + (b-e1)
+    g1m3 = LinearSeries.get( [1, 2], tree_211 )
+    SETools.p( 'g1m3 =', g1m3 )
+
+    # 1g-2q = 2a+2b-2e1-e2-e3
+    g1m2 = LinearSeries.get( [2, 2], tree_211 )
+    SETools.p( 'g1m2 =', g1m2 )
+
+    # 1g-1q = 3a+2b-2e1-e2-e3
+    g1m1 = LinearSeries.get( [3, 2], tree_211 )
+    SETools.p( 'g1m1 =', g1m1 )
+
+    # 2g-4q = 4a+4b-4e1-2e2-2e3
+    tree_422 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
+    tree_422.add( 'xw', ( 0, 0 ), 4 ).add( 't', ( 1, 0 ), 2 )
+    tree_422.add( 'yv', ( 0, 1 ), 2 )
+    g2m4 = LinearSeries.get( [4, 4], tree_422 )
+    SETools.p( 'g2m4 =', g2m4 )
+
+    # find linear relation
+    s = ring( 'x' )
+    t = ring( 'y' )
+    u = ring( 'x*v^2+y*v^2-y*v*w' )
+    v = ring( 'x*y*v^2' )
+    w = ring( 'x^2*v^2+y^2*v^2-y^2*w^2' )
+
+    xx = ring( 'x' )
+    yy = ring( 'y' )
+    ss = ring( 's' )
+    tt = ring( 't' )
+    uu = ring( 'u' )
+    vv = ring( 'v' )
+    ww = ring( 'w' )
+
+    g = ring( g2m4.pol_lst )
+    matg = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( [ comp.subs( {xx:ss, yy:tt, vv:uu, ww:vv} ) for comp in g] ) )
+    SETools.p( '\n' + str( matg ) )
+
+    h = h0, h1, h2, h3, h4, h5, h6, h7, h8, h9 = [ v * v, v * w, w * w, s * u * v, s * u * w, t * u * v, t * u * w, s * s * u * u, s * t * u * u, t * t * u * u ]
+    math = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( [ comp.subs( {xx:ss, yy:tt, vv:uu, ww:vv} ) for comp in h] ) )
+    SETools.p( '\n' + str( math ) )
+
+    kerh = math.transpose().right_kernel().matrix()
+    SETools.p( kerh )
+    assert kerh * sage_vector( h ) == sage_vector( [0] )
+    assert 2 * h0 + h1 - 2 * h3 - 2 * h5 + h8 == 0
 
 
 

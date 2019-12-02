@@ -20,6 +20,11 @@ from surface_equivalence.sage_interface import sage_QQ
 from surface_equivalence.sage_interface import sage_matrix
 from surface_equivalence.sage_interface import sage_vector
 from surface_equivalence.sage_interface import sage_gcd
+from surface_equivalence.sage_interface import sage_PolynomialRing
+from surface_equivalence.sage_interface import sage_FractionField
+from surface_equivalence.sage_interface import sage_ideal
+from surface_equivalence.sage_interface import sage__eval
+from surface_equivalence.sage_interface import sage_Compositions
 
 
 def usecase_B5():
@@ -36,146 +41,274 @@ def usecase_B5():
     p2 = ( 0, 1 )
     p3 = ( 1, 0 )
 
-
     # 0f+p = e0-e1
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p1, 1 )
-    ls0_p1 = LinearSeries.get( [1], bp_tree )
-    SETools.p( 'ls0_p1 =', ls0_p1 )
+    f0p1 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
+    SETools.p( 'f0p1 =', len( f0p1 ), f0p1 )
 
     # 1f-3p = e0+e1-e2-e3
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p2, 1 )
     bp = bp_tree.add( 'z', p3, 1 )
-    ls1_m3 = LinearSeries.get( [1], bp_tree )
-    SETools.p( 'ls1_m3 =', ls1_m3 )
+    f1m3 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
+    SETools.p( 'f1m3 =', len( f1m3 ), f1m3 )
 
     # 1f-2p = 2e0-e2-e3
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p2, 1 )
     bp = bp_tree.add( 'z', p3, 1 )
-    ls1_m2 = LinearSeries.get( [2], bp_tree )
-    SETools.p( 'ls1_m2 =', ls1_m2 )
+    f1m2 = SERing.conv( LinearSeries.get( [2], bp_tree ).pol_lst )
+    SETools.p( 'f1m2 =', len( f1m2 ), f1m2 )
 
     # 1f-1p = 3e0-e1-e2-e3
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p1, 1 )
     bp = bp_tree.add( 'z', p2, 1 )
     bp = bp_tree.add( 'z', p3, 1 )
-    ls1_m1 = LinearSeries.get( [3], bp_tree )
-    SETools.p( 'ls1_m1 =', ls1_m1 )
+    f1m1 = SERing.conv( LinearSeries.get( [3], bp_tree ).pol_lst )
+    SETools.p( 'f1m1 =', len( f1m1 ), f1m1 )
 
     # 1f-0p = 4e0-2e1-e2-e3
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p1, 2 )
     bp = bp_tree.add( 'z', p2, 1 )
     bp = bp_tree.add( 'z', p3, 1 )
-    ls1_m0 = LinearSeries.get( [4], bp_tree )
-    SETools.p( 'ls1_m0 =', ls1_m0 )
+    f1m0 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
+    SETools.p( 'f1m0 =', len( f1m0 ), f1m0 )
 
     # 2f-4p = 4e0-2e2-2e3
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p2, 2 )
     bp = bp_tree.add( 'z', p3, 2 )
-    ls2_m4 = LinearSeries.get( [4], bp_tree )
-    SETools.p( 'ls2_m4 =', ls2_m4 )
+    f2m4 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
+    SETools.p( 'f2m4 =', len( f2m4 ), f2m4 )
 
-    # generators of graded ring
-    s = ring( 'x' )
-    t = ring( 'y' )
-    u = ring( 'x+y-z' )
-    v = ring( 'x*y' )
-    w = ring( '(x+y-z)^2' )
+    # generators of graded ring of f
+    U = U0, U1, U2, U3, U4 = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
 
-    # find linear relation
-    g = ring( ls2_m4.pol_lst )
-    matg = sage_matrix( sage_QQ, SERing.get_matrix_P2( g ) )
-    SETools.p( '\n' + str( matg ) )
+    # template for generators of coordinate ring for weight (2,-1) and (1,0)
+    T2m4 = ring( '[u3^2,u3*u4,u4^2,u0*u2*u3,u0*u2*u4,u1*u2*u3,u1*u2*u4,u0^2*u2^2,u0*u1*u2^2,u1^2*u2^2]' )
+    T1m0 = ring( '[u1^2*u4,u1^2*u3,u1^3*u2,u0*u1*u4,u0*u1*u3,u0*u1^2*u2,u0^2*u4,u0^2*u3,u0^2*u1*u2,u0^3*u2]' )
+    u = u0, u1, u2, u3, u4 = ring( 'u0,u1,u2,u3,u4' )
 
-    h = h0, h1, h2, h3, h4, h5, h6, h7, h8, h9 = [ v * v, v * w, w * w, s * u * v, s * u * w, t * u * v, t * u * w, s * s * u * u, s * t * u * u, t * t * u * u ]
-    math = sage_matrix( sage_QQ, SERing.get_matrix_P2( h ) )
-    SETools.p( '\n' + str( math ) )
+    # find linear relation for f2m4
+    a = a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 = [elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T2m4 ]
+    mata = sage_matrix( sage_QQ, SERing.get_matrix_P2( a ) )
+    kera = mata.transpose().right_kernel().matrix()
+    SETools.p( 'kera =', kera )
+    assert kera * sage_vector( a ) == sage_vector( [0] )
+    assert a1 - a8 == 0
 
-    kerh = math.transpose().right_kernel().matrix()
-    SETools.p( kerh )
-    assert kerh * sage_vector( h ) == sage_vector( [0] )
-    assert h1 - h8 == 0
-
-    # construct map f
-    f = ring( ls1_m0.pol_lst )
-    SETools.p( 'f =', f )
-
-    # construct map g
+    # construct map gg from ff
     # sage_Permutations(10).random_element().to_matrix().rows()
+    ff = f1m0
     matp = [( 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ), ( 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ), ( 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ),
             ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ), ( 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ), ( 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ),
             ( 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ), ( 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ), ( 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ),
             ( 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 )]
     matp = sage_matrix( matp )
-    x, y, z, v, w = ring( 'x,y,z,v,w' )  # P2(x:y:z) and P1xP1(x:y;v:w)
-    g = [comp.subs( {x:x * v, y:y * v, z:y * w} ) for comp in f]
-    g = [comp / sage_gcd( g ) for comp in g]
-    g = list( matp * sage_vector( g ) )
-    SETools.p( 'g =', g )
+    x0, x1, x2, y0, y1, y2, y3 = ring( 'x0,x1,x2,y0,y1,y2,y3' )  # P2(x0:x1:x2) and P1xP1(y0:y1;y2:y3)
+    gg = [comp.subs( {x0:y0 * y2, x1:y1 * y2, x2 :y0 * y3} ) for comp in ff]
+    gg = [comp / sage_gcd( gg ) for comp in gg]
+    gg = list( matp * sage_vector( gg ) )
+    SETools.p( 'ff =', len( ff ), ff )
+    SETools.p( 'gg =', len( gg ), gg )
+
 
     # determine and set basepoint tree
-    ls = LinearSeries( g, PolyRing( 'x,y,v,w' ) )
+    ls = LinearSeries( SERing.conv( gg ), PolyRing( 'x,y,v,w' ) )
     bp_tree = ls.get_bp_tree()
-    SETools.p( 'bp_tree =', bp_tree )
+    SETools.p( 'bp_tree(gg) =', bp_tree )
     tree_211 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
     tree_211.add( 'xw', ( 0, 0 ), 2 ).add( 't', ( 1, 0 ), 1 )
     tree_211.add( 'yv', ( 0, 1 ), 1 )
 
     # 1g+0q = 4a+2b-2e1-e2-e3
-    g1m0 = LinearSeries.get( [4, 2], tree_211 )
-    SETools.p( 'g1m0 =', g1m0 )
+    g1m0 = SERing.conv( LinearSeries.get( [4, 2], tree_211 ).pol_lst )
+    SETools.p( 'g1m0 =', len( g1m0 ), g1m0 )
 
     # 1g-3q = (a+b-e1-e2-e3) + (b-e1)
-    g1m3 = LinearSeries.get( [1, 2], tree_211 )
-    SETools.p( 'g1m3 =', g1m3 )
+    g1m3 = SERing.conv( LinearSeries.get( [1, 2], tree_211 ).pol_lst )
+    SETools.p( 'g1m3 =', len( g1m3 ), g1m3 )
 
     # 1g-2q = 2a+2b-2e1-e2-e3
-    g1m2 = LinearSeries.get( [2, 2], tree_211 )
-    SETools.p( 'g1m2 =', g1m2 )
+    g1m2 = SERing.conv( LinearSeries.get( [2, 2], tree_211 ).pol_lst )
+    SETools.p( 'g1m2 =', len( g1m2 ), g1m2 )
 
     # 1g-1q = 3a+2b-2e1-e2-e3
-    g1m1 = LinearSeries.get( [3, 2], tree_211 )
-    SETools.p( 'g1m1 =', g1m1 )
+    g1m1 = SERing.conv( LinearSeries.get( [3, 2], tree_211 ).pol_lst )
+    SETools.p( 'g1m1 =', len( g1m1 ), g1m1 )
 
     # 2g-4q = 4a+4b-4e1-2e2-2e3
     tree_422 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
     tree_422.add( 'xw', ( 0, 0 ), 4 ).add( 't', ( 1, 0 ), 2 )
     tree_422.add( 'yv', ( 0, 1 ), 2 )
-    g2m4 = LinearSeries.get( [4, 4], tree_422 )
-    SETools.p( 'g2m4 =', g2m4 )
+    g2m4 = SERing.conv( LinearSeries.get( [4, 4], tree_422 ).pol_lst )
+    SETools.p( 'g2m4 =', len( g2m4 ), g2m4 )
 
-    # find linear relation
-    s = ring( 'x' )
-    t = ring( 'y' )
-    u = ring( 'x*v^2+y*v^2-y*v*w' )
-    v = ring( 'x*y*v^2' )
-    w = ring( 'x^2*v^2+y^2*v^2-y^2*w^2' )
+    # set generators of graded coordinate ring of g
+    V = V0, V1, V2, V3, V4 = ring( 'y0' ), ring( 'y1' ), ring( 'y0*y2^2+y1*y2^2-y1*y2*y3' ), ring( 'y0*y1*y2^2' ), ring( 'y0^2*y2^2+y1^2*y2^2-y1^2*y3^2' )
 
-    xx = ring( 'x' )
-    yy = ring( 'y' )
-    ss = ring( 's' )
-    tt = ring( 't' )
-    uu = ring( 'u' )
-    vv = ring( 'v' )
-    ww = ring( 'w' )
+    # find linear relation for g2m4
+    b = b0, b1, b2, b3, b4, b5, b6, b7, b8, b9 = [elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T2m4 ]
+    matb = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( b ) )
+    kerb = matb.transpose().right_kernel().matrix()
+    SETools.p( 'kerb =', kerb )
+    assert kerb * sage_vector( b ) == sage_vector( [0] )
+    assert 2 * b0 + b1 - 2 * b3 - 2 * b5 + b8 == 0
 
-    g = ring( g2m4.pol_lst )
-    matg = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( [ comp.subs( {xx:ss, yy:tt, vv:uu, ww:vv} ) for comp in g] ) )
-    SETools.p( '\n' + str( matg ) )
+    # compute inverse of G
+    G = [ elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T1m0]
+    z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
+    id = [ G[i] * z[0] - z[i] * G[0] for i in range( 10 ) ] + [a0 * G[0] - 1]
+    I01 = sage_ideal( id ).elimination_ideal( [a0, y2, y3 ] ).gens()
+    I23 = sage_ideal( id ).elimination_ideal( [a0, y0, y1 ] ).gens()
+    I01 = [ elt for elt in I01 if elt.degree( y0 ) == 1 and elt.degree( y1 ) == 1 ][0]
+    I23 = [ elt for elt in I23 if elt.degree( y2 ) == 1 and elt.degree( y3 ) == 1 ][0]
+    Q0 = I01.coefficient( y1 )
+    Q1 = -I01.coefficient( y0 )
+    Q2 = I23.coefficient( y3 )
+    Q3 = -I23.coefficient( y2 )
+    Q = [Q0, Q1, Q2, Q3]
+    SETools.p( 'Q =', Q )
+    # [-j, -i, -i, -g - 2*h + i + j]
 
-    h = h0, h1, h2, h3, h4, h5, h6, h7, h8, h9 = [ v * v, v * w, w * w, s * u * v, s * u * w, t * u * v, t * u * w, s * s * u * u, s * t * u * u, t * t * u * u ]
-    math = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( [ comp.subs( {xx:ss, yy:tt, vv:uu, ww:vv} ) for comp in h] ) )
-    SETools.p( '\n' + str( math ) )
+    QoG = [q.subs( { z[i]:G[i] for i in range( 10 ) } ) for q in Q ]
+    gcd01 = sage_gcd( QoG[0], QoG[1] )
+    gcd23 = sage_gcd( QoG[2], QoG[3] )
+    QoG = [QoG[0] / gcd01, QoG[1] / gcd01, QoG[2] / gcd23, QoG[3] / gcd23]
+    SETools.p( 'QoG =', QoG )
+    assert QoG == [y0, y1, y2, y3]
 
-    kerh = math.transpose().right_kernel().matrix()
-    SETools.p( kerh )
-    assert kerh * sage_vector( h ) == sage_vector( [0] )
-    assert 2 * h0 + h1 - 2 * h3 - 2 * h5 + h8 == 0
+    # compose F with projective isomorphism P
+    c = c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12 = [ring( 'c' + str( i ) ) for i in range( 13 )]
+    dctZ = { u[i]:z[i] for i in range( 5 )}
+    dctP = { z[0]:c0 * u0 + c1 * u1,
+             z[1]:c2 * u0 + c3 * u1,
+             z[2]:c4 * u2,
+             z[3]:c5 * u3 + c6 * u4 + c7 * u0 * u2 + c8 * u1 * u2,
+             z[4]:c9 * u3 + c10 * u4 + c11 * u0 * u2 + c12 * u1 * u2 }
+    PoF = [ comp.subs( dctZ ).subs( dctP ) for comp in T1m0]
+    PoF = [ comp.subs( {u[i]:U[i] for i in range( 5 )} ) for comp in PoF]
+    PoF = [ comp / sage_gcd( PoF ) for comp in PoF]
+    SETools.p( 'PoF =', len( PoF ), PoF )
+
+    # compose PoF with Q
+    QoPoF = [ comp.subs( {z[i]:PoF[i] for i in range( 10 )} ) for comp in Q]
+    gcd01 = sage_gcd( QoPoF[0], QoPoF[1] )
+    gcd23 = sage_gcd( QoPoF[2], QoPoF[3] )
+    QoPoF = [QoPoF[0] / gcd01, QoPoF[1] / gcd01, QoPoF[2] / gcd23, QoPoF[3] / gcd23]
+    SETools.p( 'QoPoF =', len( QoPoF ), QoPoF )
+
+    # create list of equations for the ci
+    b = T2m4
+    rel_g4m2 = 2 * b[0] + b[1] - 2 * b[3] - 2 * b[5] + b[8]
+    SETools.p( 'rel_g4m2 =', rel_g4m2 )
+    rel_g4m2 = rel_g4m2.subs( dctZ ).subs( dctP )
+    SETools.p( 'rel_g4m2 =', rel_g4m2 )
+    rel_lst = []
+    for exp in sage_Compositions( 4 + 5, length = 5 ):
+        rel_lst += [rel_g4m2.coefficient( {u[i]:exp[i] - 1 for i in range( 5 )} )]
+    SETools.p( 'rel_lst =', len( rel_lst ) )
+    for rel in rel_lst:
+        if rel != 0:
+            SETools.p( '\t', rel )
+
+    # get coefficient matrices
+    mff = SERing.get_matrix_P2( ff )
+    SETools.p( 'mff =', mff.dimensions() )
+    kff = mff.right_kernel_matrix().T
+    assert ( mff * kff ).is_zero()
+
+    y = ring( '[y0,y1,y2,y3]' )
+    gr = [ comp.subs( {y[i]:QoPoF[i] for i in range( 4 )} ) for comp in gg ]
+    # gr = [ comp / sage_gcd( gr ) for comp in gr ]
+    SETools.p( 'gr =', len( gr ), gr[0] )
+    # for comp in gr: SETools.p( '\t', comp )
+
+    # mgr = SERing.get_matrix_P2( gr )
+    # SETools.p( 'mgr =', mgr.dimensions() )
+
+    # mhh = mgg * kff
+    # SETools.p( 'mhh =', list( mhh ) )
+
+
+
+
+def usecase_invert_map():
+    '''
+    Inversion of maps using Groebner basis.
+    '''
+
+#     RP = sage_PolynomialRing( sage_QQ, 'y0,y1,y2,y3', order = 'deglex' )
+#     y0, y1, y2, y3 = RP.gens()
+#     RH = sage_PolynomialRing( sage_FractionField( RP ), 'x0,x1,x2,x3,x4', order = 'deglex' )
+#     x0, x1, x2, x3, x4 = RH.gens()
+#
+#     X = [x1 ** 2 + x2 ** 2 + x3 ** 2 + x4 ** 2 - x0 ** 2]
+#     f = [y0 - ( x0 - x4 ), y1 - x1, y2 - x2, y3 - x3]
+#     G1 = sage_ideal( X + f ).groebner_basis()
+#     SETools.p( 'G1 =', G1 )
+#
+#
+#     RP = sage_PolynomialRing( sage_QQ, 'y1,y2,y3,y4', order = 'deglex' )
+#     y1, y2, y3, y4 = RP.gens()
+#     S = RP.quotient_ring( [ y1 ** 2 + y2 ** 2 + y3 ** 2 + y4 ** 2 - 1] )
+#     RH = sage_PolynomialRing( sage_FractionField( S ), 'x1,x2,x3,x4', order = 'deglex' )
+#     x1, x2, x3, x4 = RH.gens()
+#
+#     d = x1 ** 2 + x2 ** 2 + x3 ** 2
+#     g = [ ( d + 1 ) * x4 - 1,
+#           2 * x1 * x4 - y1,
+#           2 * x2 * x4 - y2,
+#           2 * x3 * x4 - y3,
+#           ( d - 1 ) * x4 - y4]
+#     G2 = sage_ideal( g ).groebner_basis()
+#     SETools.p( 'G2 =', str( G2 ).replace( 'bar', '' ) )
+
+
+    R = sage_PolynomialRing( sage_QQ, 'x0,x1,x2,x3,y0,y1,y2,y3,y4,t', order = 'deglex' )
+    x0, x1, x2, x3, y0, y1, y2, y3, y4, t = R.gens()
+
+    d = x1 ** 2 + x2 ** 2 + x3 ** 2
+    f0 = d + x0 ** 2
+    f1 = 2 * x0 * x1
+    f2 = 2 * x0 * x2
+    f3 = 2 * x0 * x3
+    f4 = d - x0 ** 2
+    eq = -y0 ** 2 + y1 ** 2 + y2 ** 2 + y3 ** 2 + y4 ** 2
+
+    g = [ f1 * y0 - y1 * f0,
+          f2 * y0 - y2 * f0,
+          f3 * y0 - y3 * f0,
+          f4 * y0 - y4 * f0,
+          t * f0 - 1 ]
+
+    SETools.p( sage_ideal( g ).elimination_ideal( [ t ] ).gens() )
+    Ix1 = sage_ideal( g ).elimination_ideal( [t, x2, x3] ).gens()
+    Ix2 = sage_ideal( g ).elimination_ideal( [t, x1, x3] ).gens()
+    Ix3 = sage_ideal( g ).elimination_ideal( [t, x1, x2] ).gens()
+
+    SETools.p( 'Ix1 =', Ix1 )
+    SETools.p( 'Ix2 =', Ix2 )
+    SETools.p( 'Ix3 =', Ix3 )
+
+    Ix1 = [ elt for elt in Ix1 if elt.degree( x0 ) == 1 and elt.degree( x1 ) == 1 ][0]
+    Ix2 = [ elt for elt in Ix2 if elt.degree( x0 ) == 1 and elt.degree( x2 ) == 1 ][0]
+    Ix3 = [ elt for elt in Ix3 if elt.degree( x0 ) == 1 and elt.degree( x3 ) == 1 ][0]
+
+    SETools.p( 'Ix1 =', Ix1 )
+    SETools.p( 'Ix2 =', Ix2 )
+    SETools.p( 'Ix3 =', Ix3 )
+
+    g0 = Ix1.coefficient( x1 )
+    g1 = -Ix1.coefficient( x0 )
+    g2 = -Ix2.coefficient( x0 )
+    g3 = -Ix3.coefficient( x0 )
+
+    SETools.p( 'g = f^(-1) =', [g0, g1, g2, g3] )
+
 
 
 
@@ -201,6 +334,7 @@ if __name__ == '__main__':
     #########################################
 
     usecase_B5()
+    # usecase_invert_map()
 
     #########################################
     #                                       #

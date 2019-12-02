@@ -60,7 +60,7 @@ def iso_P1xP1( p1_lst, p2_lst, aff_dct = '{a:1, e:1}' ):
         return None
 
     #
-    # Create dictionaries for precomposing with a paramelement of Aut(P1xP1).
+    # Create dictionaries for precomposing with an element of Aut(P1xP1).
     #
     s, t, u, v = ring( 's,t,u,v' )
     a, b, c, d = ring( 'a,b,c,d' )

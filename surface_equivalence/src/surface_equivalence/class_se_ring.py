@@ -29,85 +29,131 @@ class SERing:
     Attributes
     ----------
     R : sage_PolynomialRing
-        Polynomial ring QQ[x,y,z,s,t,u,v,w,a,b,c,d,e,f,g,h,i].
+        Polynomial ring QQ[a0,...,a4,c0,...,c19,u0,...,u4,x0,...,x2,y0,...,y3,z0,...,z19].
     '''
+    x_lst = ['x' + str( i ) for i in range( 3 )]
+    y_lst = ['y' + str( i ) for i in range( 4 )]
+    z_lst = ['z' + str( i ) for i in range( 20 )]
+    a_lst = ['a' + str( i ) for i in range( 5 )]
+    c_lst = ['c' + str( i ) for i in range( 20 )]
+    u_lst = ['u' + str( i ) for i in range( 5 )]
 
-    v1_lst = ['x', 'y', 'z']
-    v2_lst = ['s', 't', 'u', 'v', 'w']
-    v3_lst = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
-    R = sage_PolynomialRing( sage_QQ, v1_lst + v2_lst + v3_lst )
-    R_P2 = sage_PolynomialRing( sage_QQ, v1_lst + v3_lst )
-    R_P1P1 = sage_PolynomialRing( sage_QQ, v2_lst + v3_lst[:-1] )
+    R = sage_PolynomialRing( sage_QQ, a_lst + c_lst + u_lst + x_lst + y_lst + z_lst )
 
     @staticmethod
     def ring( expr ):
         return sage__eval( str( expr ), SERing.R.gens_dict() )
 
+
     @staticmethod
-    def get_mon_P1xP1( m, n ):
+    def conv( pol_lst ):
+        '''
+        Renames variables as follows:
+        x0,x1,x2     <---> z,x,y
+        or
+        y0,y1,y2,y3  <---> x,y,v,w        
+        '''
+        pol_lst = str( pol_lst )
+
+        NR = sage_PolynomialRing( sage_QQ, 'a0,a1,a2,a3,a4,x0,x1,x2,y0,y1,y2,y3,x,y,z,v,w' )
+        a0, a1, a2, a3, a4, x0, x1, x2, y0, y1, y2, y3, x, y, z, v, w = NR.gens()
+
+        inring = True
+        if 'x0' in pol_lst or 'x1' in pol_lst or 'x2' in pol_lst:
+            dct = {x0:z, x1:x, x2:y}
+            inring = False
+        elif 'y0' in pol_lst or 'y1' in pol_lst or 'y2' in pol_lst or 'y3' in pol_lst:
+            dct = {y0:x, y1:y, y2:v, y3:w}
+            inring = False
+        elif 'v' in pol_lst or 'w' in pol_lst:
+            dct = {x:y0, y:y1, v:y2, w:y3}
+        else:
+            dct = {x:x1, y:x2, z:x0}
+
+        pol_lst = sage__eval( pol_lst, NR.gens_dict() )
+        pol_lst = [ pol.subs( dct ) for pol in pol_lst ]
+
+        if inring:
+            return SERing.ring( pol_lst )
+        else:
+            return pol_lst
+
+
+    @staticmethod
+    def get_mon_P1xP1( m, n, vars = 'y0,y1,y2,y3' ):
         '''        
         Parameters
         ----------
         m: int
+        
         n: int
+        
+        vars: string
+            Names of the variables.            
     
         Returns
         -------
         list<sage_POLY>
-            All monomials of the form s^%*t^%*u^%*v^% of bi-degree (m,n) 
-            in (s,t) and (u,v) respectively.
+            All monomials of the form y0^%*y1^%*y2^%*y3^% of bi-degree (m,n) 
+            in (y0,y1) and (y2,y3), respectively.
         '''
 
-        s, t, u, v = ring( 's,t,u,v' )
+        y0, y1, y2, y3 = ring( vars )
         mon_lst = []
         for a, b, c, d in sage_Compositions( m + n + 4, length = 4 ):
                 if a + b == m + 2 and c + d == n + 2:
-                    mon_lst += [ s ** ( a - 1 ) * t ** ( b - 1 ) * u ** ( c - 1 ) * v ** ( d - 1 ) ]
+                    mon_lst += [ y0 ** ( a - 1 ) * y1 ** ( b - 1 ) * y2 ** ( c - 1 ) * y3 ** ( d - 1 ) ]
         return mon_lst
 
 
     @staticmethod
-    def get_mon_P2( d ):
+    def get_mon_P2( d, vars = 'x0,x1,x2' ):
         '''        
         Parameters
         ----------
         d: int
-    
+        
+        vars: string
+            Names of the variables.
+            
         Returns
         -------
         list<sage_POLY>
-            All monomials of the form x^%*y^%*z^% of degree d.         
+            All monomials of the form x0^%*x1^%*x2^% of degree d.         
         '''
-        x, y, z = ring( 'x, y, z' )
+        x0, x1, x2 = ring( vars )
         mon_lst = []
         for a, b, c in sage_Compositions( d + 3, length = 3 ):
-            mon_lst += [ x ** ( a - 1 ) * y ** ( b - 1 ) * z ** ( c - 1 ) ]
+            mon_lst += [ x0 ** ( a - 1 ) * x1 ** ( b - 1 ) * x2 ** ( c - 1 ) ]
         return mon_lst
 
 
     @staticmethod
-    def get_bidegree( pol_lst ):
+    def get_bidegree( pol_lst, vars = 'y0,y1,y2,y3' ):
         '''
         Parameters
         ----------        
         pol_lst : list<SERing.R> 
             List of homogeneous polynomials of equal bi-degree (m,n) in 
-            QQ(a,b,c,d,e,f,g,h)[s,t,u,v]. 
-            
+            (y0:y1;y2:y3) where the variables are specified by vars.
+        
+        vars: string
+            Names of the variables.
+                        
         Returns
         -------
         (int,int)
             A pair of integers (m,n) defining the bi-degree of input polynomials.
         '''
         pol_lst = ring( pol_lst )
-        s, t, u, v = ring( 's,t,u,v' )
-        m = max( [ p.degree( s ) for p in pol_lst] )
-        n = max( [ p.degree( u ) for p in pol_lst] )
+        y0, y1, y2, y3 = ring( 'y0,y1,y2,y3' )
+        m = max( [ p.degree( y0 ) for p in pol_lst] )
+        n = max( [ p.degree( y2 ) for p in pol_lst] )
         return m, n
 
 
     @staticmethod
-    def get_matrix_P1xP1( pol_lst ):
+    def get_matrix_P1xP1( pol_lst, vars = 'y0,y1,y2,y3' ):
         '''
         Obtains the matrix M so that wrt monomial basis vector v defined 
         by SERing.get_mon_P1xP1() we recover pol_lst as M*v.
@@ -117,7 +163,10 @@ class SERing:
         ----------        
         pol_lst : list<SERing.R> 
             List of homogeneous polynomials of equal bi-degree in 
-            QQ(a,b,c,d,e,f,g,h)[s,t,u,v]. 
+            (y0:y1;y2:y3) where the variables are specified by vars. 
+            
+        vars: string
+            Names of the variables.           
             
         Returns
         -------  
@@ -125,8 +174,8 @@ class SERing:
             A matrix with polynomials in QQ[a,b,c,d,e,f,g,h].
         '''
         pol_lst = ring( pol_lst )
-        m, n = SERing.get_bidegree( pol_lst )
-        mon_lst = SERing.get_mon_P1xP1( m, n )
+        m, n = SERing.get_bidegree( pol_lst, vars )
+        mon_lst = SERing.get_mon_P1xP1( m, n, vars )
 
         SETools.p( 'm = ' + str( m ) + ', n = ' + str( n ) )
 
@@ -141,7 +190,7 @@ class SERing:
 
 
     @staticmethod
-    def get_matrix_P2( pol_lst ):
+    def get_matrix_P2( pol_lst, vars = 'x0,x1,x2' ):
         '''
         Obtains the matrix M so that wrt monomial basis vector v defined 
         by SERing.get_mon_P1xP1() we recover pol_lst as M*v.
@@ -150,17 +199,20 @@ class SERing:
         Parameters
         ----------        
         pol_lst : list<SERing.R> 
-            List of homogeneous polynomials of equal bi-degree in 
-            QQ(a,b,c,d,e,f,g,h)[s,t,u,v]. 
+            List of homogeneous polynomials of equal degree in (x0:x1:x2), 
+            where the variables are specified by vars. 
+            
+        vars: string
+            Names of the variables.    
             
         Returns
         -------  
         sage_Matrix<SERing.R> 
-            A matrix with polynomials in QQ[a,b,c,d,e,f,g,h].
+            The coefficient matrix of pol_lst whose entries are polynomials.
         '''
         pol_lst = ring( pol_lst )
         d = pol_lst[0].degree()
-        mon_lst = SERing.get_mon_P2( d )
+        mon_lst = SERing.get_mon_P2( d, vars )
 
         SETools.p( 'd = ' + str( d ) )
 

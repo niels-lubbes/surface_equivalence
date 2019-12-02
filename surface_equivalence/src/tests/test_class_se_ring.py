@@ -21,6 +21,47 @@ from surface_equivalence.sage_interface import sage_matrix
 class TestSERing( TestTools ):
 
 
+    def test__conv__xyvw( self ):
+
+        inp = '[x,y,v,w,x*y*v*w,x+y+v+w,a0*a1*a2*a3*x^2*y^2+v^2*w^2]'
+        out = SERing.conv( inp )
+        chk = '[y0, y1, y2, y3, y0*y1*y2*y3, y0 + y1 + y2 + y3, a0*a1*a2*a3*y0^2*y1^2 + y2^2*y3^2]'
+
+        print( out )
+        assert str( out ) == chk
+
+
+    def test__conv__xyz( self ):
+
+        inp = '[x,y,z,x*y*z,x+y+z,a0*a1*a2*a3*x^2*y^2+z^2]'
+        out = SERing.conv( inp )
+        chk = '[x1, x2, x0, x0*x1*x2, x0 + x1 + x2, a0*a1*a2*a3*x1^2*x2^2 + x0^2]'
+
+        print( out )
+        assert str( out ) == chk
+
+
+    def test__conv__xi( self ):
+
+        inp = '[x1, x2, x0, x0*x1*x2, x0 + x1 + x2, a0*a1*a2*a3*x1^2*x2^2 + x0^2]'
+        out = SERing.conv( inp )
+        chk = '[x, y, z, x*y*z, x + y + z, a0*a1*a2*a3*x^2*y^2 + z^2]'
+
+
+        print( out )
+        assert str( out ) == chk
+
+
+    def test__conv__yi( self ):
+
+        inp = '[y0, y1, y2, y3, y0*y1*y2*y3, y0 + y1 + y2 + y3, a0*a1*a2*a3*y0^2*y1^2 + y2^2*y3^2]'
+        out = SERing.conv( inp )
+        chk = '[x, y, v, w, x*y*v*w, x + y + v + w, a0*a1*a2*a3*x^2*y^2 + v^2*w^2]'
+
+        print( out )
+        assert str( out ) == chk
+
+
     def test__random_ZZ( self ):
         out = SERing.random_ZZ( 10 )
         assert out >= -10 and out <= 10
@@ -56,32 +97,32 @@ class TestSERing( TestTools ):
 
 
     def test__get_mon_P1xP1__22( self ):
-        out = SERing.get_mon_P1xP1( 2, 2 )
-        chk = '[s^2*u^2, s^2*u*v, s^2*v^2, s*t*u^2, s*t*u*v, s*t*v^2, t^2*u^2, t^2*u*v, t^2*v^2]'
+        out = SERing.get_mon_P1xP1( 2, 2, 'y0,y1,y2,y3' )
+        chk = '[y0^2*y2^2, y0^2*y2*y3, y0^2*y3^2, y0*y1*y2^2, y0*y1*y2*y3, y0*y1*y3^2, y1^2*y2^2, y1^2*y2*y3, y1^2*y3^2]'
         print( out )
-        s, t, u, v = ring( 's,t,u,v' )
+        y0, y1, y2, y3 = ring( 'y0,y1,y2,y3' )
         for p in out:
-            assert p.degree( s ) + p.degree( t ) == 2
-            assert p.degree( u ) + p.degree( v ) == 2
+            assert p.degree( y0 ) + p.degree( y1 ) == 2
+            assert p.degree( y2 ) + p.degree( y3 ) == 2
         assert str( out ) == chk
 
 
     def test__get_mon_P1xP1__23( self ):
-        out = SERing.get_mon_P1xP1( 2, 3 )
-        chk = '[s^2*u^3, s^2*u^2*v, s^2*u*v^2, s^2*v^3, s*t*u^3, s*t*u^2*v, s*t*u*v^2, s*t*v^3, t^2*u^3, t^2*u^2*v, t^2*u*v^2, t^2*v^3]'
+        out = SERing.get_mon_P1xP1( 2, 3, 'y0,y1,y2,y3' )
+        chk = '[y0^2*y2^3, y0^2*y2^2*y3, y0^2*y2*y3^2, y0^2*y3^3, y0*y1*y2^3, y0*y1*y2^2*y3, y0*y1*y2*y3^2, y0*y1*y3^3, y1^2*y2^3, y1^2*y2^2*y3, y1^2*y2*y3^2, y1^2*y3^3]'
         print( out )
-        s, t, u, v = ring( 's,t,u,v' )
+        y0, y1, y2, y3 = ring( 'y0,y1,y2,y3' )
         for p in out:
-            assert p.degree( s ) + p.degree( t ) == 2
-            assert p.degree( u ) + p.degree( v ) == 3
+            assert p.degree( y0 ) + p.degree( y1 ) == 2
+            assert p.degree( y2 ) + p.degree( y3 ) == 3
         assert str( out ) == chk
 
 
     def test__get_mon_P2( self ):
-        out = SERing.get_mon_P2( 2 )
-        chk = '[x^2, x*y, x*z, y^2, y*z, z^2]'
+        out = SERing.get_mon_P2( 2, 'x0,x1,x2' )
+        chk = '[x0^2, x0*x1, x0*x2, x1^2, x1*x2, x2^2]'
         print( out )
-        x, y, z = ring( 'x,y,z' )
+        x0, x1, x2 = ring( 'x0,x1,x2' )
         for p in out:
             assert p.degree() == 2
         assert str( out ) == chk
@@ -123,70 +164,10 @@ class TestSERing( TestTools ):
         assert mat == out
 
 
-    def test__compose_aut_P1P1__1( self ):
-
-        matL = '[(3,2),(7,5)]'
-        matL = sage_matrix( sage_QQ, ring( matL ) )
-        assert matL.is_invertible()
-
-        matR = '[(1,2),(3,7)]'
-        matR = sage_matrix( sage_QQ, ring( matR ) )
-        assert matR.is_invertible()
-
-        pol_lst = SERing.get_mon_P1xP1( 1, 1 )
-        out = SERing.compose_aut_P1P1( pol_lst, matL, matR, False )
-
-        print( pol_lst )
-        print( out )
-
-        check = '[3*s*u + 2*t*u + 6*s*v + 4*t*v, 9*s*u + 6*t*u + 21*s*v + 14*t*v, 7*s*u + 5*t*u + 14*s*v + 10*t*v, 21*s*u + 15*t*u + 49*s*v + 35*t*v]'
-        assert out == ring( check )
-
-
-    def test__compose_aut_P1P1__2( self ):
-
-        matL = '[(3,2),(7,5)]'
-        matL = sage_matrix( sage_QQ, ring( matL ) )
-        assert matL.is_invertible()
-
-        matR = '[(1,2),(3,7)]'
-        matR = sage_matrix( sage_QQ, ring( matR ) )
-        assert matR.is_invertible()
-
-        pol_lst = SERing.get_mon_P1xP1( 1, 1 )
-        out = SERing.compose_aut_P1P1( pol_lst, matL, matR, True )
-
-        print( pol_lst )
-        print( out )
-
-        #        [3*s*u + 2*t*u + 6*s*v + 4*t*v, 9*s*u + 6*t*u + 21*s*v + 14*t*v, 7*s*u + 5*t*u + 14*s*v + 10*t*v, 21*s*u + 15*t*u + 49*s*v + 35*t*v]
-        check = '[3*s*u + 6*t*u + 2*s*v + 4*t*v, 9*s*u + 21*t*u + 6*s*v + 14*t*v, 7*s*u + 14*t*u + 5*s*v + 10*t*v, 21*s*u + 49*t*u + 15*s*v + 35*t*v]'
-        assert out == ring( check )
-
-
     def test__maple_is_installed( self ):
 
         assert self.maple_is_installed()
 
-
-    def test__solve( self ):
-
-        if not self.maple_is_installed():
-            return
-
-        # s, t, u, v = ring( 's,t,u,v' )
-        # a, b, c, d = ring( 'a,b,c,d' )
-        # e, f, g, h = ring( 'e,f,g,h' )
-
-        pol_lst = [ ring( 'a^2-b^2' ), ring( 'b+1' ), ring( '(c^2+1)*(c-1)' )]
-        var_lst = ring( '[a,b,c]' )
-        sol_lst = SERing.solve( pol_lst, var_lst )
-
-        a, b, c = ring( 'a,b,c' )
-        for sol in sol_lst:
-            assert sol[a] ** 2 - sol[b] ** 2 == 0
-            assert sol[b] + 1 == 0
-            assert ( sol[c] ** 2 + 1 ) * ( sol[c] - 1 ) == 0
 
 
 if __name__ == '__main__':
@@ -194,18 +175,20 @@ if __name__ == '__main__':
     SETools.filter( None )
     SETools.start_timer()
 
+    TestSERing().test__conv__xyvw()
+    TestSERing().test__conv__xyz()
+    TestSERing().test__conv__xi()
+    TestSERing().test__conv__yi()
 #     TestSERing().test__get_mon_P1xP1__22()
 #     TestSERing().test__get_mon_P1xP1__23()
 #     TestSERing().test__get_mon_P2()
 #     TestSERing().test__random_matrix_QQ()
 #     TestSERing().test__get_bidegree()
 #     TestSERing().test__get_matrix_P1xP1()
-    TestSERing().test__get_matrix_P2()
-#     TestSERing().test__compose_aut_P1P1__1()
-#     TestSERing().test__compose_aut_P1P1__2()
+#     TestSERing().test__get_matrix_P2()
 #     TestSERing().test__random_ZZ()
 #     TestSERing().test__random_elt()
 #     TestSERing().test__random_inv_matrix_QQ()
-#     TestSERing().test__solve()
+
 
     SETools.end_timer()

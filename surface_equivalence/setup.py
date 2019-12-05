@@ -16,7 +16,7 @@ def readme():
         return f.read()
 
 
-setup( name = 'linkage',
+setup( name = 'linkage',  # to change!
        version = '1.0',
        description = 'Finding surface equivalences',
        long_description = readme(),

@@ -29,16 +29,18 @@ class SERing:
     Attributes
     ----------
     R : sage_PolynomialRing
-        Polynomial ring QQ[a0,...,a4,c0,...,c19,u0,...,u4,x0,...,x2,y0,...,y3,z0,...,z19].
+        Polynomial ring QQ[t,a0,...,a4,c0,...,c19,u0,...,u4,r0,...,r50,x0,...,x2,y0,...,y3,z0,...,z19].
     '''
+
     x_lst = ['x' + str( i ) for i in range( 3 )]
     y_lst = ['y' + str( i ) for i in range( 4 )]
     z_lst = ['z' + str( i ) for i in range( 20 )]
     a_lst = ['a' + str( i ) for i in range( 5 )]
     c_lst = ['c' + str( i ) for i in range( 20 )]
     u_lst = ['u' + str( i ) for i in range( 5 )]
+    r_lst = ['r' + str( i ) for i in range( 50 )]
 
-    R = sage_PolynomialRing( sage_QQ, a_lst + c_lst + u_lst + x_lst + y_lst + z_lst )
+    R = sage_PolynomialRing( sage_QQ, ['t'] + a_lst + c_lst + u_lst + r_lst + x_lst + y_lst + z_lst )
 
     @staticmethod
     def ring( expr ):
@@ -153,6 +155,28 @@ class SERing:
 
 
     @staticmethod
+    def get_degree( pol_lst, vars = 'x0,x1,x2' ):
+        '''
+        Parameters
+        ----------        
+        pol_lst : list<SERing.R> 
+            List of homogeneous polynomials of equal degree d in 
+            (x0:x1:x2) where the variables are specified by vars.
+        
+        vars: string
+            Names of the variables.
+                        
+        Returns
+        -------
+        int            
+            An integer d defining the degree of input polynomials.
+        '''
+        x0, x1, x2 = ring( 'x0,x1,x2' )
+        mon = ring( pol_lst )[0].monomials()[0]
+        return mon.degree( x0 ) + mon.degree( x1 ) + mon.degree( x2 )
+
+
+    @staticmethod
     def get_matrix_P1xP1( pol_lst, vars = 'y0,y1,y2,y3' ):
         '''
         Obtains the matrix M so that wrt monomial basis vector v defined 
@@ -211,7 +235,7 @@ class SERing:
             The coefficient matrix of pol_lst whose entries are polynomials.
         '''
         pol_lst = ring( pol_lst )
-        d = pol_lst[0].degree()
+        d = SERing.get_degree( pol_lst, vars )
         mon_lst = SERing.get_mon_P2( d, vars )
 
         SETools.p( 'd = ' + str( d ) )

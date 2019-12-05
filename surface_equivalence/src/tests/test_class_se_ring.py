@@ -138,6 +138,22 @@ class TestSERing( TestTools ):
         assert SERing.get_bidegree( pol_lst ) == ( 3, 5 )
 
 
+    def test__get_degree( self ):
+        d = 4
+        mon_lst = SERing.get_mon_P2( d )
+        print( mon_lst )
+        out = SERing.get_degree( mon_lst )
+        print( out )
+        assert out == d
+
+        mat = SERing.random_matrix_QQ( 4, len( mon_lst ) )
+        pol_lst = list( mat * sage_vector( mon_lst ) )
+        print( pol_lst )
+        out = SERing.get_degree( pol_lst )
+        print( out )
+        assert out == d
+
+
     def test__get_matrix_P1P1( self ):
         mat = '[(13, 1, -2, 1/2, 1, 3, 3, 0, -1), (2/5, -2/5, -2, -1, -2, -1, -5/49, 19, 0), (1, -1, 0, -3/2, 1/2, -1/22, 2, 5, -8/9), (7/23, -1/2, 0, -1, 1, 32, 1/2, 0, 1)]'
         mat = sage_matrix( sage_QQ, ring( mat ) )
@@ -175,15 +191,16 @@ if __name__ == '__main__':
     SETools.filter( None )
     SETools.start_timer()
 
-    TestSERing().test__conv__xyvw()
-    TestSERing().test__conv__xyz()
-    TestSERing().test__conv__xi()
-    TestSERing().test__conv__yi()
+#     TestSERing().test__conv__xyvw()
+#     TestSERing().test__conv__xyz()
+#     TestSERing().test__conv__xi()
+#     TestSERing().test__conv__yi()
 #     TestSERing().test__get_mon_P1xP1__22()
 #     TestSERing().test__get_mon_P1xP1__23()
 #     TestSERing().test__get_mon_P2()
 #     TestSERing().test__random_matrix_QQ()
 #     TestSERing().test__get_bidegree()
+    TestSERing().test__get_degree()
 #     TestSERing().test__get_matrix_P1xP1()
 #     TestSERing().test__get_matrix_P2()
 #     TestSERing().test__random_ZZ()

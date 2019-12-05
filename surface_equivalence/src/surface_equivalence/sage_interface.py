@@ -97,7 +97,9 @@ def sage_n( *args, **kwargs ):
 def sage_flatten( *args, **kwargs ):
     return flatten( *args, **kwargs )
 
-
+# from sage.misc.functional import denominator
+def sage_denominator( *args, **kwargs ):
+    return denominator( *args, **kwargs )
 
 #################################################
 # sage.functions                                #
@@ -133,6 +135,8 @@ sage_pi = pi
 # from sage.symbolic.relation import solve
 def sage_solve( *args, **kwargs ):
     return solve( *args, **kwargs )
+
+
 
 
 #################################################

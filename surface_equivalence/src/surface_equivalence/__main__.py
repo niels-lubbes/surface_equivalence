@@ -25,6 +25,11 @@ from surface_equivalence.sage_interface import sage_FractionField
 from surface_equivalence.sage_interface import sage_ideal
 from surface_equivalence.sage_interface import sage__eval
 from surface_equivalence.sage_interface import sage_Compositions
+from surface_equivalence.sage_interface import sage_solve
+from surface_equivalence.sage_interface import sage_SR
+from surface_equivalence.sage_interface import sage_lcm
+from surface_equivalence.sage_interface import sage_denominator
+from surface_equivalence.sage_interface import sage_identity_matrix
 
 
 def usecase_B5():
@@ -109,11 +114,13 @@ def usecase_B5():
             ( 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 )]
     matp = sage_matrix( matp )
     x0, x1, x2, y0, y1, y2, y3 = ring( 'x0,x1,x2,y0,y1,y2,y3' )  # P2(x0:x1:x2) and P1xP1(y0:y1;y2:y3)
-    gg = [comp.subs( {x0:y0 * y2, x1:y1 * y2, x2 :y0 * y3} ) for comp in ff]
-    gg = [comp / sage_gcd( gg ) for comp in gg]
+    gg = [comp.subs( {x0:y1 * y3, x1:y0 * y2, x2 :y1 * y2} ) for comp in ff]
     gg = list( matp * sage_vector( gg ) )
-    SETools.p( 'ff =', len( ff ), ff )
-    SETools.p( 'gg =', len( gg ), gg )
+    gcd_gg = sage_gcd( gg )
+    gg = [comp / gcd_gg for comp in gg]
+    SETools.p( 'gcd_gg =', gcd_gg )
+    SETools.p( 'ff     =', len( ff ), ff )
+    SETools.p( 'gg     =', len( gg ), gg )
 
 
     # determine and set basepoint tree
@@ -161,9 +168,10 @@ def usecase_B5():
     # compute inverse of G
     G = [ elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T1m0]
     z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
-    id = [ G[i] * z[0] - z[i] * G[0] for i in range( 10 ) ] + [a0 * G[0] - 1]
-    I01 = sage_ideal( id ).elimination_ideal( [a0, y2, y3 ] ).gens()
-    I23 = sage_ideal( id ).elimination_ideal( [a0, y0, y1 ] ).gens()
+    t = ring( 't' )
+    id = [ G[i] * z[0] - z[i] * G[0] for i in range( 10 ) ] + [t * G[0] - 1]
+    I01 = sage_ideal( id ).elimination_ideal( [t, y2, y3 ] ).gens()
+    I23 = sage_ideal( id ).elimination_ideal( [t, y0, y1 ] ).gens()
     I01 = [ elt for elt in I01 if elt.degree( y0 ) == 1 and elt.degree( y1 ) == 1 ][0]
     I23 = [ elt for elt in I23 if elt.degree( y2 ) == 1 and elt.degree( y3 ) == 1 ][0]
     Q0 = I01.coefficient( y1 )
@@ -205,34 +213,118 @@ def usecase_B5():
     b = T2m4
     rel_g4m2 = 2 * b[0] + b[1] - 2 * b[3] - 2 * b[5] + b[8]
     SETools.p( 'rel_g4m2 =', rel_g4m2 )
-    rel_g4m2 = rel_g4m2.subs( dctZ ).subs( dctP )
+    rel_g4m2 = rel_g4m2.subs( dctZ ).subs( dctP ).subs( {u[i]:U[i] for i in range( 5 )} )
     SETools.p( 'rel_g4m2 =', rel_g4m2 )
     rel_lst = []
-    for exp in sage_Compositions( 4 + 5, length = 5 ):
-        rel_lst += [rel_g4m2.coefficient( {u[i]:exp[i] - 1 for i in range( 5 )} )]
+    x = ring( '[x0,x1,x2]' )
+    for exp in sage_Compositions( 4 + 3, length = 3 ):
+        rel_lst += [rel_g4m2.coefficient( {x[i]:exp[i] - 1 for i in range( 3 )} )]
     SETools.p( 'rel_lst =', len( rel_lst ) )
     for rel in rel_lst:
-        if rel != 0:
-            SETools.p( '\t', rel )
+        SETools.p( '\t', rel )
+    t = ring( 't' )
+    rel_lst += [ ( c0 * c3 - c1 * c2 ) * c4 * ( c5 * c10 - c9 * c6 ) * t - 1 ]
 
-    # get coefficient matrices
-    mff = SERing.get_matrix_P2( ff )
-    SETools.p( 'mff =', mff.dimensions() )
-    kff = mff.right_kernel_matrix().T
-    assert ( mff * kff ).is_zero()
+    # solve for ci
+    prime_lst = sage_ideal( rel_lst ).elimination_ideal( t ).primary_decomposition()
+    SETools.p( 'prime_lst =', len( prime_lst ) )
+    for prime in prime_lst:
+        SETools.p( '\t', prime.gens() )
+
+    # SETools.p( '>', sage_ideal( rel_lst ).elimination_ideal( t ).triangular_decomposition() )
+
+
+    # put solutions in dictionary form
+    for gen_lst in [prime.gens() for prime in prime_lst]:
+        sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
+        SETools.p( '\t sol_dct =', sol_dct )
+        assert len( sol_dct ) == 1
+    prime_lst2 = []
+    prime_lst2 += [prime_lst[0].gens() + [c0 - 1, c4 - 1]]
+    prime_lst2 += [prime_lst[1].gens() + [c1 - 1, c4 - 1]]
+    prime_lst2 += [prime_lst[2].gens() + [c1 - 1, c4 - 1]]
+    prime_lst2 += [prime_lst[3].gens() + [c0 - 1, c4 - 1]]
+    for prime in prime_lst2:
+        SETools.p( '\t', prime )
+    SETools.p( 'Simplified solutions:' )
+    for gen_lst in prime_lst2:
+        sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
+        SETools.p( '\t sol_dct =', sol_dct )
+        assert len( sol_dct ) == 1
+
+    r0, r1 = ring( 'r0,r1' )
+    sol0 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:2, c12:-2 * r0 * r1}
+    sol1 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:-2 * r0 * r1, c12:2}
+    sol2 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:r0, c6:0, c7:0, c8:0, c9:-2 * r0, c10:r1, c11:-2 * r0 * r1, c12:2}
+    sol3 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:r0, c6:0, c7:0, c8:0, c9:-2 * r0, c10:r1, c11:2, c12:-2 * r0 * r1}
+    sol_lst = [sol0, sol1, sol2, sol3]
+
+    SETools.p( 'Simplified solutions by hand:' )
+    for sol in sol_lst:
+        SETools.p( '\t', sol )
+
 
     y = ring( '[y0,y1,y2,y3]' )
-    gr = [ comp.subs( {y[i]:QoPoF[i] for i in range( 4 )} ) for comp in gg ]
-    # gr = [ comp / sage_gcd( gr ) for comp in gr ]
-    SETools.p( 'gr =', len( gr ), gr[0] )
-    # for comp in gr: SETools.p( '\t', comp )
+    gr_lst = []
+    SETools.p( 'Computing (gg o r) for each sol in sol_lst...' )
+    for sol in sol_lst:
+        gr = [ comp.subs( {y[i]:QoPoF[i] for i in range( 4 )} ).subs( sol ) for comp in gg ]
+        SETools.p( '\t gr =', gr )
+        gcd_gr = sage_gcd( gr )
+        SETools.p( '\t\tgcd_gr =', gcd_gr )
+        gr_lst += [[ comp / gcd_gr for comp in gr ]]
+    SETools.p( 'gr_lst =', len( gr_lst ) )
+    for gr in gr_lst:
+        SETools.p( '\t gr =', gr )
 
-    # mgr = SERing.get_matrix_P2( gr )
-    # SETools.p( 'mgr =', mgr.dimensions() )
+    # load("/home/niels/Desktop/n/src/git/surface_equivalence/surface_equivalence/src/surface_equivalence/se_tools")['gr_lst']
 
-    # mhh = mgg * kff
-    # SETools.p( 'mhh =', list( mhh ) )
 
+    # get coefficient matrix ff
+    mff = SERing.get_matrix_P2( ff )
+    kff = mff.right_kernel_matrix().T
+    SETools.p( 'mff =', mff.dimensions(), list( mff ) )
+    SETools.p( 'kff =', kff.dimensions(), list( kff ) )
+    assert ( mff * kff ).is_zero()
+
+    # get implicit equations for image of gg
+    z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
+    y = ring( 'y0,y1,y2,y3' )
+    igg = SERing.R.ideal( [ z[i] - gg[i] for i in range( 10 )  ] ).elimination_ideal( [y[i] for i in range( 4 )] )
+    SETools.p( 'igg =', igg )
+
+    # Compute automorphism for each gr
+    SETools.p( 'Compute coefficient matrices for gr in gr_lst:' )
+    for gr in gr_lst:
+
+        mgr = SERing.get_matrix_P2( gr )
+        mgk = mgr * kff
+        SETools.p( '\tmgr =', mgr.dimensions(), list( mgr ) )
+        SETools.p( '\tmgk =', mgk.dimensions(), list( mgk ) )
+        SETools.p( '\t    >', [elt for elt in mgk.list() if elt != 0] )
+        su_lst = []
+        for su in sage_ideal( mgk.list() ).primary_decomposition():
+            su_lst += [ su.gens() ]
+        SETools.p( '\tsu_lst =', su_lst )
+
+        assert mgk.is_zero()
+        mgs = mgr  # substituted with the solutions
+
+        Ef = sage_matrix( sage_QQ, mff.rows() + kff.T.rows() )
+        Egs = sage_matrix( mgs.rows() + kff.T.rows() )
+        UpI = Egs * Ef.inverse()
+        SETools.p( '\tUpI =', UpI.dimensions(), list( UpI ) )
+
+        assert ( UpI.submatrix( 10, 10 ) - sage_identity_matrix( 5 ) ).is_zero()
+
+        U = UpI.submatrix( 0, 0, 10, 10 )
+        SETools.p( '\tU =', U.dimensions(), list( U ) )
+
+        Uff = list( U * sage_vector( ff ) )
+        iggs = igg.subs( {z[i]:Uff[i] for i in range( 10 )} )
+        assert iggs.is_zero()
+
+        SETools.p( '\t---' )
 
 
 

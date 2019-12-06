@@ -92,10 +92,18 @@ def usecase_B5():
     # generators of graded ring of f
     U = U0, U1, U2, U3, U4 = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
 
+    # compute bidegree (2,d) in order to find a relation between the generators
+    u = u0, u1, u2, u3, u4 = ring( 'u0,u1,u2,u3,u4' )
+    SETools.p( 'Compare number of monomials of given bi-weigth with dimension predicted by the Riemann-Roch formula...' )
+    for d in reversed( [-i for i in range( 8 )] ):
+        w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
+        SETools.p( '\tweigth=', ( 2, d ), ',\t#monomials=', len( SERing.get_wmon_lst( u, w_lst, 2, d ) ), ',\tRR=', 29 + 5 * d )
+
     # template for generators of coordinate ring for weight (2,-1) and (1,0)
     T2m4 = ring( '[u3^2,u3*u4,u4^2,u0*u2*u3,u0*u2*u4,u1*u2*u3,u1*u2*u4,u0^2*u2^2,u0*u1*u2^2,u1^2*u2^2]' )
     T1m0 = ring( '[u1^2*u4,u1^2*u3,u1^3*u2,u0*u1*u4,u0*u1*u3,u0*u1^2*u2,u0^2*u4,u0^2*u3,u0^2*u1*u2,u0^3*u2]' )
-    u = u0, u1, u2, u3, u4 = ring( 'u0,u1,u2,u3,u4' )
+    SETools.p( 'T2m4 =', T2m4 )
+    SETools.p( 'T1m0 =', T1m0 )
 
     # find linear relation for f2m4
     a = a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 = [elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T2m4 ]
@@ -219,9 +227,7 @@ def usecase_B5():
     x = ring( '[x0,x1,x2]' )
     for exp in sage_Compositions( 4 + 3, length = 3 ):
         rel_lst += [rel_g4m2.coefficient( {x[i]:exp[i] - 1 for i in range( 3 )} )]
-    SETools.p( 'rel_lst =', len( rel_lst ) )
-    for rel in rel_lst:
-        SETools.p( '\t', rel )
+    SETools.p( 'rel_lst =', len( rel_lst ), rel_lst )
     t = ring( 't' )
     rel_lst += [ ( c0 * c3 - c1 * c2 ) * c4 * ( c5 * c10 - c9 * c6 ) * t - 1 ]
 
@@ -244,6 +250,7 @@ def usecase_B5():
     prime_lst2 += [prime_lst[1].gens() + [c1 - 1, c4 - 1]]
     prime_lst2 += [prime_lst[2].gens() + [c1 - 1, c4 - 1]]
     prime_lst2 += [prime_lst[3].gens() + [c0 - 1, c4 - 1]]
+    SETools.p( 'Added equations to prime_lst to simplify solutions:' )
     for prime in prime_lst2:
         SETools.p( '\t', prime )
     SETools.p( 'Simplified solutions:' )
@@ -293,38 +300,26 @@ def usecase_B5():
     igg = SERing.R.ideal( [ z[i] - gg[i] for i in range( 10 )  ] ).elimination_ideal( [y[i] for i in range( 4 )] )
     SETools.p( 'igg =', igg )
 
-    # Compute automorphism for each gr
-    SETools.p( 'Compute coefficient matrices for gr in gr_lst:' )
+    # Compute isomorphisms for each gr
+    SETools.p( 'Compute projective isomorphism for each gr in gr_lst:' )
     for gr in gr_lst:
 
         mgr = SERing.get_matrix_P2( gr )
         mgk = mgr * kff
-        SETools.p( '\tmgr =', mgr.dimensions(), list( mgr ) )
-        SETools.p( '\tmgk =', mgk.dimensions(), list( mgk ) )
-        SETools.p( '\t    >', [elt for elt in mgk.list() if elt != 0] )
-        su_lst = []
-        for su in sage_ideal( mgk.list() ).primary_decomposition():
-            su_lst += [ su.gens() ]
-        SETools.p( '\tsu_lst =', su_lst )
-
-        assert mgk.is_zero()
-        mgs = mgr  # substituted with the solutions
+        assert mgk.is_zero()  # because the surfaces in P^9 are linearly normal
 
         Ef = sage_matrix( sage_QQ, mff.rows() + kff.T.rows() )
-        Egs = sage_matrix( mgs.rows() + kff.T.rows() )
-        UpI = Egs * Ef.inverse()
-        SETools.p( '\tUpI =', UpI.dimensions(), list( UpI ) )
-
+        Egr = sage_matrix( mgr.rows() + kff.T.rows() )
+        UpI = Egr * Ef.inverse()
         assert ( UpI.submatrix( 10, 10 ) - sage_identity_matrix( 5 ) ).is_zero()
 
         U = UpI.submatrix( 0, 0, 10, 10 )
         SETools.p( '\tU =', U.dimensions(), list( U ) )
 
+        # check if the answer is correct
         Uff = list( U * sage_vector( ff ) )
         iggs = igg.subs( {z[i]:Uff[i] for i in range( 10 )} )
         assert iggs.is_zero()
-
-        SETools.p( '\t---' )
 
 
 
@@ -411,11 +406,11 @@ if __name__ == '__main__':
     mod_lst = []
     mod_lst += ['__main__.py']
     SETools.filter( mod_lst )  # output only from specified modules
-    SETools.filter( None )  # print all verbose output, comment to disable.
+    # SETools.filter( None )  # print all verbose output, comment to disable.
 
     if 'OUTPUT_PATH' not in os.environ:
         os.environ['OUTPUT_PATH'] = './'
-    # os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/bin'
+    os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/bin'
 
     SETools.start_timer()
 

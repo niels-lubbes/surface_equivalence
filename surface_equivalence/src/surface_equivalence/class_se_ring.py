@@ -16,7 +16,10 @@ from surface_equivalence.sage_interface import sage_matrix
 from surface_equivalence.sage_interface import sage_vector
 from surface_equivalence.sage_interface import sage_solve
 from surface_equivalence.sage_interface import sage_SR
+from surface_equivalence.sage_interface import sage_prod
 from surface_equivalence.sage_interface import sage_maple
+from surface_equivalence.sage_interface import sage_mathematica
+
 
 def ring( s ):
     return SERing.ring( s )
@@ -385,6 +388,41 @@ class SERing:
         '''
         idx = int( sage_ZZ.random_element( 0, len( lst ) ) )
         return lst[idx]
+
+
+    @staticmethod
+    def get_wmon_lst( g_lst, w_lst, a, b ):
+        '''
+        '''
+        sum0 = str( sum( [w_lst[i][0] * g_lst[i] for i in range( len( g_lst ) ) ] ) )
+        sum1 = str( sum( [w_lst[i][1] * g_lst[i] for i in range( len( g_lst ) ) ] ) )
+        a, b = str( a ), str( b )
+        ieq = str( [str( g ) + '>=0' for g in g_lst ] )[1:-1].replace( "'", '' )
+        gens = '{' + str( g_lst )[1:-1] + '}'
+
+        # Reduce[{u + v + w == i, s + t - 3 u - 2 v - 2 w == j, u >= 0, v >= 0, w >= 0, s >= 0, t >= 0}, {s, t, u, v, w}, Integers]
+        cmd = 'Reduce[{' + sum0 + '==' + a + ',' + sum1 + '==' + b + ',' + ieq + '},' + gens + ',Integers]'
+        SETools.p( 'cmd =', cmd )
+        out = sage_mathematica( cmd )
+        out = str( out ).replace( '\n', '' ).replace( ' ', '' ).replace( '>', '' )
+        SETools.p( 'out =', out )
+        if out == 'False':
+            return []
+        elif out[0] != '(':
+            m_lst = ['(' + out + ')']
+        else:
+            m_lst = out.split( '||' )
+
+        mon_lst = []
+        for m in m_lst:
+            m = m[1:-1]
+            for g in g_lst:
+                m = m.replace( str( g ), '' )
+            m = m.replace( '==', '' )
+            e_lst = [ int( e ) for e in m.split( '&&' )]
+            mon_lst += [sage_prod( [ g_lst[i] ** e_lst[i] for i in range( len( g_lst ) )] )]
+
+        return sorted( mon_lst )
 
 
     @staticmethod

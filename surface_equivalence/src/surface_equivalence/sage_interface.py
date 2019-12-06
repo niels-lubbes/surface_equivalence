@@ -101,6 +101,10 @@ def sage_flatten( *args, **kwargs ):
 def sage_denominator( *args, **kwargs ):
     return denominator( *args, **kwargs )
 
+# from sage.misc.misc_c import prod
+def sage_prod( *args, **kwargs ):
+    return prod( *args, **kwargs )
+
 #################################################
 # sage.functions                                #
 #################################################

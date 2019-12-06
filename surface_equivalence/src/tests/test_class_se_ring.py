@@ -180,9 +180,65 @@ class TestSERing( TestTools ):
         assert mat == out
 
 
-    def test__maple_is_installed( self ):
+    def test__get_wmon_lst_2m4( self ):
 
-        assert self.maple_is_installed()
+        if not self.mathematica_is_installed():
+            print( 'test__get_wmon_lst is not tested, since mathematica is not installed' )
+            return
+
+        g_lst = ring( 'u0,u1,u2,u3,u4' )
+        w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
+
+        chk = ring( '[u3^2,u3*u4,u4^2,u0*u2*u3,u0*u2*u4,u1*u2*u3,u1*u2*u4,u0^2*u2^2,u0*u1*u2^2,u1^2*u2^2]' )
+        out = SERing.get_wmon_lst( g_lst, w_lst, 2, -4 )
+        print( out )
+        assert out == sorted( chk )
+
+
+    def test__get_wmon_lst_1m0( self ):
+
+        if not self.mathematica_is_installed():
+            print( 'test__get_wmon_lst is not tested, since mathematica is not installed' )
+            return
+
+        g_lst = ring( 'u0,u1,u2,u3,u4' )
+        w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
+
+        chk = ring( '[u1^2*u4,u1^2*u3,u1^3*u2,u0*u1*u4,u0*u1*u3,u0*u1^2*u2,u0^2*u4,u0^2*u3,u0^2*u1*u2,u0^3*u2]' )
+
+        out = SERing.get_wmon_lst( g_lst, w_lst, 1, 0 )
+        print( out )
+        assert out == sorted( chk )
+
+
+    def test__get_wmon_lst_1m3( self ):
+
+        if not self.mathematica_is_installed():
+            print( 'test__get_wmon_lst is not tested, since mathematica is not installed' )
+            return
+
+        g_lst = ring( 'u0,u1,u2,u3,u4' )
+        w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
+
+        chk = ring( '[u2]' )
+
+        out = SERing.get_wmon_lst( g_lst, w_lst, 1, -3 )
+        print( out )
+        assert out == sorted( chk )
+
+
+    def test__get_wmon_lst_1m4( self ):
+
+        if not self.mathematica_is_installed():
+            print( 'test__get_wmon_lst is not tested, since mathematica is not installed' )
+            return
+
+        g_lst = ring( 'u0,u1,u2,u3,u4' )
+        w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
+
+        out = SERing.get_wmon_lst( g_lst, w_lst, 1, -4 )
+        print( out )
+        assert out == []
 
 
 
@@ -190,6 +246,8 @@ if __name__ == '__main__':
 
     SETools.filter( None )
     SETools.start_timer()
+
+
 
 #     TestSERing().test__conv__xyvw()
 #     TestSERing().test__conv__xyz()
@@ -200,12 +258,15 @@ if __name__ == '__main__':
 #     TestSERing().test__get_mon_P2()
 #     TestSERing().test__random_matrix_QQ()
 #     TestSERing().test__get_bidegree()
-    TestSERing().test__get_degree()
+#     TestSERing().test__get_degree()
 #     TestSERing().test__get_matrix_P1xP1()
 #     TestSERing().test__get_matrix_P2()
 #     TestSERing().test__random_ZZ()
 #     TestSERing().test__random_elt()
 #     TestSERing().test__random_inv_matrix_QQ()
-
+    TestSERing().test__get_wmon_lst_2m4()
+    TestSERing().test__get_wmon_lst_1m0()
+    TestSERing().test__get_wmon_lst_1m3()
+    TestSERing().test__get_wmon_lst_1m4()
 
     SETools.end_timer()

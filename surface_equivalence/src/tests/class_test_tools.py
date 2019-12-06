@@ -7,7 +7,7 @@ Created on Jan 1, 2019
 import os
 
 from surface_equivalence.sage_interface import sage_maple
-
+from surface_equivalence.sage_interface import sage_mathematica
 
 class TestTools( object ):
 
@@ -61,6 +61,22 @@ class TestTools( object ):
             return False
 
 
+    def mathematica_is_installed( self ):
+        '''
+        Returns
+        -------
+        boolean
+            True if mathematica is installed and false otherwise.
+        '''
+
+        os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/bin'
+
+        try:
+            sage_mathematica.eval( '1 + 1' )
+            return True
+        except:
+            print( 'WARNING: Mathematica is not installed.' )
+            return False
 
 
 

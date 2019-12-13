@@ -374,6 +374,31 @@ class SERing:
 
 
     @staticmethod
+    def random_inv_matrix( m ):
+        '''
+        Parameters
+        ----------
+        m : int
+        
+        Returns
+        -------
+        sage_matrix<sage_QQ>        
+            A random invertible m x m-matrix with either -1, 0 or 1 as entries.         
+        '''
+
+        while True:
+            mat = []
+            for ri in range( m ):
+                row = []
+                for ci in range( m ):
+                    row += [ SERing.random_ZZ( 1 ) ]
+                mat += [row]
+            mat = sage_matrix( sage_QQ, mat )
+            if mat.is_invertible():
+                return mat
+
+
+    @staticmethod
     def random_elt( lst ):
         '''
         Parameters

@@ -96,6 +96,15 @@ class TestSERing( TestTools ):
         assert mat.is_invertible()
 
 
+    def test__random_inv_matrix( self ):
+        m = 4
+        mat = SERing.random_inv_matrix( m )
+        print( mat.rows() )
+        assert mat.is_invertible()
+        assert set( mat.list() ) == set( [-1, 0, 1] )
+
+
+
     def test__get_mon_P1xP1__22( self ):
         out = SERing.get_mon_P1xP1( 2, 2, 'y0,y1,y2,y3' )
         chk = '[y0^2*y2^2, y0^2*y2*y3, y0^2*y3^2, y0*y1*y2^2, y0*y1*y2*y3, y0*y1*y3^2, y1^2*y2^2, y1^2*y2*y3, y1^2*y3^2]'
@@ -264,9 +273,10 @@ if __name__ == '__main__':
 #     TestSERing().test__random_ZZ()
 #     TestSERing().test__random_elt()
 #     TestSERing().test__random_inv_matrix_QQ()
-    TestSERing().test__get_wmon_lst_2m4()
-    TestSERing().test__get_wmon_lst_1m0()
-    TestSERing().test__get_wmon_lst_1m3()
-    TestSERing().test__get_wmon_lst_1m4()
+    TestSERing().test__random_inv_matrix()
+#     TestSERing().test__get_wmon_lst_2m4()
+#     TestSERing().test__get_wmon_lst_1m0()
+#     TestSERing().test__get_wmon_lst_1m3()
+#     TestSERing().test__get_wmon_lst_1m4()
 
     SETools.end_timer()

@@ -15,6 +15,7 @@ from surface_equivalence.class_se_ring import SERing
 from linear_series.class_poly_ring import PolyRing
 from linear_series.class_base_points import BasePointTree
 from linear_series.class_linear_series import LinearSeries
+from linear_series.class_ls_tools import LSTools
 
 from surface_equivalence.sage_interface import sage_QQ
 from surface_equivalence.sage_interface import sage_matrix
@@ -32,21 +33,208 @@ from surface_equivalence.sage_interface import sage_denominator
 from surface_equivalence.sage_interface import sage_identity_matrix
 
 
+def usecase_B2():
+    '''
+    We compute the projective isomorphisms between
+    the images of birational maps:
+    
+    f:P2--->X and g:P1xP1--->Y
+
+    Further explanation of this example can be found 
+    in the accompanying arxiv article on projective
+    isomorphisms between rational surfaces.
+    '''
+    x = [ring( 'x' + str( i ) ) for i in range( 3 )]
+    y = [ring( 'y' + str( i ) ) for i in range( 4 )]
+    z = [ring( 'z' + str( i ) ) for i in range( 4 )]
+
+    # we consider the toric surface
+    f = ring( '[x0^6*x1^2,x0*x1^5*x2^2,x1^3*x2^5,x0^5*x2^3+x0^5*x2^3+x0^5*x1*x2^2]' )
+    g = ring( '[y0^3*y1^2*y2^5,y1^5*y2^3*y3^2,y0^2*y1^3*y3^5,y0^5*y2^2*y3^3+y0^4*y1*y2^3*y3^2]' )
+    g = [g[0], g[1] + g[0], g[2], g[3] + g[2]]
+
+    SETools.p( 'f =', len( f ), f )
+    SETools.p( 'g =', len( g ), g )
+    assert sage_gcd( f ) == 1
+    assert sage_gcd( g ) == 1
+
+
+    eqf = sage_ideal( [z[i] - f[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
+    SETools.p( 'eqf =', eqf )
+
+    eqg = sage_ideal( [z[i] - g[i] for i in range( 4 )] ).elimination_ideal( y ).gens()
+    SETools.p( 'eqg =', eqg )
+
+    # basepoint analysis
+    bf = LinearSeries( SERing.conv( f ), PolyRing( 'x,y,z', True ) ).get_bp_tree()
+    SETools.p( 'bf =', bf )
+
+    bg = LinearSeries( SERing.conv( g ), PolyRing( 'x,y,v,w', True ) ).get_bp_tree()
+    SETools.p( 'bg =', bg )
+
+
+
+
+
+def usecase_B4():
+    '''
+    We compute the projective automorphism of the 
+    rational normal scrolls that is parametrized 
+    the birational map f: P2 ---> X.
+     
+    Further explanation of this example can be found 
+    in the accompanying arxiv article on projective
+    isomorphisms between rational surfaces.
+    '''
+
+    # e0-e1
+    p1 = ( 0, 0 );p2 = ( 1, 0 );p3 = ( 0, 1 )
+    PolyRing.reset_base_field()
+    bpt = BasePointTree()
+    bpt.add( 'z', p1, 1 )
+    f0p1 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
+    SETools.p( 'f0p1 =', len( f0p1 ), f0p1 )
+
+    # e0-e2-e3
+    bpt = BasePointTree()
+    bpt.add( 'z', p2, 1 )
+    bpt.add( 'z', p3, 1 )
+    f1m2 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
+    SETools.p( 'f1m2 =', len( f1m2 ), f1m2 )
+
+    # 2e0-e1-e2-e3
+    bpt = BasePointTree()
+    bpt.add( 'z', p1, 1 )
+    bpt.add( 'z', p2, 1 )
+    bpt.add( 'z', p3, 1 )
+    f1m1 = SERing.conv( LinearSeries.get( [2], bpt ).pol_lst )
+    SETools.p( 'f1m1 =', len( f1m1 ), f1m1 )
+
+    # 3e0-2e1-e2-e3
+    bpt = BasePointTree()
+    bpt.add( 'z', p1, 2 )
+    bpt.add( 'z', p2, 1 )
+    bpt.add( 'z', p3, 1 )
+    f1m0 = SERing.conv( LinearSeries.get( [3], bpt ).pol_lst )
+    SETools.p( 'f1m0 =', len( f1m0 ), f1m0 )
+
+    # set generators for the graded coordinate ring of f
+    U = [ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' )]
+    u = ring( 'u0,u1,u2,u3' )
+
+    # obtain monomials of weight (1,0)
+    w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -2 ), ( 1, -1 )]
+    M1m0 = SERing.get_wmon_lst( u, w_lst, 1, 0 )
+    SETools.p( 'M1m0 =', len( M1m0 ), M1m0 )
+
+    # compose F with projective isomorphism P
+    z = [ring( 'z' + str( i ) ) for i in range( 6 )]
+    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
+    dctZ = { u[i]:z[i] for i in range( 4 )}
+    dctP = { z[0]:c[0] * u[0] + c[1] * u[1],
+             z[1]:c[2] * u[0] + c[3] * u[1],
+             z[2]:c[4] * u[2],
+             z[3]:c[5] * u[3] + c[6] * u[0] * u[2] + c[7] * u[1] * u[2]}
+    PoF = [ comp.subs( dctZ ).subs( dctP ) for comp in M1m0]
+    SETools.p( 'PoF wrt u =', len( PoF ), PoF )
+    PoF = [ comp.subs( {u[i]:U[i] for i in range( 4 )} ) for comp in PoF]
+    PoF = [ comp / sage_gcd( PoF ) for comp in PoF]
+    SETools.p( 'PoF =', len( PoF ), PoF )
+
+    # recover matrix for automorphism P
+    F = [ comp.subs( {u[i]:U[i] for i in range( 4 )} ) for comp in M1m0 ]
+    M = []
+    for pol in [ comp.subs( dctZ ).subs( dctP ) for comp in M1m0]:
+        row = []
+        for mon in M1m0:
+            row += [ pol.coefficient( mon ) ]
+        M += [row]
+    M = sage_matrix( M )
+    SETools.p( 'M =', M.dimensions(), '\n' + str( M ) )
+    MF = list( M * sage_vector( F ) )
+    assert MF == PoF
+
+    # compute the inverse Q of F
+    t = ring( 't' )
+    x = ring( 'x0,x1,x2' )
+    id = [ F[i] * z[0] - z[i] * F[0] for i in range( 5 ) ] + [t * F[0] - 1]
+    I1 = sage_ideal( id ).elimination_ideal( [t, x[2] ] ).gens()
+    I2 = sage_ideal( id ).elimination_ideal( [t, x[1] ] ).gens()
+    I1 = [ elt for elt in I1 if elt.degree( x[0] ) == 1 and elt.degree( x[1] ) == 1 ][0]
+    I2 = [ elt for elt in I2 if elt.degree( x[0] ) == 1 and elt.degree( x[2] ) == 1 ][0]
+    Q0 = I1.coefficient( x[1] )
+    Q1 = -I1.coefficient( x[0] )
+    Q2 = I2.coefficient( x[0] )
+    Q = [Q0, Q1, Q2]
+    SETools.p( 'Q =', Q )
+    QoF = [comp.subs( {z[i]:F[i] for i in range( 5 )} ) for comp in Q]
+    QoF = [comp / sage_gcd( QoF ) for comp in QoF]
+    assert QoF == [x[0], x[1], x[2]]
+
+    # compute the composition
+    QoPoF = [ comp.subs( {z[i]:PoF[i] for i in range( 5 )} ) for comp in Q]
+    QoPoF = [ comp / sage_gcd( QoPoF ) for comp in QoPoF ]
+    SETools.p( 'QoPoF =', len( QoPoF ), QoPoF )
+
+    # from the compatible reparametrizations QoPoF we compute the
+    # projective automorphisms U of X.
+    f = f1m0
+    gr = [ comp.subs( {x[i]:QoPoF[i] for i in range( 3 )} ) for comp in f]
+    gcd_gr = sage_gcd( gr )
+
+    gr = [ comp / gcd_gr for comp in gr ]
+    Mf = SERing.get_matrix_P2( f )
+    Mgr = SERing.get_matrix_P2( gr )
+    Kf = Mf.right_kernel_matrix().T
+    SETools.p( 'f   =', len( f ), f )
+    SETools.p( 'gr  =', len( gr ), gr )
+    SETools.p( '\t gcd_gr  =', gcd_gr )
+    SETools.p( 'Mf  =', Mf.dimensions(), list( Mf ) )
+    SETools.p( 'Mgr =', Mgr.dimensions(), list( Mgr ) )
+    SETools.p( 'Kf  =', Kf.dimensions(), list( Kf ) )
+
+    assert ( Mf * Kf ).is_zero()
+    assert ( Mgr * Kf ).is_zero()
+
+    Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
+    Egr = sage_matrix( list( Mgr ) + list( Kf.T ) )
+    UpI = Egr * ~Ef
+    assert ( UpI.submatrix( 5, 5 ) - sage_identity_matrix( 5 ) ).is_zero()
+    U = UpI.submatrix( 0, 0, 5, 5 )
+    SETools.p( 'UpI =', UpI.dimensions(), list( UpI ) )
+    SETools.p( 'U   =', U.dimensions(), list( U ) )
+
+    # verify whether U*f is a parametrization for X for all (c0,...,c7)
+    Uf = list( U * sage_vector( f ) )
+    SETools.p( 'Uf  =', len( Uf ), Uf )
+    eqX = sage_ideal( [ z[i] - f[i] for i in range( 5 )] ).elimination_ideal( [x[0], x[1], x[2]] ).gens()
+    eqXs = [ eq.subs( {z[i]:Uf[i] for i in range( 5 )} ) for eq in eqX ]
+    SETools.p( 'eqX =', len( eqX ), eqX )
+    SETools.p( 'eqXs=', len( eqXs ), eqXs )
+    assert eqXs == [0, 0, 0]
+
+
 def usecase_B5():
     '''
+    We compute the projective isomorphism between two 
+    conic bundles that are parametrized by the 
+    birational maps 
     
+    ff: P2 ---> X     and    gg: P1xP1 ---> Y
+     
+    Further explanation of this example can be found 
+    in the accompanying arxiv article on projective
+    isomorphisms between rational surfaces.
     '''
 
-    # f = 4e0-2e1-e2-e3 (class of hyperplane sections)
-    # p = e0-e1         (class of conical family)
-    # k = -3e0+e1+e2+e3 (canonical class)
+    # we construct linear series associated to ff in order to determine
+    # the generators of the graded coordinate ring of conic bundle X
 
     # basepoints in chart x0!=0;
-    p1 = ( 0, 0 )
-    p2 = ( 0, 1 )
-    p3 = ( 1, 0 )
+    p1 = ( 0, 0 );p2 = ( 0, 1 );p3 = ( 1, 0 )
 
     # 0f+p = e0-e1
+    PolyRing.reset_base_field()
     bp_tree = BasePointTree()
     bp = bp_tree.add( 'z', p1, 1 )
     f0p1 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
@@ -89,15 +277,15 @@ def usecase_B5():
     f2m4 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
     SETools.p( 'f2m4 =', len( f2m4 ), f2m4 )
 
-    # generators of graded ring of f
+    # by inspection we recover the generators of graded ring of ff
     U = U0, U1, U2, U3, U4 = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
 
     # compute bidegree (2,d) in order to find a relation between the generators
     u = u0, u1, u2, u3, u4 = ring( 'u0,u1,u2,u3,u4' )
-    SETools.p( 'Compare number of monomials of given bi-weigth with dimension predicted by the Riemann-Roch formula...' )
+    SETools.p( 'Compare number of monomials of given bi-weight with dimension predicted by the Riemann-Roch formula...' )
     for d in reversed( [-i for i in range( 8 )] ):
         w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
-        SETools.p( '\tweigth=', ( 2, d ), ',\t#monomials=', len( SERing.get_wmon_lst( u, w_lst, 2, d ) ), ',\tRR=', 29 + 5 * d )
+        SETools.p( '\tweight=', ( 2, d ), ',\t#monomials=', len( SERing.get_wmon_lst( u, w_lst, 2, d ) ), ',\tRR=', 29 + 5 * d )
 
     # template for generators of coordinate ring for weight (2,-1) and (1,0)
     T2m4 = ring( '[u3^2,u3*u4,u4^2,u0*u2*u3,u0*u2*u4,u1*u2*u3,u1*u2*u4,u0^2*u2^2,u0*u1*u2^2,u1^2*u2^2]' )
@@ -130,6 +318,8 @@ def usecase_B5():
     SETools.p( 'ff     =', len( ff ), ff )
     SETools.p( 'gg     =', len( gg ), gg )
 
+    # we construct linear series associated to gg in order to determine
+    # the generators of the graded coordinate ring of conic bundle Y
 
     # determine and set basepoint tree
     ls = LinearSeries( SERing.conv( gg ), PolyRing( 'x,y,v,w' ) )
@@ -139,30 +329,30 @@ def usecase_B5():
     tree_211.add( 'xw', ( 0, 0 ), 2 ).add( 't', ( 1, 0 ), 1 )
     tree_211.add( 'yv', ( 0, 1 ), 1 )
 
-    # 1g+0q = 4a+2b-2e1-e2-e3
+    # 1g+0q = 4l0+2l1-2e1-e2-e3
     g1m0 = SERing.conv( LinearSeries.get( [4, 2], tree_211 ).pol_lst )
     SETools.p( 'g1m0 =', len( g1m0 ), g1m0 )
 
-    # 1g-3q = (a+b-e1-e2-e3) + (b-e1)
+    # 1g-3q = (l0+l1-e1-e2-e3) + (b-e1)
     g1m3 = SERing.conv( LinearSeries.get( [1, 2], tree_211 ).pol_lst )
     SETools.p( 'g1m3 =', len( g1m3 ), g1m3 )
 
-    # 1g-2q = 2a+2b-2e1-e2-e3
+    # 1g-2q = 2l0+2l1-2e1-e2-e3
     g1m2 = SERing.conv( LinearSeries.get( [2, 2], tree_211 ).pol_lst )
     SETools.p( 'g1m2 =', len( g1m2 ), g1m2 )
 
-    # 1g-1q = 3a+2b-2e1-e2-e3
+    # 1g-1q = 3l0+2l1-2e1-e2-e3
     g1m1 = SERing.conv( LinearSeries.get( [3, 2], tree_211 ).pol_lst )
     SETools.p( 'g1m1 =', len( g1m1 ), g1m1 )
 
-    # 2g-4q = 4a+4b-4e1-2e2-2e3
+    # 2g-4q = 4l0+4l1-4e1-2e2-2e3
     tree_422 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
     tree_422.add( 'xw', ( 0, 0 ), 4 ).add( 't', ( 1, 0 ), 2 )
     tree_422.add( 'yv', ( 0, 1 ), 2 )
     g2m4 = SERing.conv( LinearSeries.get( [4, 4], tree_422 ).pol_lst )
     SETools.p( 'g2m4 =', len( g2m4 ), g2m4 )
 
-    # set generators of graded coordinate ring of g
+    # by inspection we recover the generators of graded ring of gg
     V = V0, V1, V2, V3, V4 = ring( 'y0' ), ring( 'y1' ), ring( 'y0*y2^2+y1*y2^2-y1*y2*y3' ), ring( 'y0*y1*y2^2' ), ring( 'y0^2*y2^2+y1^2*y2^2-y1^2*y3^2' )
 
     # find linear relation for g2m4
@@ -187,9 +377,9 @@ def usecase_B5():
     Q2 = I23.coefficient( y3 )
     Q3 = -I23.coefficient( y2 )
     Q = [Q0, Q1, Q2, Q3]
-    SETools.p( 'Q =', Q )
-    # [-j, -i, -i, -g - 2*h + i + j]
+    SETools.p( 'Q =', Q )  # [-z9, -z8, -z8, -z6 - 2*z7 + z8 + z9]
 
+    # check the inverse
     QoG = [q.subs( { z[i]:G[i] for i in range( 10 ) } ) for q in Q ]
     gcd01 = sage_gcd( QoG[0], QoG[1] )
     gcd23 = sage_gcd( QoG[2], QoG[3] )
@@ -217,7 +407,7 @@ def usecase_B5():
     QoPoF = [QoPoF[0] / gcd01, QoPoF[1] / gcd01, QoPoF[2] / gcd23, QoPoF[3] / gcd23]
     SETools.p( 'QoPoF =', len( QoPoF ), QoPoF )
 
-    # create list of equations for the ci
+    # create a list of equations for the ci
     b = T2m4
     rel_g4m2 = 2 * b[0] + b[1] - 2 * b[3] - 2 * b[5] + b[8]
     SETools.p( 'rel_g4m2 =', rel_g4m2 )
@@ -231,16 +421,11 @@ def usecase_B5():
     t = ring( 't' )
     rel_lst += [ ( c0 * c3 - c1 * c2 ) * c4 * ( c5 * c10 - c9 * c6 ) * t - 1 ]
 
-    # solve for ci
+    # solve for ci and put the solutions in dictionary form
     prime_lst = sage_ideal( rel_lst ).elimination_ideal( t ).primary_decomposition()
     SETools.p( 'prime_lst =', len( prime_lst ) )
     for prime in prime_lst:
         SETools.p( '\t', prime.gens() )
-
-    # SETools.p( '>', sage_ideal( rel_lst ).elimination_ideal( t ).triangular_decomposition() )
-
-
-    # put solutions in dictionary form
     for gen_lst in [prime.gens() for prime in prime_lst]:
         sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
         SETools.p( '\t sol_dct =', sol_dct )
@@ -258,19 +443,17 @@ def usecase_B5():
         sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
         SETools.p( '\t sol_dct =', sol_dct )
         assert len( sol_dct ) == 1
-
     r0, r1 = ring( 'r0,r1' )
     sol0 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:2, c12:-2 * r0 * r1}
     sol1 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:-2 * r0 * r1, c12:2}
     sol2 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:r0, c6:0, c7:0, c8:0, c9:-2 * r0, c10:r1, c11:-2 * r0 * r1, c12:2}
     sol3 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:r0, c6:0, c7:0, c8:0, c9:-2 * r0, c10:r1, c11:2, c12:-2 * r0 * r1}
     sol_lst = [sol0, sol1, sol2, sol3]
-
     SETools.p( 'Simplified solutions by hand:' )
     for sol in sol_lst:
         SETools.p( '\t', sol )
 
-
+    #  compose compatible reparametrizations with gg
     y = ring( '[y0,y1,y2,y3]' )
     gr_lst = []
     SETools.p( 'Computing (gg o r) for each sol in sol_lst...' )
@@ -284,10 +467,7 @@ def usecase_B5():
     for gr in gr_lst:
         SETools.p( '\t gr =', gr )
 
-    # load("/home/niels/Desktop/n/src/git/surface_equivalence/surface_equivalence/src/surface_equivalence/se_tools")['gr_lst']
-
-
-    # get coefficient matrix ff
+    # get coefficient matrix of ff and its kernel
     mff = SERing.get_matrix_P2( ff )
     kff = mff.right_kernel_matrix().T
     SETools.p( 'mff =', mff.dimensions(), list( mff ) )
@@ -312,11 +492,10 @@ def usecase_B5():
         Egr = sage_matrix( mgr.rows() + kff.T.rows() )
         UpI = Egr * Ef.inverse()
         assert ( UpI.submatrix( 10, 10 ) - sage_identity_matrix( 5 ) ).is_zero()
-
         U = UpI.submatrix( 0, 0, 10, 10 )
         SETools.p( '\tU =', U.dimensions(), list( U ) )
 
-        # check if the answer is correct
+        # check if the answer is correct by substituting into the equations of Y
         Uff = list( U * sage_vector( ff ) )
         iggs = igg.subs( {z[i]:Uff[i] for i in range( 10 )} )
         assert iggs.is_zero()
@@ -355,8 +534,8 @@ def usecase_invert_map():
 #     SETools.p( 'G2 =', str( G2 ).replace( 'bar', '' ) )
 
 
-    R = sage_PolynomialRing( sage_QQ, 'x0,x1,x2,x3,y0,y1,y2,y3,y4,t', order = 'deglex' )
-    x0, x1, x2, x3, y0, y1, y2, y3, y4, t = R.gens()
+    R = sage_PolynomialRing( sage_QQ, 'x0,x1,x2,x3,z0,z1,z2,z3,z4,t', order = 'deglex' )
+    x0, x1, x2, x3, z0, z1, z2, z3, z4, t = R.gens()
 
     d = x1 ** 2 + x2 ** 2 + x3 ** 2
     f0 = d + x0 ** 2
@@ -364,12 +543,12 @@ def usecase_invert_map():
     f2 = 2 * x0 * x2
     f3 = 2 * x0 * x3
     f4 = d - x0 ** 2
-    eq = -y0 ** 2 + y1 ** 2 + y2 ** 2 + y3 ** 2 + y4 ** 2
+    eq = -z0 ** 2 + z1 ** 2 + z2 ** 2 + z3 ** 2 + z4 ** 2
 
-    g = [ f1 * y0 - y1 * f0,
-          f2 * y0 - y2 * f0,
-          f3 * y0 - y3 * f0,
-          f4 * y0 - y4 * f0,
+    g = [ f1 * z0 - z1 * f0,
+          f2 * z0 - z2 * f0,
+          f3 * z0 - z3 * f0,
+          f4 * z0 - z4 * f0,
           t * f0 - 1 ]
 
     SETools.p( sage_ideal( g ).elimination_ideal( [ t ] ).gens() )
@@ -420,7 +599,9 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    usecase_B5()
+    usecase_B2()
+    # usecase_B4()
+    # usecase_B5()
     # usecase_invert_map()
 
     #########################################

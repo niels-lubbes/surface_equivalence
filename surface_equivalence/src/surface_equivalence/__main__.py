@@ -31,6 +31,217 @@ from surface_equivalence.sage_interface import sage_SR
 from surface_equivalence.sage_interface import sage_lcm
 from surface_equivalence.sage_interface import sage_denominator
 from surface_equivalence.sage_interface import sage_identity_matrix
+from surface_equivalence.sage_interface import sage_diff
+
+def usecase_B2_helper_bp( gr ):
+    '''
+    This is a helper method for usecase_B2().
+    
+    We return equations in c that give conditions so that 
+    gr has the same basepoints as f.
+
+    The basepoints and infinitely near basepoints of f are as follows:
+    
+        { 4, <<x^2*z^6, x^5*y^2*z, x^3*y^5, x*y^2*z^5 + 2*y^3*z^5>>, QQ[x, y, z] }
+        chart=z, depth=0, mult=2, sol=(0, 0), { 4, <<x^2, x^5*y^2, x^3*y^5, x*y^2 + 2*y^3>>, QQ[x, y] }
+            chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<x^2, x^5*y^5, x^3*y^6, x*y + 2*y>>, QQ[x, y] }
+                chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x, x^9*y^5, x^8*y^6, x*y + 2*y>>, QQ[x, y] }
+        chart=x, depth=0, mult=3, sol=(0, 0), { 4, <<z^6, y^2*z, y^5, 2*y^3*z^5 + y^2*z^5>>, QQ[y, z] }
+            chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<z^3, y^2, y^5*z^2, 2*y^3*z^5 + y^2*z^4>>, QQ[y, z] }
+                chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<z, y^2, y^5*z^5, 2*y^3*z^6 + y^2*z^4>>, QQ[y, z] }
+                    chart=s, depth=3, mult=1, sol=(0, 0), { 4, <<z, y, y^9*z^5, 2*y^8*z^6 + y^5*z^4>>, QQ[y, z] }
+            chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<y^3*z^6, z, y^2, 2*y^5*z^5 + y^4*z^5>>, QQ[y, z] }
+                chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<y^8*z^6, z, y, 2*y^9*z^5 + y^8*z^5>>, QQ[y, z] }
+        chart=y, depth=0, mult=3, sol=(0, 0), { 4, <<x^2*z^6, x^5*z, x^3, x*z^5 + 2*z^5>>, QQ[x, z] }
+            chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<x^2*z^5, x^5*z^3, x^3, x*z^3 + 2*z^2>>, QQ[x, z] }
+                chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^5*z^5, x^6*z^3, x, x^2*z^3 + 2*z^2>>, QQ[x, z] }
+                    chart=t, depth=3, mult=1, sol=(0, 0), { 4, <<x^5*z^9, x^6*z^8, x, x^2*z^4 + 2*z>>, QQ[x, z] }
+    
+    '''
+    x = [ring( 'x' + str( i ) ) for i in range( 3 )]
+
+    # initialize the list to be returned
+    eqn_lst = []
+
+    #
+    #     chart=z, depth=0, mult=2, sol=(0, 0), { 4, <<x^2, x^5*y^2, x^3*y^5, x*y^2 + 2*y^3>>, QQ[x, y] }
+    #         chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<x^2, x^5*y^5, x^3*y^6, x*y + 2*y>>, QQ[x, y] }
+    #             chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x, x^9*y^5, x^8*y^6, x*y + 2*y>>, QQ[x, y] }
+    #
+    gr0 = [ comp.subs( {x[0]:1} ) for comp in gr ]
+    gr0t = [ comp.subs( {x[1]:x[1] * x[2]} ).quo_rem( x[2] ** 2 )[0] for comp in gr0 ]
+    gr0ts = [ comp.subs( {x[2]:x[1] * x[2]} ).quo_rem( x[1] )[0] for comp in gr0t ]
+    for a, b in [( 0, 0 ), ( 0, 1 ), ( 1, 0 )]:
+        eqn_lst += [ sage_diff( comp, x[1], a, x[2], b ).subs( {x[1]:0, x[2]:0} ) for comp in gr0 ]
+    eqn_lst += [ comp.subs( {x[1]:0, x[2]:0} ) for comp in gr0t ]
+    eqn_lst += [ comp.subs( {x[1]:0, x[2]:0} ) for comp in gr0ts ]
+
+    #
+    #     chart=x, depth=0, mult=3, sol=(0, 0), { 4, <<z^6, y^2*z, y^5, 2*y^3*z^5 + y^2*z^5>>, QQ[y, z] }
+    #         chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<z^3, y^2, y^5*z^2, 2*y^3*z^5 + y^2*z^4>>, QQ[y, z] }
+    #             chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<z, y^2, y^5*z^5, 2*y^3*z^6 + y^2*z^4>>, QQ[y, z] }
+    #                 chart=s, depth=3, mult=1, sol=(0, 0), { 4, <<z, y, y^9*z^5, 2*y^8*z^6 + y^5*z^4>>, QQ[y, z] }
+    #         chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<y^3*z^6, z, y^2, 2*y^5*z^5 + y^4*z^5>>, QQ[y, z] }
+    #             chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<y^8*z^6, z, y, 2*y^9*z^5 + y^8*z^5>>, QQ[y, z] }
+    #
+    gr1 = [ comp.subs( {x[1]:1} ) for comp in gr ]
+    gr1t = [ comp.subs( {x[0]:x[0] * x[2]} ).quo_rem( x[2] ** 3 )[0] for comp in gr1 ]
+    gr1tt = [ comp.subs( {x[0]:x[0] * x[2]} ).quo_rem( x[2] ** 2 )[0] for comp in gr1t ]
+    gr1tts = [ comp.subs( {x[2]:x[0] * x[2]} ).quo_rem( x[0] ** 1 )[0] for comp in gr1tt ]
+    gr1s = [ comp.subs( {x[2]:x[0] * x[2]} ).quo_rem( x[0] ** 3 )[0] for comp in gr1 ]
+    gr1ss = [ comp.subs( {x[2]:x[0] * x[2]} ).quo_rem( x[0] ** 1 )[0] for comp in gr1s ]
+    for a, b in [( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 2, 0 ), ( 1, 1 ), ( 0, 2 )]:
+        eqn_lst += [ sage_diff( comp, x[0], a, x[2], b ).subs( {x[0]:0, x[2]:0} ) for comp in gr1 ]
+    for a, b in [( 0, 0 ), ( 0, 1 ), ( 1, 0 )]:
+        eqn_lst += [ sage_diff( comp, x[0], a, x[2], b ).subs( {x[0]:0, x[2]:0} ) for comp in gr1t ]
+    eqn_lst += [ comp.subs( {x[0]:0, x[2]:0} ) for comp in gr1tt ]
+    eqn_lst += [ comp.subs( {x[0]:0, x[2]:0} ) for comp in gr1tts ]
+    eqn_lst += [ comp.subs( {x[0]:0, x[2]:0} ) for comp in gr1s ]
+    eqn_lst += [ comp.subs( {x[0]:0, x[2]:0} ) for comp in gr1ss ]
+
+    #
+    #     chart=y, depth=0, mult=3, sol=(0, 0), { 4, <<x^2*z^6, x^5*z, x^3, x*z^5 + 2*z^5>>, QQ[x, z] }
+    #         chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<x^2*z^5, x^5*z^3, x^3, x*z^3 + 2*z^2>>, QQ[x, z] }
+    #             chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^5*z^5, x^6*z^3, x, x^2*z^3 + 2*z^2>>, QQ[x, z] }
+    #                 chart=t, depth=3, mult=1, sol=(0, 0), { 4, <<x^5*z^9, x^6*z^8, x, x^2*z^4 + 2*z>>, QQ[x, z] }
+    #
+    gr2 = [ comp.subs( {x[2]:1} ) for comp in gr ]
+    gr2t = [ comp.subs( {x[0]:x[0] * x[1]} ).quo_rem( x[1] ** 3 )[0] for comp in gr2 ]
+    gr2ts = [ comp.subs( {x[1]:x[0] * x[1]} ).quo_rem( x[0] ** 2 )[0] for comp in gr2t ]
+    gr2tst = [ comp.subs( {x[0]:x[0] * x[1]} ).quo_rem( x[1] ** 1 )[0] for comp in gr2ts ]
+    for a, b in [( 0, 0 ), ( 0, 1 ), ( 1, 0 ), ( 2, 0 ), ( 1, 1 ), ( 0, 2 )]:
+        eqn_lst += [ sage_diff( comp, x[0], a, x[1], b ).subs( {x[0]:0, x[1]:0} ) for comp in gr2 ]
+    for a, b in [( 0, 0 ), ( 0, 1 ), ( 1, 0 )]:
+        eqn_lst += [ sage_diff( comp, x[0], a, x[1], b ).subs( {x[0]:0, x[1]:0} ) for comp in gr2t ]
+    eqn_lst += [ comp.subs( {x[0]:0, x[1]:0} ) for comp in gr2ts ]
+    eqn_lst += [ comp.subs( {x[0]:0, x[1]:0} ) for comp in gr2tst ]
+
+    eqn_lst += [ ring( '(c0*c3-c1*c2)*(c4*c7-c5*c6)*t-1' ) ]
+    eqn_lst = sorted( list( set( eqn_lst ) ) )
+
+    assert 'x0' not in str( eqn_lst )
+    assert 'x1' not in str( eqn_lst )
+    assert 'x2' not in str( eqn_lst )
+
+    return eqn_lst
+
+
+def usecase_B2_helper_r1( Kf, gr ):
+    '''
+    This is a helper method for usecase_B2(): case r1.
+    
+    We find possible values for parameters c in the 
+    composition (g o r1) for reparametrization r1 so 
+    that this composition has the same basepoints as f
+    and so that the coefficient matrix of (g o r1) has 
+    the same kernel Kf as the coefficient matrix of f.
+    
+    We return all possible coefficient matrices of 
+    (g o r1) with valid parameter values for c. 
+    '''
+    x = [ring( 'x' + str( i ) ) for i in range( 3 )]
+    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
+
+    # find conditions on c so that gr has the same basepoints as f
+    eqn_lst = usecase_B2_helper_bp( gr )
+    SETools.p( 'eqn_lst =', len( eqn_lst ), eqn_lst )
+    prime_lst = sage_ideal( eqn_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    for prime in prime_lst:
+        SETools.p( '\t', prime.gens() )
+    sol0 = {c[1]:0, c[2]:0, c[5]:0, c[6]:0, c[0]:1, c[4]:1}  # notice that wlog c0=c4=1
+    sol1 = {c[0]:0, c[3]:0, c[4]:0, c[7]:0, c[1]:1, c[5]:1}  # notice that wlog c1=c5=1
+
+    # initialize Mgr_lst
+    Mgr_lst = []
+
+    # sol0: notice that c3!=0 and c7!=0
+    gr0 = [ comp.subs( sol0 ) for comp in gr]
+    gcd_gr0 = sage_gcd( gr0 )
+    gr0 = [ comp / gcd_gr0 for comp in gr0]
+    SETools.p( 'gr0 =', len( gr0 ), gcd_gr0, gr0 )
+    assert SERing.get_degree( gr0 ) == 8
+    Mgr0 = SERing.get_matrix_P2( gr0 )
+    SETools.p( 'Mgr0 =', Mgr0.dimensions(), list( Mgr0 ) )
+    ke0_lst = [ke for ke in ( Mgr0 * Kf ).list() if ke != 0]  # enforce that Mgr0 * Kf==0
+    pke0_lst = sage_ideal( ke0_lst + [ring( 'c3*c7*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    pke0_lst = [pke.gens() for pke in pke0_lst]
+    SETools.p( 'pke0_lst =', len( pke0_lst ), pke0_lst )
+    assert pke0_lst == [[2 * c[3] - c[7]]]
+    Mgr0 = Mgr0.subs( {c[7]:2 * c[3]} )
+    SETools.p( 'Mgr0 =', Mgr0.dimensions(), list( Mgr0 ) )
+    Mgr_lst += [Mgr0]
+
+    # sol1: notice that c2!=0 and c6!=0
+    gr1 = [ comp.subs( sol1 ) for comp in gr]
+    gcd_gr1 = sage_gcd( gr1 )
+    gr1 = [ comp / gcd_gr1 for comp in gr1]
+    SETools.p( 'gr1 =', len( gr1 ), gcd_gr1, gr1 )
+    assert SERing.get_degree( gr1 ) == 8
+    Mgr1 = SERing.get_matrix_P2( gr1 )
+    SETools.p( 'Mgr1 =', Mgr1.dimensions(), list( Mgr1 ) )
+    ke1_lst = [ke for ke in ( Mgr1 * Kf ).list() if ke != 0]  # enforce that Mgr1 * Kf==0
+    pke1_lst = sage_ideal( ke1_lst + [ring( 'c2*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    pke1_lst = [pke.gens() for pke in pke1_lst]
+    SETools.p( 'pke1_lst =', len( pke1_lst ), pke1_lst )
+    assert pke1_lst == []
+
+    return Mgr_lst
+
+
+def usecase_B2_helper_r2( Kf, gr ):
+    '''
+    This is a helper method for usecase_B2(): case r2.
+    
+    We find possible values for parameters c in the 
+    composition (g o r2) for reparametrization r2 so 
+    that this composition has the same basepoints as f
+    and so that the coefficient matrix of (g o r2) has 
+    the same kernel Kf as the coefficient matrix of f.
+    
+    We return all possible coefficient matrices of 
+    (g o r2) with valid parameter values for c.     
+    '''
+    x = [ring( 'x' + str( i ) ) for i in range( 3 )]
+    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
+
+    # find conditions on c so that gr has the same basepoints as f
+    eqn_lst = usecase_B2_helper_bp( gr )
+    SETools.p( 'eqn_lst =', len( eqn_lst ), eqn_lst )
+    prime_lst = sage_ideal( eqn_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    for prime in prime_lst:
+        SETools.p( '\t', prime.gens() )
+    sol0 = {c[0]:0, c[3]:0, c[5]:0, c[6]:0, c[1]:1, c[4]:1}  # notice that wlog c1=c4=1
+    sol1 = {c[1]:0, c[2]:0, c[4]:0, c[7]:0, c[0]:1, c[5]:1}  # notice that wlog c0=c5=1
+
+    # sol0: notice that c2!=0 and c7!=0
+    gr0 = [ comp.subs( sol0 ) for comp in gr]
+    gcd_gr0 = sage_gcd( gr0 )
+    gr0 = [ comp / gcd_gr0 for comp in gr0]
+    SETools.p( 'gr0 =', len( gr0 ), gcd_gr0, gr0 )
+    assert SERing.get_degree( gr0 ) == 8
+    Mgr0 = SERing.get_matrix_P2( gr0 )
+    SETools.p( 'Mgr0 =', Mgr0.dimensions(), list( Mgr0 ) )
+    ke0_lst = [ke for ke in ( Mgr0 * Kf ).list() if ke != 0]  # enforce that Mgr0 * Kf==0
+    pke0_lst = sage_ideal( ke0_lst + [ring( 'c2*c7*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    pke0_lst = [pke.gens() for pke in pke0_lst]
+    SETools.p( 'pke0_lst =', len( pke0_lst ), pke0_lst )
+    assert pke0_lst == []  # no solutions
+
+    # sol1: notice that c3!=0 and c6!=0
+    gr1 = [ comp.subs( sol1 ) for comp in gr]
+    gcd_gr1 = sage_gcd( gr1 )
+    gr1 = [ comp / gcd_gr1 for comp in gr1]
+    SETools.p( 'gr1 =', len( gr1 ), gcd_gr1, gr1 )
+    assert SERing.get_degree( gr1 ) == 8
+    Mgr1 = SERing.get_matrix_P2( gr1 )
+    SETools.p( 'Mgr1 =', Mgr1.dimensions(), list( Mgr1 ) )
+    ke1_lst = [ke for ke in ( Mgr1 * Kf ).list() if ke != 0]  # enforce that Mgr1 * Kf==0
+    pke1_lst = sage_ideal( ke1_lst + [ring( 'c3*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    pke1_lst = [pke.gens() for pke in pke1_lst]
+    SETools.p( 'pke1_lst =', len( pke1_lst ), pke1_lst )
+    assert pke1_lst == []  # no solutions
+
+    return []
 
 
 def usecase_B2():
@@ -47,33 +258,105 @@ def usecase_B2():
     x = [ring( 'x' + str( i ) ) for i in range( 3 )]
     y = [ring( 'y' + str( i ) ) for i in range( 4 )]
     z = [ring( 'z' + str( i ) ) for i in range( 4 )]
+    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
 
-    # we consider the toric surface
+    # parametrizations of toric surface
     f = ring( '[x0^6*x1^2,x0*x1^5*x2^2,x1^3*x2^5,x0^5*x2^3+x0^5*x2^3+x0^5*x1*x2^2]' )
     g = ring( '[y0^3*y1^2*y2^5,y1^5*y2^3*y3^2,y0^2*y1^3*y3^5,y0^5*y2^2*y3^3+y0^4*y1*y2^3*y3^2]' )
     g = [g[0], g[1] + g[0], g[2], g[3] + g[2]]
-
     SETools.p( 'f =', len( f ), f )
     SETools.p( 'g =', len( g ), g )
     assert sage_gcd( f ) == 1
     assert sage_gcd( g ) == 1
 
-
+    # implicit equations
     eqf = sage_ideal( [z[i] - f[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
     SETools.p( 'eqf =', eqf )
-
+    assert len( eqf ) == 1
+    assert eqf[0].degree() == 26
     eqg = sage_ideal( [z[i] - g[i] for i in range( 4 )] ).elimination_ideal( y ).gens()
     SETools.p( 'eqg =', eqg )
+    assert len( eqg ) == 1
+    assert eqg[0].degree() == 26
+
+    # compute Mf and Kf
+    Mf = SERing.get_matrix_P2( f )
+    Kf = Mf.right_kernel_matrix().T
+    SETools.p( 'Mf  =', Mf.dimensions(), list( Mf ) )
+    SETools.p( 'Kf  =', Kf.dimensions(), list( Kf ) )
+    assert ( Mf * Kf ).is_zero()
 
     # basepoint analysis
     bf = LinearSeries( SERing.conv( f ), PolyRing( 'x,y,z', True ) ).get_bp_tree()
     SETools.p( 'bf =', bf )
-
     bg = LinearSeries( SERing.conv( g ), PolyRing( 'x,y,v,w', True ) ).get_bp_tree()
     SETools.p( 'bg =', bg )
 
+    # create map to P1xP1
+    PolyRing.reset_base_field()
+    bpt = BasePointTree()
+    bpt.add( 'x', ( 0, 0 ) , 1 )
+    pen1 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
+    SETools.p( 'pen1 =', pen1 )
+    assert set( [x[0], x[2]] ) == set( pen1 )
 
+    bpt = BasePointTree()
+    bpt.add( 'y', ( 0, 0 ) , 1 )
+    pen2 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
+    SETools.p( 'pen2 =', pen2 )
+    assert set( [x[0], x[1]] ) == set( pen2 )
 
+    # compatible reparametrizations (all substitutions with .subs(...) are performed at the same time)
+    r0 = {y[0]:x[0], y[1]:x[1], y[2]:x[0], y[3]:x[2]}
+    r1 = {y[0]:c[0] * y[0] + c[1] * y[1],
+          y[1]:c[2] * y[0] + c[3] * y[1],
+          y[2]:c[4] * y[2] + c[5] * y[3],
+          y[3]:c[6] * y[2] + c[7] * y[3]}
+    r2 = {y[0]:c[0] * y[2] + c[1] * y[3],
+          y[1]:c[2] * y[2] + c[3] * y[3],
+          y[2]:c[4] * y[0] + c[5] * y[1],
+          y[3]:c[6] * y[0] + c[7] * y[1]}
+
+    # initialize Mgr_lst
+    Mgr_lst = []
+
+    # r1
+    gr1 = [ comp.subs( r1 ).subs( r0 ) for comp in g ]
+    gr1_gcd = sage_gcd( gr1 )
+    gr1 = [ comp / gr1_gcd for comp in gr1 ]
+    SETools.p( 'gr1 =', gr1_gcd, gr1 )
+    assert SERing.get_degree( gr1 ) == 10
+    assert SERing.get_degree( f ) == 8
+    Mgr_lst += usecase_B2_helper_r1( Kf, gr1 )
+    assert len( Mgr_lst ) == 1
+
+    # r2
+    gr2 = [ comp.subs( r2 ).subs( r0 ) for comp in g ]
+    gr2_gcd = sage_gcd( gr2 )
+    gr2 = [ comp / gr2_gcd for comp in gr2 ]
+    SETools.p( 'gr2 =', gr2_gcd, gr2 )
+    assert SERing.get_degree( gr2 ) == 10
+    assert SERing.get_degree( f ) == 8
+    Mgr_lst += usecase_B2_helper_r2( Kf, gr2 )
+    assert len( Mgr_lst ) == 1
+
+    # compute extended matrices
+    Mgr = Mgr_lst[0]
+    Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
+    Egr = sage_matrix( list( Mgr ) + list( Kf.T ) )
+    UpI = Egr * ~Ef
+    assert ( UpI.submatrix( 4, 4 ) - sage_identity_matrix( 41 ) ).is_zero()
+    U = UpI.submatrix( 0, 0, 4, 4 )
+    U = U / sage_gcd( U.list() )
+    SETools.p( 'U =', U.dimensions(), list( U ), '\n' + str( U ) )
+
+    # verify whether U*f is a parametrization for X for all (c0,...,c7)
+    Uf = list( U * sage_vector( f ) )
+    eqg_sub = [ eq.subs( {z[i]:Uf[i] for i in range( 4 )} ) for eq in eqg ]
+    if eqg_sub != [0]:
+        SETools.p( 'Uf  =', len( Uf ), Uf )
+        SETools.p( 'eqg_sub=', len( eqg_sub ), eqg_sub )
+    assert eqg_sub == [0]
 
 
 def usecase_B4():

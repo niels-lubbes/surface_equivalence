@@ -116,7 +116,6 @@ def usecase_B2_helper_bp( gr ):
     eqn_lst += [ comp.subs( {x[0]:0, x[1]:0} ) for comp in gr2ts ]
     eqn_lst += [ comp.subs( {x[0]:0, x[1]:0} ) for comp in gr2tst ]
 
-    eqn_lst += [ ring( '(c0*c3-c1*c2)*(c4*c7-c5*c6)*t-1' ) ]
     eqn_lst = sorted( list( set( eqn_lst ) ) )
 
     assert 'x0' not in str( eqn_lst )
@@ -142,7 +141,7 @@ def usecase_B2():
     z = [ring( 'z' + str( i ) ) for i in range( 4 )]
     c = [ring( 'c' + str( i ) ) for i in range( 8 )]
 
-    # parametrizations of toric surface
+    # the maps f and g are parametrizations of (linear projections of) toric surfaces
     f = ring( '[x0^6*x1^2,x0*x1^5*x2^2,x1^3*x2^5,x0^5*x2^3+x0^5*x2^3+x0^5*x1*x2^2]' )
     g = ring( '[y0^3*y1^2*y2^5,y1^5*y2^3*y3^2,y0^2*y1^3*y3^5,y0^5*y2^2*y3^3+y0^4*y1*y2^3*y3^2]' )
     g = [g[0], g[1] + g[0], g[2], g[3] + g[2]]
@@ -151,7 +150,7 @@ def usecase_B2():
     assert sage_gcd( f ) == 1
     assert sage_gcd( g ) == 1
 
-    # implicit equations
+    # we compute the implicit equations of the images of the maps f and g
     eqf = sage_ideal( [z[i] - f[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
     SETools.p( 'eqf =', eqf )
     assert len( eqf ) == 1
@@ -161,34 +160,40 @@ def usecase_B2():
     assert len( eqg ) == 1
     assert eqg[0].degree() == 26
 
-    # compute Mf and Kf
+    # We compute the coefficient matrix Mf and its kernel Kf
     Mf = SERing.get_matrix_P2( f )
     Kf = Mf.right_kernel_matrix().T
     SETools.p( 'Mf  =', Mf.dimensions(), list( Mf ) )
     SETools.p( 'Kf  =', Kf.dimensions(), list( Kf ) )
     assert ( Mf * Kf ).is_zero()
 
-    # basepoint analysis
+    # we do a basepoint analysis for f and g
     bf = LinearSeries( SERing.conv( f ), PolyRing( 'x,y,z', True ) ).get_bp_tree()
     SETools.p( 'bf =', bf )
     bg = LinearSeries( SERing.conv( g ), PolyRing( 'x,y,v,w', True ) ).get_bp_tree()
     SETools.p( 'bg =', bg )
 
-    # we create maps to P1xP1 from the following two pencils
+    # we compute maps to P1xP1 from two pencils
     PolyRing.reset_base_field()
     bpt = BasePointTree()
-    bpt.add( 'x', ( 0, 0 ) , 1 )
+    bpt.add( 'y', ( 0, 0 ) , 1 )
     pen1 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
     SETools.p( 'pen1 =', pen1 )
-    assert set( [x[0], x[2]] ) == set( pen1 )
-
+    assert set( [x[0], x[1]] ) == set( pen1 )
+    # thus the first pencil defines a map pen1: (x0:x1:x2) |--> (x0:x1)
     bpt = BasePointTree()
-    bpt.add( 'y', ( 0, 0 ) , 1 )
+    bpt.add( 'x', ( 0, 0 ) , 1 )
     pen2 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
     SETools.p( 'pen2 =', pen2 )
-    assert set( [x[0], x[1]] ) == set( pen2 )
+    assert set( [x[0], x[2]] ) == set( pen2 )
+    # thus the second pencil defines a map pen2: (x0:x1:x2) |--> (x0:x2)
+    # We find that
+    #     pen1 x pen2: P2-->P1xP1, (x0:x1:x2) |--> (x0:x1;x0:x2) and
+    #     pen2 x pen1: P2-->P1xP1, (x0:x1:x2) |--> (x0:x2;x0:x1)
 
-    # from the above output we find the following compatible reparametrizations
+    # we find the following compatible reparametrizations
+    # by composing the maps pen1 x pen2 and pen2 x pen1
+    # with a parametrized map in the identity component of Aut(P1xP1).
     r0 = {y[0]:c[0] * x[0] + c[1] * x[1],
           y[1]:c[2] * x[0] + c[3] * x[1],
           y[2]:c[4] * x[0] + c[5] * x[2],
@@ -198,7 +203,6 @@ def usecase_B2():
           y[2]:c[4] * x[0] + c[5] * x[1],
           y[3]:c[6] * x[0] + c[7] * x[1]}
     # Remark: all substitutions with .subs(...) are performed at the same time.
-
 
     ###################################################
     # reparametrization r0                            #
@@ -214,6 +218,7 @@ def usecase_B2():
 
     # find conditions on c so that gr0 has the same basepoints as f
     eqn0_lst = usecase_B2_helper_bp( gr0 )
+    eqn0_lst += [ ring( '(c0*c3-c1*c2)*(c4*c7-c5*c6)*t-1' ) ]
     prime0_lst = sage_ideal( eqn0_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
     SETools.p( 'eqn0_lst =', len( eqn0_lst ), eqn0_lst )
     for prime0 in prime0_lst:
@@ -263,6 +268,7 @@ def usecase_B2():
 
     # find conditions on c so that gr1 has the same basepoints as f
     eqn1_lst = usecase_B2_helper_bp( gr1 )
+    eqn1_lst += [ ring( '(c0*c3-c1*c2)*(c4*c7-c5*c6)*t-1' ) ]
     SETools.p( 'eqn1_lst =', len( eqn1_lst ), eqn1_lst )
     prime1_lst = sage_ideal( eqn1_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
     for prime1 in prime1_lst:
@@ -295,7 +301,11 @@ def usecase_B2():
     # compute extended matrices                       #
     ###################################################
 
+    # Mgr00 is the only case we have to consider as other cases had no solution
     Mgr = Mgr00
+
+    # compute the projective isomorphism between the images of f and g
+    # in terms of parametrized matrix U
     Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
     Egr = sage_matrix( list( Mgr ) + list( Kf.T ) )
     UpI = Egr * ~Ef

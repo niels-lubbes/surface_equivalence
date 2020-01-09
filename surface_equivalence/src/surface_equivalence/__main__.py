@@ -126,124 +126,6 @@ def usecase_B2_helper_bp( gr ):
     return eqn_lst
 
 
-def usecase_B2_helper_r1( Kf, gr ):
-    '''
-    This is a helper method for usecase_B2(): case r1.
-    
-    We find possible values for parameters c in the 
-    composition (g o r1) for reparametrization r1 so 
-    that this composition has the same basepoints as f
-    and so that the coefficient matrix of (g o r1) has 
-    the same kernel Kf as the coefficient matrix of f.
-    
-    We return all possible coefficient matrices of 
-    (g o r1) with valid parameter values for c. 
-    '''
-    x = [ring( 'x' + str( i ) ) for i in range( 3 )]
-    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
-
-    # find conditions on c so that gr has the same basepoints as f
-    eqn_lst = usecase_B2_helper_bp( gr )
-    SETools.p( 'eqn_lst =', len( eqn_lst ), eqn_lst )
-    prime_lst = sage_ideal( eqn_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
-    for prime in prime_lst:
-        SETools.p( '\t', prime.gens() )
-    sol0 = {c[1]:0, c[2]:0, c[5]:0, c[6]:0, c[0]:1, c[4]:1}  # notice that wlog c0=c4=1
-    sol1 = {c[0]:0, c[3]:0, c[4]:0, c[7]:0, c[1]:1, c[5]:1}  # notice that wlog c1=c5=1
-
-    # initialize Mgr_lst
-    Mgr_lst = []
-
-    # sol0: notice that c3!=0 and c7!=0
-    gr0 = [ comp.subs( sol0 ) for comp in gr]
-    gcd_gr0 = sage_gcd( gr0 )
-    gr0 = [ comp / gcd_gr0 for comp in gr0]
-    SETools.p( 'gr0 =', len( gr0 ), gcd_gr0, gr0 )
-    assert SERing.get_degree( gr0 ) == 8
-    Mgr0 = SERing.get_matrix_P2( gr0 )
-    SETools.p( 'Mgr0 =', Mgr0.dimensions(), list( Mgr0 ) )
-    ke0_lst = [ke for ke in ( Mgr0 * Kf ).list() if ke != 0]  # enforce that Mgr0 * Kf==0
-    pke0_lst = sage_ideal( ke0_lst + [ring( 'c3*c7*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
-    pke0_lst = [pke.gens() for pke in pke0_lst]
-    SETools.p( 'pke0_lst =', len( pke0_lst ), pke0_lst )
-    assert pke0_lst == [[2 * c[3] - c[7]]]
-    Mgr0 = Mgr0.subs( {c[7]:2 * c[3]} )
-    SETools.p( 'Mgr0 =', Mgr0.dimensions(), list( Mgr0 ) )
-    Mgr_lst += [Mgr0]
-
-    # sol1: notice that c2!=0 and c6!=0
-    gr1 = [ comp.subs( sol1 ) for comp in gr]
-    gcd_gr1 = sage_gcd( gr1 )
-    gr1 = [ comp / gcd_gr1 for comp in gr1]
-    SETools.p( 'gr1 =', len( gr1 ), gcd_gr1, gr1 )
-    assert SERing.get_degree( gr1 ) == 8
-    Mgr1 = SERing.get_matrix_P2( gr1 )
-    SETools.p( 'Mgr1 =', Mgr1.dimensions(), list( Mgr1 ) )
-    ke1_lst = [ke for ke in ( Mgr1 * Kf ).list() if ke != 0]  # enforce that Mgr1 * Kf==0
-    pke1_lst = sage_ideal( ke1_lst + [ring( 'c2*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
-    pke1_lst = [pke.gens() for pke in pke1_lst]
-    SETools.p( 'pke1_lst =', len( pke1_lst ), pke1_lst )
-    assert pke1_lst == []
-
-    return Mgr_lst
-
-
-def usecase_B2_helper_r2( Kf, gr ):
-    '''
-    This is a helper method for usecase_B2(): case r2.
-    
-    We find possible values for parameters c in the 
-    composition (g o r2) for reparametrization r2 so 
-    that this composition has the same basepoints as f
-    and so that the coefficient matrix of (g o r2) has 
-    the same kernel Kf as the coefficient matrix of f.
-    
-    We return all possible coefficient matrices of 
-    (g o r2) with valid parameter values for c.     
-    '''
-    x = [ring( 'x' + str( i ) ) for i in range( 3 )]
-    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
-
-    # find conditions on c so that gr has the same basepoints as f
-    eqn_lst = usecase_B2_helper_bp( gr )
-    SETools.p( 'eqn_lst =', len( eqn_lst ), eqn_lst )
-    prime_lst = sage_ideal( eqn_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
-    for prime in prime_lst:
-        SETools.p( '\t', prime.gens() )
-    sol0 = {c[0]:0, c[3]:0, c[5]:0, c[6]:0, c[1]:1, c[4]:1}  # notice that wlog c1=c4=1
-    sol1 = {c[1]:0, c[2]:0, c[4]:0, c[7]:0, c[0]:1, c[5]:1}  # notice that wlog c0=c5=1
-
-    # sol0: notice that c2!=0 and c7!=0
-    gr0 = [ comp.subs( sol0 ) for comp in gr]
-    gcd_gr0 = sage_gcd( gr0 )
-    gr0 = [ comp / gcd_gr0 for comp in gr0]
-    SETools.p( 'gr0 =', len( gr0 ), gcd_gr0, gr0 )
-    assert SERing.get_degree( gr0 ) == 8
-    Mgr0 = SERing.get_matrix_P2( gr0 )
-    SETools.p( 'Mgr0 =', Mgr0.dimensions(), list( Mgr0 ) )
-    ke0_lst = [ke for ke in ( Mgr0 * Kf ).list() if ke != 0]  # enforce that Mgr0 * Kf==0
-    pke0_lst = sage_ideal( ke0_lst + [ring( 'c2*c7*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
-    pke0_lst = [pke.gens() for pke in pke0_lst]
-    SETools.p( 'pke0_lst =', len( pke0_lst ), pke0_lst )
-    assert pke0_lst == []  # no solutions
-
-    # sol1: notice that c3!=0 and c6!=0
-    gr1 = [ comp.subs( sol1 ) for comp in gr]
-    gcd_gr1 = sage_gcd( gr1 )
-    gr1 = [ comp / gcd_gr1 for comp in gr1]
-    SETools.p( 'gr1 =', len( gr1 ), gcd_gr1, gr1 )
-    assert SERing.get_degree( gr1 ) == 8
-    Mgr1 = SERing.get_matrix_P2( gr1 )
-    SETools.p( 'Mgr1 =', Mgr1.dimensions(), list( Mgr1 ) )
-    ke1_lst = [ke for ke in ( Mgr1 * Kf ).list() if ke != 0]  # enforce that Mgr1 * Kf==0
-    pke1_lst = sage_ideal( ke1_lst + [ring( 'c3*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
-    pke1_lst = [pke.gens() for pke in pke1_lst]
-    SETools.p( 'pke1_lst =', len( pke1_lst ), pke1_lst )
-    assert pke1_lst == []  # no solutions
-
-    return []
-
-
 def usecase_B2():
     '''
     We compute the projective isomorphisms between
@@ -292,7 +174,7 @@ def usecase_B2():
     bg = LinearSeries( SERing.conv( g ), PolyRing( 'x,y,v,w', True ) ).get_bp_tree()
     SETools.p( 'bg =', bg )
 
-    # create map to P1xP1
+    # we create maps to P1xP1 from the following two pencils
     PolyRing.reset_base_field()
     bpt = BasePointTree()
     bpt.add( 'x', ( 0, 0 ) , 1 )
@@ -306,42 +188,114 @@ def usecase_B2():
     SETools.p( 'pen2 =', pen2 )
     assert set( [x[0], x[1]] ) == set( pen2 )
 
-    # compatible reparametrizations (all substitutions with .subs(...) are performed at the same time)
-    r0 = {y[0]:x[0], y[1]:x[1], y[2]:x[0], y[3]:x[2]}
-    r1 = {y[0]:c[0] * y[0] + c[1] * y[1],
-          y[1]:c[2] * y[0] + c[3] * y[1],
-          y[2]:c[4] * y[2] + c[5] * y[3],
-          y[3]:c[6] * y[2] + c[7] * y[3]}
-    r2 = {y[0]:c[0] * y[2] + c[1] * y[3],
-          y[1]:c[2] * y[2] + c[3] * y[3],
-          y[2]:c[4] * y[0] + c[5] * y[1],
-          y[3]:c[6] * y[0] + c[7] * y[1]}
+    # from the above output we find the following compatible reparametrizations
+    r0 = {y[0]:c[0] * x[0] + c[1] * x[1],
+          y[1]:c[2] * x[0] + c[3] * x[1],
+          y[2]:c[4] * x[0] + c[5] * x[2],
+          y[3]:c[6] * x[0] + c[7] * x[2]}
+    r1 = {y[0]:c[0] * x[0] + c[1] * x[2],
+          y[1]:c[2] * x[0] + c[3] * x[2],
+          y[2]:c[4] * x[0] + c[5] * x[1],
+          y[3]:c[6] * x[0] + c[7] * x[1]}
+    # Remark: all substitutions with .subs(...) are performed at the same time.
 
-    # initialize Mgr_lst
-    Mgr_lst = []
 
-    # r1
-    gr1 = [ comp.subs( r1 ).subs( r0 ) for comp in g ]
-    gr1_gcd = sage_gcd( gr1 )
-    gr1 = [ comp / gr1_gcd for comp in gr1 ]
-    SETools.p( 'gr1 =', gr1_gcd, gr1 )
+    ###################################################
+    # reparametrization r0                            #
+    ###################################################
+
+    # compose g with reparametrization r0
+    gcd0 = sage_gcd( [ comp.subs( r0 ) for comp in g ] )
+    assert gcd0 == 1
+    gr0 = [ comp.subs( r0 ) / gcd0 for comp in g ]
+    SETools.p( 'gr0 =', len( gr0 ), gcd0, gr0 )
+    assert SERing.get_degree( gr0 ) == 10
+    assert SERing.get_degree( f ) == 8
+
+    # find conditions on c so that gr0 has the same basepoints as f
+    eqn0_lst = usecase_B2_helper_bp( gr0 )
+    prime0_lst = sage_ideal( eqn0_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    SETools.p( 'eqn0_lst =', len( eqn0_lst ), eqn0_lst )
+    for prime0 in prime0_lst:
+        SETools.p( '\t', prime0.gens() )
+    sol00 = {c[1]:0, c[2]:0, c[5]:0, c[6]:0, c[0]:1, c[4]:1}  # notice that wlog c0=c4=1
+    sol01 = {c[0]:0, c[3]:0, c[4]:0, c[7]:0, c[1]:1, c[5]:1}  # notice that wlog c1=c5=1
+    assert len( prime0_lst ) == 2
+    assert set( [gen.subs( sol00 ) for gen in prime0_lst[0].gens()] ) == set( [0] )
+    assert set( [gen.subs( sol01 ) for gen in prime0_lst[1].gens()] ) == set( [0] )
+
+    # sol00: notice that c3!=0 and c7!=0
+    gcd00 = sage_gcd( [ comp.subs( sol00 ) for comp in gr0] )
+    assert gcd00 == x[0] * x[0]
+    gr00 = [ comp.subs( sol00 ) / gcd00 for comp in gr0]
+    SETools.p( 'gr00 =', len( gr00 ), gcd00, gr00 )
+    assert SERing.get_degree( gr00 ) == 8
+    Mgr00 = SERing.get_matrix_P2( gr00 )
+    assert Mgr00.dimensions() == ( 4, 45 )
+    # find conditions for c so that Mgr00 has the same kernel as the matrix of f
+    p00_lst = sage_ideal( ( Mgr00 * Kf ).list() + [ring( 'c3*c7*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    assert [p00.gens() for p00 in p00_lst] == [[2 * c[3] - c[7]]]
+    Mgr00 = Mgr00.subs( {c[7]:2 * c[3]} )
+    SETools.p( 'Mgr00 =', Mgr00.dimensions(), list( Mgr00 ) )
+    # found a solution: Mgr00
+
+    # sol01: notice that c2!=0 and c6!=0
+    gcd01 = sage_gcd( [ comp.subs( sol01 ) for comp in gr0] )
+    assert gcd01 == x[0] * x[0]
+    gr01 = [ comp.subs( sol01 ) / gcd01 for comp in gr0]
+    SETools.p( 'gr01 =', len( gr01 ), gcd01, gr01 )
+    assert SERing.get_degree( gr01 ) == 8
+    assert [] == sage_ideal( ( SERing.get_matrix_P2( gr01 ) * Kf ).list() + [ring( 'c2*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    # --> no solution
+
+
+    ###################################################
+    # reparametrization r1                            #
+    ###################################################
+
+    # compose g with reparametrization r1
+    gcd1 = sage_gcd( [ comp.subs( r1 ) for comp in g ] )
+    assert gcd1 == 1
+    gr1 = [ comp.subs( r1 ) / gcd1 for comp in g ]
+    SETools.p( 'gr1 =', gcd1, gr1 )
     assert SERing.get_degree( gr1 ) == 10
     assert SERing.get_degree( f ) == 8
-    Mgr_lst += usecase_B2_helper_r1( Kf, gr1 )
-    assert len( Mgr_lst ) == 1
 
-    # r2
-    gr2 = [ comp.subs( r2 ).subs( r0 ) for comp in g ]
-    gr2_gcd = sage_gcd( gr2 )
-    gr2 = [ comp / gr2_gcd for comp in gr2 ]
-    SETools.p( 'gr2 =', gr2_gcd, gr2 )
-    assert SERing.get_degree( gr2 ) == 10
-    assert SERing.get_degree( f ) == 8
-    Mgr_lst += usecase_B2_helper_r2( Kf, gr2 )
-    assert len( Mgr_lst ) == 1
+    # find conditions on c so that gr1 has the same basepoints as f
+    eqn1_lst = usecase_B2_helper_bp( gr1 )
+    SETools.p( 'eqn1_lst =', len( eqn1_lst ), eqn1_lst )
+    prime1_lst = sage_ideal( eqn1_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    for prime1 in prime1_lst:
+        SETools.p( '\t', prime1.gens() )
+    sol10 = {c[0]:0, c[3]:0, c[5]:0, c[6]:0, c[1]:1, c[4]:1}  # notice that wlog c1=c4=1
+    sol11 = {c[1]:0, c[2]:0, c[4]:0, c[7]:0, c[0]:1, c[5]:1}  # notice that wlog c0=c5=1
+    assert len( prime1_lst ) == 2
+    assert set( [gen.subs( sol10 ) for gen in prime1_lst[0].gens()] ) == set( [0] )
+    assert set( [gen.subs( sol11 ) for gen in prime1_lst[1].gens()] ) == set( [0] )
 
-    # compute extended matrices
-    Mgr = Mgr_lst[0]
+    # sol10: notice that c2!=0 and c7!=0
+    gcd10 = sage_gcd( [ comp.subs( sol10 ) for comp in gr1] )
+    assert gcd10 == x[0] * x[0]
+    gr10 = [ comp.subs( sol10 ) / gcd10 for comp in gr1]
+    SETools.p( 'gr10 =', len( gr10 ), gcd10, gr10 )
+    assert SERing.get_degree( gr10 ) == 8
+    assert [] == sage_ideal( ( SERing.get_matrix_P2( gr10 ) * Kf ).list() + [ring( 'c2*c7*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    # --> no solution
+
+    # sol11: notice that c3!=0 and c6!=0
+    gcd11 = sage_gcd( [ comp.subs( sol11 ) for comp in gr1] )
+    assert gcd11 == x[0] * x[0]
+    gr11 = [ comp.subs( sol11 ) / gcd11 for comp in gr1]
+    SETools.p( 'gr11 =', len( gr11 ), gcd11, gr11 )
+    assert SERing.get_degree( gr11 ) == 8
+    assert [] == sage_ideal( ( SERing.get_matrix_P2( gr11 ) * Kf ).list() + [ring( 'c3*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    # --> no solution
+
+    ###################################################
+    # compute extended matrices                       #
+    ###################################################
+
+    Mgr = Mgr00
     Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
     Egr = sage_matrix( list( Mgr ) + list( Kf.T ) )
     UpI = Egr * ~Ef

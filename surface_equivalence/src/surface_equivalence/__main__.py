@@ -33,6 +33,93 @@ from surface_equivalence.sage_interface import sage_denominator
 from surface_equivalence.sage_interface import sage_identity_matrix
 from surface_equivalence.sage_interface import sage_diff
 
+
+def usecase_B1():
+    '''
+    We compute the automorphisms of a Roman surface from a set of 
+    compatible reparametrizations.        
+    If the domain the projective plane, then a parametrization of a 
+    Roman surface is basepoint free. 
+    The compatible reparametrizations are in this case linear 
+    automorphisms of the projective plane.
+    '''
+    y = ring( 'y0,y1,y2,y3' )
+    x = ring( 'x0,x1,x2' )
+    c = ring( 'c0,c1,c2,c3,c4,c5,c6,c7,c8' )
+
+    # parametrizations f and g of Roman surface
+    f = ring( '[x0^2+x1^2+x2^2,x0*x1,x0*x2,x1*x2]' )
+    g = f
+
+    # compatible reparametrizations are linear and indexed by c
+    r = {x[0]:c[0] * y[0] + c[1] * y[1] + c[2] * y[2],
+         x[1]:c[3] * y[0] + c[4] * y[1] + c[5] * y[2],
+         x[2]:c[6] * y[0] + c[7] * y[1] + c[8] * y[2]}
+
+    # compute kernel and coefficient matrix of f
+    Mf = SERing.get_matrix_P2( f )
+    Kf = Mf.right_kernel_matrix().T
+    assert ( Mf * Kf ).is_zero()
+
+    # compute the coefficient matrix of g composed with r
+    gr = [ comp.subs( r ) for comp in g ]
+    assert sage_gcd( gr ) == 1
+    assert SERing.get_degree( gr, 'y0,y1,y2' ) == SERing.get_degree( f )
+    Mgr = SERing.get_matrix_P2( gr, 'y0,y1,y2' )
+
+    # output to screen
+    SETools.p( 'f       =', f )
+    SETools.p( 'g       =', g )
+    SETools.p( 'r       =', r )
+    SETools.p( 'Mf      =', Mf.dimensions(), list( Mf ) )
+    SETools.p( 'Mgr     =', Mgr.dimensions(), list( Mgr ), '\n' + str( Mgr ) )
+
+    # compute c such that Mgr*Kf==0
+    ec_lst = ( Mgr * Kf ).list() + [  sage_matrix( SERing.R, 3, 3, c ).det() * ring( 't' ) - 1 ]
+    pc_lst = sage_ideal( ec_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+    SETools.p( 'sol_lst = ' )
+    sol_lst = []
+    for pc in pc_lst:
+        s_lst = list( reversed( sorted( pc.gens() ) ) )
+        s_dct = {}
+        for s in s_lst:
+            if s in c:
+                s_dct.update( {s:0} )
+            for ca in c:
+                for cb in c:
+                    if s == ca - cb and ca > cb: s_dct.update( {ca:cb} )
+                    if s == ca - cb and ca < cb: s_dct.update( {cb:ca} )
+                    if s == ca + cb and ca > cb: s_dct.update( {ca:-cb} )
+                    if s == ca + cb and ca < cb: s_dct.update( {cb:-ca} )
+        sol_lst += [s_dct]
+        SETools.p( '\t\t', s_lst, '-->', s_dct )
+
+    # compute implicit equation for image Y of g
+    eqg = sage_ideal( [y[i] - g[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
+    SETools.p( 'eqg =', eqg )
+    SETools.p( '    =', str( eqg.subs( {y[0]:1} ) ).replace( 'y1', 'x' ).replace( 'y2', 'y' ).replace( 'y3', 'z' ) )
+
+    # computing U and test each sol in sol_lst
+    SETools.p( 'Testing each sol in sol_lst...' )
+    for sol in sol_lst:
+        # compute the projective isomorphism in terms of parametrized matrix U
+        Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
+        Egr = sage_matrix( list( Mgr.subs( sol ) ) + list( Kf.T ) )
+        UpI = Egr * ~Ef
+        assert ( UpI.submatrix( 4, 4 ) - sage_identity_matrix( 2 ) ).is_zero()
+        U = UpI.submatrix( 0, 0, 4, 4 )
+        U = U / sage_gcd( U.list() )
+        assert U.dimensions() == ( 4, 4 )
+
+        # verify whether U*f is a parametrization for Y for all (c0,...,c7)
+        Uf = list( U * sage_vector( f ) )
+        eqg_sub = [ eq.subs( {y[i]:Uf[i] for i in range( 4 )} ) for eq in eqg ]
+        assert eqg_sub == [0]
+
+        # output U with corresponding solution
+        SETools.p( '\t U =', list( U ), ', sol =', sol )
+
+
 def usecase_B2_helper_bp( gr ):
     '''
     This is a helper method for usecase_B2().
@@ -823,8 +910,6 @@ def usecase_invert_map():
     SETools.p( 'g = f^(-1) =', [g0, g1, g2, g3] )
 
 
-
-
 if __name__ == '__main__':
 
     #  Debug output settings
@@ -846,7 +931,8 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    usecase_B2()
+    usecase_B1()
+    # usecase_B2()
     # usecase_B4()
     # usecase_B5()
     # usecase_invert_map()

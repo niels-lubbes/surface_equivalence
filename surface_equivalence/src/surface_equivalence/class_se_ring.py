@@ -174,7 +174,7 @@ class SERing:
         int            
             An integer d defining the degree of input polynomials.
         '''
-        x0, x1, x2 = ring( 'x0,x1,x2' )
+        x0, x1, x2 = ring( vars )
         mon = ring( pol_lst )[0].monomials()[0]
         return mon.degree( x0 ) + mon.degree( x1 ) + mon.degree( x2 )
 

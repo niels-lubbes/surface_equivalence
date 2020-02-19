@@ -71,7 +71,8 @@ def usecase_B1():
     SETools.p( 'f       =', f )
     SETools.p( 'g       =', g )
     SETools.p( 'r       =', r )
-    SETools.p( 'Mf      =', Mf.dimensions(), list( Mf ) )
+    SETools.p( 'Mf      =', Mf.dimensions(), list( Mf ), SERing.get_mon_P2( 2 ) )
+    SETools.p( 'Kf.T    =', Kf.T.dimensions(), list( Kf.T ) )
     SETools.p( 'Mgr     =', Mgr.dimensions(), list( Mgr ), '\n' + str( Mgr ) )
 
     # compute c such that Mgr*Kf==0
@@ -81,16 +82,7 @@ def usecase_B1():
     sol_lst = []
     for pc in pc_lst:
         s_lst = list( reversed( sorted( pc.gens() ) ) )
-        s_dct = {}
-        for s in s_lst:
-            if s in c:
-                s_dct.update( {s:0} )
-            for ca in c:
-                for cb in c:
-                    if s == ca - cb and ca > cb: s_dct.update( {ca:cb} )
-                    if s == ca - cb and ca < cb: s_dct.update( {cb:ca} )
-                    if s == ca + cb and ca > cb: s_dct.update( {ca:-cb} )
-                    if s == ca + cb and ca < cb: s_dct.update( {cb:-ca} )
+        s_dct = ring( sage_solve( [sage_SR( comp ) for comp in s_lst], [sage_SR( comp ) for comp in c], solution_dict = True )[0] )
         sol_lst += [s_dct]
         SETools.p( '\t\t', s_lst, '-->', s_dct )
 

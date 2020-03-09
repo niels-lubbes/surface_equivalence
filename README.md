@@ -169,7 +169,7 @@ Output:
 [c0, c1, c2 + c6, c3, c4 + c6, c5, c7, c8] --> {c3: 0, c8: 0, c4: r24, c5: 0, c0: 0, c1: 0, c6: -r24, c7: 0, c2: r24} 
 ```
 
-We testing out procedure we compute the ideal of the Roman surface parametrized by `g`.
+We testing the outcome below we first compute the ideal of the Roman surface parametrized by `g`.
 
 ```python
 eqg = sage_ideal( [y[i] - g[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
@@ -183,7 +183,7 @@ Output:
     [x^2*y^2 + x^2*z^2 + y^2*z^2 - x*y*z] 
 ```
  
-For each of the 24 solutions in `sol_lst` we recover the projective automorphism `U`.  
+For each of the 24 solutions in `sol_lst` obtained, we recover the corresponding projective automorphism `U`.
 Each of the 24 symmetries of the [Roman surface](https://en.wikipedia.org/wiki/Roman_surface) corresponds to the symmetries of a tetrahedron.
 
 ```python

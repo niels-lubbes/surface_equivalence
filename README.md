@@ -1,9 +1,9 @@
-# Orbital 
+# Surface Equivalence 
 
 
 ## Introduction
 
-Surface-Equivalence is a library for computing projective equivalences between surfaces, if such equivalence exists.
+Surface-Equivalence is a library for computing projective isomorphisms between surfaces, if such isomorphisms exists.
 
 This library depends on [SageMath](https://SageMath.org) libraries and uses [Maple](https://www.maplesoft.com) for Groebner basis computations.
 
@@ -13,7 +13,7 @@ This library depends on [SageMath](https://SageMath.org) libraries and uses [Map
 We assume that `sage` is accessible from your commandline interface.
 
 * Install [Maple](https://www.maplesoft.com).
-We assume that `maple` is accessible from your commandline interface.
+We assume for some examples that `maple` is accessible from your commandline interface.
 
 * Install the `surface_equivalence` package: 
 ```    
@@ -57,7 +57,176 @@ The [test functions](https://github.com/niels-lubbes/surface_equivalence/blob/ma
 might be informative for how to call each function.
 
 
-### Example 1: Projective equivalence of surfaces parametrized by bihomogeneous polynomials
+### Example 1: Projective automorphisms of Roman surfaces
+
+```python
+# import the required libraries and initialize parameters
+from surface_equivalence.class_se_ring import ring
+from surface_equivalence.class_se_ring import SERing
+y = ring( 'y0,y1,y2,y3' )
+x = ring( 'x0,x1,x2' )
+c = ring( 'c0,c1,c2,c3,c4,c5,c6,c7,c8' )
+```
+
+We denote the parametrizations of the two Roman surfaces by `f` and `g`.
+
+```python
+f = ring( '[x0^2+x1^2+x2^2,x0*x1,x0*x2,x1*x2]' )
+g = f
+```
+
+Our goal is to recover matrices `U` that define the projective automorphisms of the Roman surface.
+For this purpose we first compute coefficient matrices.
+
+```python
+# compatible reparametrizations are linear and indexed by c
+r = {x[0]:c[0] * y[0] + c[1] * y[1] + c[2] * y[2],
+     x[1]:c[3] * y[0] + c[4] * y[1] + c[5] * y[2],
+     x[2]:c[6] * y[0] + c[7] * y[1] + c[8] * y[2]}
+
+# compute kernel and coefficient matrix of f
+Mf = SERing.get_matrix_P2( f )
+Kf = Mf.right_kernel_matrix().T
+assert ( Mf * Kf ).is_zero()
+
+# compute the coefficient matrix of g composed with r
+gr = [ comp.subs( r ) for comp in g ]
+assert sage_gcd( gr ) == 1
+assert SERing.get_degree( gr, 'y0,y1,y2' ) == SERing.get_degree( f )
+Mgr = SERing.get_matrix_P2( gr, 'y0,y1,y2' )
+
+# output
+print( 'f    =', f )
+print( 'g    =', g )
+print( 'r    =', r )
+print( 'Mf   =', Mf.dimensions(), list( Mf ), SERing.get_mon_P2( 2 ) )
+print( 'Kf.T =', Kf.T.dimensions(), list( Kf.T ) )
+print( 'Mgr  =', Mgr.dimensions(), list( Mgr ), '\n' + str( Mgr ) )
+```
+
+Output:
+
+    f    = [x0^2 + x1^2 + x2^2, x0*x1, x0*x2, x1*x2] 
+    g    = [x0^2 + x1^2 + x2^2, x0*x1, x0*x2, x1*x2] 
+    r    = {x2: c6*y0 + c7*y1 + c8*y2, x1: c3*y0 + c4*y1 + c5*y2, x0: c0*y0 + c1*y1 + c2*y2} 
+    Mf   = (4, 6) [(1, 0, 0, 1, 0, 1), (0, 1, 0, 0, 0, 0), (0, 0, 1, 0, 0, 0), (0, 0, 0, 0, 1, 0)] [x0^2, x0*x1, x0*x2, x1^2, x1*x2, x2^2] 
+    Kf.T = (2, 6) [(1, 0, 0, 0, 0, -1), (0, 0, 0, 1, 0, -1)] 
+    Mgr  = (4, 6) [(c0^2 + c3^2 + c6^2, 2*c0*c1 + 2*c3*c4 + 2*c6*c7, 2*c0*c2 + 2*c3*c5 + 2*c6*c8, c1^2 + c4^2 + c7^2, 2*c1*c2 + 2*c4*c5 + 2*c7*c8, c2^2 + c5^2 + c8^2), (c0*c3, c1*c3 + c0*c4, c2*c3 + c0*c5, c1*c4, c2*c4 + c1*c5, c2*c5), (c0*c6, c1*c6 + c0*c7, c2*c6 + c0*c8, c1*c7, c2*c7 + c1*c8, c2*c8), (c3*c6, c4*c6 + c3*c7, c5*c6 + c3*c8, c4*c7, c5*c7 + c4*c8, c5*c8)] 
+    [         c0^2 + c3^2 + c6^2 2*c0*c1 + 2*c3*c4 + 2*c6*c7 2*c0*c2 + 2*c3*c5 + 2*c6*c8          c1^2 + c4^2 + c7^2 2*c1*c2 + 2*c4*c5 + 2*c7*c8          c2^2 + c5^2 + c8^2]
+    [                      c0*c3               c1*c3 + c0*c4               c2*c3 + c0*c5                       c1*c4               c2*c4 + c1*c5                       c2*c5]
+    [                      c0*c6               c1*c6 + c0*c7               c2*c6 + c0*c8                       c1*c7               c2*c7 + c1*c8                       c2*c8]
+    [                      c3*c6               c4*c6 + c3*c7               c5*c6 + c3*c8                       c4*c7               c5*c7 + c4*c8                       c5*c8] 
+    
+
+We compute all solutions for `c` such that `Mgr*Kf==0`.
+
+```python
+ec_lst = ( Mgr * Kf ).list() + [  sage_matrix( SERing.R, 3, 3, c ).det() * ring( 't' ) - 1 ]
+pc_lst = sage_ideal( ec_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+sol_lst = []
+for pc in pc_lst:
+    s_lst = list( reversed( sorted( pc.gens() ) ) )
+    s_dct = ring( sage_solve( [sage_SR( comp ) for comp in s_lst], [sage_SR( comp ) for comp in c], solution_dict = True )[0] )
+    sol_lst += [s_dct]
+    print( s_lst, '-->', s_dct )
+```
+
+Output:
+
+    [c0, c1 - c6, c2, c3, c4, c5 - c6, c7, c8] --> {c3: 0, c8: 0, c4: 0, c5: r1, c0: 0, c1: r1, c6: r1, c7: 0, c2: 0} 
+    [c0, c1 + c6, c2, c3, c4, c5 - c6, c7, c8] --> {c3: 0, c8: 0, c4: 0, c5: r2, c0: 0, c1: -r2, c6: r2, c7: 0, c2: 0} 
+    [c0, c1 - c6, c2, c3, c4, c5 + c6, c7, c8] --> {c3: 0, c8: 0, c4: 0, c5: r3, c0: 0, c1: -r3, c6: -r3, c7: 0, c2: 0} 
+    [c0, c1 + c6, c2, c3, c4, c5 + c6, c7, c8] --> {c3: 0, c8: 0, c4: 0, c5: r4, c0: 0, c1: r4, c6: -r4, c7: 0, c2: 0} 
+    [c0 - c7, c1, c2, c3, c4, c5 - c7, c6, c8] --> {c3: 0, c8: 0, c4: 0, c5: r5, c0: r5, c1: 0, c6: 0, c7: r5, c2: 0} 
+    [c0 + c7, c1, c2, c3, c4, c5 - c7, c6, c8] --> {c3: 0, c8: 0, c4: 0, c5: r6, c0: -r6, c1: 0, c6: 0, c7: r6, c2: 0} 
+    [c0 + c7, c1, c2, c3, c4, c5 + c7, c6, c8] --> {c3: 0, c8: 0, c4: 0, c5: r7, c0: r7, c1: 0, c6: 0, c7: -r7, c2: 0} 
+    [c0 - c7, c1, c2, c3, c4, c5 + c7, c6, c8] --> {c3: 0, c8: 0, c4: 0, c5: r8, c0: -r8, c1: 0, c6: 0, c7: -r8, c2: 0} 
+    [c0 - c8, c1, c2, c3, c4 - c8, c5, c6, c7] --> {c3: 0, c8: r9, c4: r9, c5: 0, c0: r9, c1: 0, c6: 0, c7: 0, c2: 0} 
+    [c0 + c8, c1, c2, c3, c4 - c8, c5, c6, c7] --> {c3: 0, c8: r10, c4: r10, c5: 0, c0: -r10, c1: 0, c6: 0, c7: 0, c2: 0} 
+    [c0 + c8, c1, c2, c3, c4 + c8, c5, c6, c7] --> {c3: 0, c8: r11, c4: -r11, c5: 0, c0: -r11, c1: 0, c6: 0, c7: 0, c2: 0} 
+    [c0 - c8, c1, c2, c3, c4 + c8, c5, c6, c7] --> {c3: 0, c8: r12, c4: -r12, c5: 0, c0: r12, c1: 0, c6: 0, c7: 0, c2: 0} 
+    [c0, c1, c2 - c6, c3, c4 - c6, c5, c7, c8] --> {c3: 0, c8: 0, c4: r13, c5: 0, c0: 0, c1: 0, c6: r13, c7: 0, c2: r13} 
+    [c0, c1, c2 + c6, c3, c4 - c6, c5, c7, c8] --> {c3: 0, c8: 0, c4: -r14, c5: 0, c0: 0, c1: 0, c6: -r14, c7: 0, c2: r14} 
+    [c0, c1 - c8, c2, c3 - c8, c4, c5, c6, c7] --> {c3: r15, c8: r15, c4: 0, c5: 0, c0: 0, c1: r15, c6: 0, c7: 0, c2: 0} 
+    [c0, c1 - c8, c2, c3 + c8, c4, c5, c6, c7] --> {c3: -r16, c8: r16, c4: 0, c5: 0, c0: 0, c1: r16, c6: 0, c7: 0, c2: 0} 
+    [c0, c1 + c8, c2, c3 - c8, c4, c5, c6, c7] --> {c3: r17, c8: r17, c4: 0, c5: 0, c0: 0, c1: -r17, c6: 0, c7: 0, c2: 0} 
+    [c0, c1 + c8, c2, c3 + c8, c4, c5, c6, c7] --> {c3: -r18, c8: r18, c4: 0, c5: 0, c0: 0, c1: -r18, c6: 0, c7: 0, c2: 0} 
+    [c0, c1, c2 - c7, c3 - c7, c4, c5, c6, c8] --> {c3: r19, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: r19, c2: r19} 
+    [c0, c1, c2 - c7, c3 + c7, c4, c5, c6, c8] --> {c3: r20, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: -r20, c2: -r20} 
+    [c0, c1, c2 + c7, c3 - c7, c4, c5, c6, c8] --> {c3: r21, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: r21, c2: -r21} 
+    [c0, c1, c2 + c7, c3 + c7, c4, c5, c6, c8] --> {c3: r22, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: -r22, c2: r22} 
+    [c0, c1, c2 - c6, c3, c4 + c6, c5, c7, c8] --> {c3: 0, c8: 0, c4: -r23, c5: 0, c0: 0, c1: 0, c6: r23, c7: 0, c2: r23} 
+    [c0, c1, c2 + c6, c3, c4 + c6, c5, c7, c8] --> {c3: 0, c8: 0, c4: r24, c5: 0, c0: 0, c1: 0, c6: -r24, c7: 0, c2: r24} 
+
+
+We testing out procedure we compute the ideal of the Roman surface parametrized by `g`.
+
+```python
+eqg = sage_ideal( [y[i] - g[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
+print( eqg )
+print( str( eqg.subs( {y[0]:1} ) ).replace( 'y1', 'x' ).replace( 'y2', 'y' ).replace( 'y3', 'z' ) )
+```
+
+Output:
+    
+    [y1^2*y2^2 - y0*y1*y2*y3 + y1^2*y3^2 + y2^2*y3^2]
+    [x^2*y^2 + x^2*z^2 + y^2*z^2 - x*y*z] 
+ 
+For each solution in `sol_lst` we recover the projective automorphism `U`.
+
+```python
+for sol in sol_lst:
+    
+    # compute the projective isomorphism in terms of parametrized matrix U
+    Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
+    Egr = sage_matrix( list( Mgr.subs( sol ) ) + list( Kf.T ) )
+    UpI = Egr * ~Ef
+    assert ( UpI.submatrix( 4, 4 ) - sage_identity_matrix( 2 ) ).is_zero()
+    U = UpI.submatrix( 0, 0, 4, 4 )
+    U = U / sage_gcd( U.list() )
+    assert U.dimensions() == ( 4, 4 )
+    
+    # verify whether U*f is a parametrization for Y for all (c0,...,c7)
+    Uf = list( U * sage_vector( f ) )
+    eqg_sub = [ eq.subs( {y[i]:Uf[i] for i in range( 4 )} ) for eq in eqg ]
+    assert eqg_sub == [0]
+
+    # output U with corresponding solution
+    print( 'U =', list( U ), ', sol =', sol )
+```
+
+Output:
+
+    U = [(1, 0, 0, 0), (0,  0,  0,  1), (0,  1,  0,  0), (0,  0,  1,  0)] , sol = {c3: 0, c8: 0, c4: 0, c5: r1, c0: 0, c1: r1, c6: r1, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  0, -1), (0, -1,  0,  0), (0,  0,  1,  0)] , sol = {c3: 0, c8: 0, c4: 0, c5: r2, c0: 0, c1: -r2, c6: r2, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  0, -1), (0,  1,  0,  0), (0,  0, -1,  0)] , sol = {c3: 0, c8: 0, c4: 0, c5: r3, c0: 0, c1: -r3, c6: -r3, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  0,  1), (0, -1,  0,  0), (0,  0, -1,  0)] , sol = {c3: 0, c8: 0, c4: 0, c5: r4, c0: 0, c1: r4, c6: -r4, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  1,  0), (0,  1,  0,  0), (0,  0,  0,  1)] , sol = {c3: 0, c8: 0, c4: 0, c5: r5, c0: r5, c1: 0, c6: 0, c7: r5, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0, -1,  0), (0, -1,  0,  0), (0,  0,  0,  1)] , sol = {c3: 0, c8: 0, c4: 0, c5: r6, c0: -r6, c1: 0, c6: 0, c7: r6, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  1,  0), (0, -1,  0,  0), (0,  0,  0, -1)] , sol = {c3: 0, c8: 0, c4: 0, c5: r7, c0: r7, c1: 0, c6: 0, c7: -r7, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0, -1,  0), (0,  1,  0,  0), (0,  0,  0, -1)] , sol = {c3: 0, c8: 0, c4: 0, c5: r8, c0: -r8, c1: 0, c6: 0, c7: -r8, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  1,  0,  0), (0,  0,  1,  0), (0,  0,  0,  1)] , sol = {c3: 0, c8: r9, c4: r9, c5: 0, c0: r9, c1: 0, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0, -1,  0,  0), (0,  0, -1,  0), (0,  0,  0,  1)] , sol = {c3: 0, c8: r10, c4: r10, c5: 0, c0: -r10, c1: 0, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  1,  0,  0), (0,  0, -1,  0), (0,  0,  0, -1)] , sol = {c3: 0, c8: r11, c4: -r11, c5: 0, c0: -r11, c1: 0, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0, -1,  0,  0), (0,  0,  1,  0), (0,  0,  0, -1)] , sol = {c3: 0, c8: r12, c4: -r12, c5: 0, c0: r12, c1: 0, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  0,  1), (0,  0,  1,  0), (0,  1,  0,  0)] , sol = {c3: 0, c8: 0, c4: r13, c5: 0, c0: 0, c1: 0, c6: r13, c7: 0, c2: r13} 
+    U = [(1, 0, 0, 0), (0,  0,  0, -1), (0,  0, -1,  0), (0,  1,  0,  0)] , sol = {c3: 0, c8: 0, c4: -r14, c5: 0, c0: 0, c1: 0, c6: -r14, c7: 0, c2: r14} 
+    U = [(1, 0, 0, 0), (0,  1,  0,  0), (0,  0,  0,  1), (0,  0,  1,  0)] , sol = {c3: r15, c8: r15, c4: 0, c5: 0, c0: 0, c1: r15, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0, -1,  0,  0), (0,  0,  0,  1), (0,  0, -1,  0)] , sol = {c3: -r16, c8: r16, c4: 0, c5: 0, c0: 0, c1: r16, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0, -1,  0,  0), (0,  0,  0, -1), (0,  0,  1,  0)] , sol = {c3: r17, c8: r17, c4: 0, c5: 0, c0: 0, c1: -r17, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  1,  0,  0), (0,  0,  0, -1), (0,  0, -1,  0)] , sol = {c3: -r18, c8: r18, c4: 0, c5: 0, c0: 0, c1: -r18, c6: 0, c7: 0, c2: 0} 
+    U = [(1, 0, 0, 0), (0,  0,  1,  0), (0,  0,  0,  1), (0,  1,  0,  0)] , sol = {c3: r19, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: r19, c2: r19} 
+    U = [(1, 0, 0, 0), (0,  0, -1,  0), (0,  0,  0,  1), (0, -1,  0,  0)] , sol = {c3: r20, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: -r20, c2: -r20} 
+    U = [(1, 0, 0, 0), (0,  0, -1,  0), (0,  0,  0, -1), (0,  1,  0,  0)] , sol = {c3: r21, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: r21, c2: -r21} 
+    U = [(1, 0, 0, 0), (0,  0,  1,  0), (0,  0,  0, -1), (0, -1,  0,  0)] , sol = {c3: r22, c8: 0, c4: 0, c5: 0, c0: 0, c1: 0, c6: 0, c7: -r22, c2: r22} 
+    U = [(1, 0, 0, 0), (0,  0,  0, -1), (0,  0,  1,  0), (0, -1,  0,  0)] , sol = {c3: 0, c8: 0, c4: -r23, c5: 0, c0: 0, c1: 0, c6: r23, c7: 0, c2: r23} 
+    U = [(1, 0, 0, 0), (0,  0,  0,  1), (0,  0, -1,  0), (0, -1,  0,  0)] , sol = {c3: 0, c8: 0, c4: r24, c5: 0, c0: 0, c1: 0, c6: -r24, c7: 0, c2: r24} 
+
+
+
+
+
+### Example 2: Projective equivalence of surfaces parametrized by bihomogeneous polynomials
 
 We test projective equivalence of two surfaces that are represented by a parametrization with bihomogeneous polynomials.
 

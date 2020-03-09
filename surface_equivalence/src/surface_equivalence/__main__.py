@@ -32,6 +32,7 @@ from surface_equivalence.sage_interface import sage_lcm
 from surface_equivalence.sage_interface import sage_denominator
 from surface_equivalence.sage_interface import sage_identity_matrix
 from surface_equivalence.sage_interface import sage_diff
+from surface_equivalence.sage_interface import sage_maple
 
 
 def usecase_B1():
@@ -110,6 +111,169 @@ def usecase_B1():
 
         # output U with corresponding solution
         SETools.p( '\t U =', list( U ), ', sol =', sol )
+
+
+def usecase_B1_P1xP1( case = 1 ):
+    '''
+    we compute the projective automorphisms of two embeddings of P^1xP^1 into P^(m-1)
+    that are given by basepoint free parametrizations f and g, whose components.
+    are of bi-degree (d1,d2) such that d1,d2 <= 3.   
+    
+    Parameters
+    ----------
+    case : int
+        If 0, then random f and g are computed.
+        If 1, then a usecase of f and g of bidegree (2,2) is considered
+        If 2, then a usecase of f and g of bidegree (3,3) is considered 
+    '''
+
+    ######################################################################
+    # We first create random parametrizations f and g                    #
+    ######################################################################
+
+
+    # f is of bidegree (d1, d2) with coefficent matrix matf
+    # The surfaces are in P^m
+    # g is constructed as the composition U o f o P
+    # where the reparametrization P: P1xP1-->P1xP1 is defined by two 2x2 matrices L and R
+    # and U is defined by a 4x4 matrix U
+    d1, d2, m = SERing.random_elt( [2, 3] ), SERing.random_elt( [2, 3] ), 3
+    matf = SERing.random_matrix_QQ( m + 1, len( SERing.get_mon_P1xP1( d1, d2 ) ) )
+    matU = SERing.random_inv_matrix_QQ( m + 1 )
+    L = SERing.random_inv_matrix_QQ( 2 ).list()
+    R = SERing.random_inv_matrix_QQ( 2 ).list()
+
+    if case == 1:
+        d1, d2, m = 2, 2, 3
+        matf = sage_matrix( sage_QQ, ring( '[(3/5, 87, -1/2, 1/4, 0, 1/8, 16/5, 0, 0), (0, 11, -1/9, 44, 0, 0, -1, 0, 1/3), (1/12, -4, 0, 2, -1, 1/4, 0, -3, -1/9), (1/3, 1/4, 1, -4, 1/2, -1, -6, 2, 22)]' ) )
+        matU = sage_matrix( sage_QQ, ring( '[( 1, 0, -1, -3 ), ( -1 / 18, -3, 0, 15 / 2 ), ( -1, 0, 13, 1 ), ( -3, -1 / 11, -2, 3 / 23 )]' ) )
+        L = ring( '[-1, 0, -1/87, -1/2] ' )
+        R = ring( '[2, 1, 0, 2]' )
+
+    elif case == 2:
+        d1, d2, m = 3, 3, 3
+        matf = sage_matrix( sage_QQ, ring( '[(-2, -6, 1, 0, 1/43, 4, -1, 1/2, 2/5, 1, -1, -2, 3, -1/3, -1, -1/2), (3/2, 0, -1, 1/3, -1/3, 1, -1/2, 1, 0, 4, 1/2, -1/6, 0, 0, -1, -1/2), (0, -2, -2/15, 1, -1/3, 1, 1, 2/9, -1, 1, 3, -2, -1, 0, 1/2, 0), (52/3, -2, 3/2, 0, 1, 0, 1, -7, -1/3, -1, -1, 0, 1, 3, 1, 1)] ' ) )
+        matU = sage_matrix( sage_QQ, ring( '[(5, -1/5, 1, -1/7), (0, -1/15, -4, 3), (1/43, -92, 5, 1), (3, 1/2, -2, -1)]' ) )
+        L = ring( '[-94, -15/2, 0, 1/5] ' )
+        R = ring( '[-2, 0, 4, -3]' )
+
+    elif case == 3:
+        d1, d2, m = 3, 2, 3
+        matf = sage_matrix( sage_QQ, ring( '[( -1 / 3, 0, -1, 3, 1 / 2, 1, -3 / 4, 1, 0, 1, 1 / 4, 0 ), ( -87, 17, -1, 0, 1 / 28, -1 / 2, 3, 0, -7, 2 / 3, -1, 5 ), ( -2, -1 / 9, 5 / 22, 2, -1, -2, 1, -5, -27 / 5, 1 / 2, 0, 7 ), ( 1, -1, -1 / 5, 1, -1 / 6, 1 / 141, 0, 5, -1, 1 / 3, 32, -1 )]' ) )
+        matU = sage_matrix( sage_QQ, ring( '[( 1, -31 / 6, 19, 4 / 5 ), ( 2, 0, 2, 9 / 19 ), ( 6, 1 / 5, -1 / 2, 1 / 2 ), ( 1, -1, 0, 1 / 12 )]' ) )
+        L = ring( '[2, -1/3, -5, 1/3]' )
+        R = ring( '[0, 10, -3, 0]' )
+
+
+    mon_lst = SERing.get_mon_P1xP1( d1, d2, vars = 'y0,y1,y2,y3' )  # basis for monomials
+    y = [ring( 'y' + str( i ) ) for i in range( 4 )]
+    s = {y[0]:L[0] * y[0] + L[1] * y[1], y[1]:L[2] * y[0] + L[3] * y[1],
+         y[2]:R[0] * y[2] + R[1] * y[3], y[3]:R[2] * y[2] + R[3] * y[3]}
+    f = list( matf * sage_vector( mon_lst ) )
+    g = matU * sage_vector( [ comp.subs( s ) for comp in f ] )
+    assert set( SERing.get_bidegree( f ) ) == set( SERing.get_bidegree( g ) )
+    SETools.p( 'case      =', case )
+    SETools.p( '(d1,d2,m) =', ( d1, d2, m ) )
+    SETools.p( 'matf      =', list( matf ) )
+    SETools.p( 'matU      =', list( matU ) )
+    SETools.p( 'L         =', L )
+    SETools.p( 'R         =', R )
+    SETools.p( 'f         =', f )
+    SETools.p( 'g         =', g )
+
+    ###############################################################################
+    # From here on we demonstrate how to recover L, U and matU from f and g only. #
+    ###############################################################################
+    SETools.p( 'Recover (matU, L, R) from (f, g)...' )
+
+    y = [ring( 'y' + str( i ) ) for i in range( 4 )]
+    c = [ring( 'c' + str( i ) ) for i in range( 8 )]
+
+    # superset of compatible reparametrizations consists of two families r0 and r1
+    r0 = {y[0]:c[0] * y[0] + c[1] * y[1],
+          y[1]:c[2] * y[0] + c[3] * y[1],
+          y[2]:c[4] * y[2] + c[5] * y[3],
+          y[3]:c[6] * y[2] + c[7] * y[3]}
+    r1 = {y[2]:c[0] * y[0] + c[1] * y[1],
+          y[3]:c[2] * y[0] + c[3] * y[1],
+          y[0]:c[4] * y[2] + c[5] * y[3],
+          y[1]:c[6] * y[2] + c[7] * y[3]}
+
+    # try both families for compatible reparametrizations
+    for r in [r0, r1]:
+
+        # compute kernel and coefficient matrix of f
+        Mf = SERing.get_matrix_P1xP1( f )
+        Kf = Mf.right_kernel_matrix().T
+        assert ( Mf * Kf ).is_zero()
+
+        # compute the coefficient matrix of g composed with r
+        gr = [ comp.subs( r ) for comp in g ]
+        Mgr = SERing.get_matrix_P1xP1( gr )
+        assert sage_gcd( gr ) == 1
+
+        # verbose output
+        SETools.p( 10 * '-' )
+        SETools.p( 'r =', r )
+        SETools.p( '\t Mf   =', Mf.dimensions(), list( Mf ), SERing.get_mon_P1xP1( d1, d2 ) )
+        SETools.p( '\t Kf.T =', Kf.T.dimensions(), list( Kf.T ) )
+        SETools.p( '\t Mgr  =', Mgr.dimensions(), list( Mgr ) )
+
+        # compute c such that Mgr*Kf==0
+        # we use the Groeberbasis implementation of Maple as it is much faster
+        ec_lst = ( Mgr * Kf ).list() + ring( '[(c0*c3-c1*c2)*t-1, (c4*c7-c5*c6)*t-1]' )
+        SETools.p( '\t Computing elimination ideal...' )
+        try:
+            sage_maple.eval( '1 + 1' )
+        except:
+            SETools( '\t Aborting, since Maple is not installed...' )
+            return
+        sage_maple.eval( 'with(Groebner);' )
+        sage_maple.eval( 'gb := Basis( ' + str( ec_lst ) + ', plex(' + str( c )[1:-1] + ', t) );' )
+        gb_lst = ring( sage_maple.eval( 'lprint(gb);' ) )
+        SETools.p( '\t gb_lst =', gb_lst )
+        if gb_lst == [1]:
+            continue
+        pc_lst = sage_ideal( gb_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
+        SETools.p( '\t sol_lst: ' )
+        sol_lst = []
+        for pc in pc_lst:
+            s_lst = list( reversed( sorted( pc.gens() ) ) )
+            dct_lst = ring( sage_solve( [sage_SR( comp ) for comp in s_lst], [sage_SR( comp ) for comp in c], solution_dict = True ) )
+            SETools.p( '\t\t', s_lst )
+            for dct in dct_lst:
+                if dct.values() == 8 * [0]: continue
+                sol_lst += [dct]
+                SETools.p( '\t\t\t', dct )
+
+        # computing U and test each sol in sol_lst
+        SETools.p( '\t Testing each sol in sol_lst...' )
+        for sol in sol_lst:
+            # compute the projective isomorphism in terms of parametrized matrix U
+            Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
+            Egr = sage_matrix( list( Mgr.subs( sol ) ) + list( Kf.T ) )
+            UpI = Egr * ~Ef
+            # SETools.p( '\t UpI =\n' + str( UpI ) )
+
+            assert ( UpI.submatrix( 4, 4 ) - sage_identity_matrix( len( mon_lst ) - 4 ) ).is_zero()
+            U = UpI.submatrix( 0, 0, 4, 4 )
+            if U.is_zero():
+                continue
+            # U = U / sage_gcd( U.list() )
+            assert U.dimensions() == ( 4, 4 )
+
+            # output U with corresponding solution
+            SETools.p( '\t\t U =', list( U ), ', sol =', sol )
+
+            # verify solution
+            # does not always work, since symbolic expressions cannot always be simplified in Sage
+            if U[0, 0] != 0:
+                a00, b00 = matU[0, 0], U[0, 0]
+                SETools.p( '\t\t\t U simplified =', list( ( a00 / b00 ) * U ) )
+                SETools.p( '\t\t\t matU is equivalent to U: ', ( a00 / b00 ) * U == matU, ', factor =', a00 / b00 )
+
+    SETools.p( 10 * '-' )
+    SETools.p( 'End of usecase.' )
 
 
 def usecase_B2_helper_bp( gr ):
@@ -914,6 +1078,7 @@ if __name__ == '__main__':
     if 'OUTPUT_PATH' not in os.environ:
         os.environ['OUTPUT_PATH'] = './'
     os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/bin'
+    os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/maple/link/bin'
 
     SETools.start_timer()
 
@@ -923,7 +1088,8 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    usecase_B1()
+    # usecase_B1()
+    usecase_B1_P1xP1()
     # usecase_B2()
     # usecase_B4()
     # usecase_B5()

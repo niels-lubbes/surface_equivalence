@@ -252,59 +252,6 @@ class SERing:
 
         return sage_matrix( mat )
 
-
-    @staticmethod
-    def compose_aut_P1P1( pol_lst, matL, matR, flip = False ):
-        '''
-        Precomposes map P1xP1--->X with an automorphism P1xP1.
-        We represent Aut(P1xP1) with two 2x2 matrices matL and matR, that
-        act on the left and right factor of P1xP1 respectively. 
-        If flip is True,  then the factors are flipped as well.
-
-        Notes
-        -----
-        Internally the variables a,b,c,d are used as temporary place holders.
-                        
-        Parameters
-        ----------        
-        pol_lst : list<SERing.R> 
-            List of homogeneous polynomials of equal bi-degree in QQ[s,t,u,v].
-            This list defines the map P1xP1--->X.
-        
-        matL : sage_matrix<QQ>
-            A 2x2 matrix representing an automorphism of projective line P1.
-        
-        matR : sage_matrix<QQ>
-            A 2x2 matrix representing an automorphism of projective line P1.
-
-        flip : boolean
-            Flips the left and right factor of P1xP1.
-            
-        Returns
-        -------  
-        list<SERing.R>
-            A list of polynomials in s,t,u,v which are defined by pol_lst
-            composed with an automorphism of P1P1
-        '''
-        s, t, u, v = ring( 's,t,u,v' )
-        a, b, c, d = ring( 'a,b,c,d' )
-
-        if not flip:
-            sn, tn = matL * sage_vector( [a, b] )
-            un, vn = matR * sage_vector( [c, d] )
-        else:
-            sn, tn = matL * sage_vector( [c, d] )
-            un, vn = matR * sage_vector( [a, b] )
-
-        dct1 = {s:sn, t:tn, u:un, v:vn}
-        dct2 = {a:s, b:t, c:u, d:v}
-
-        out_lst = [pol.subs( dct1 ).subs( dct2 ) for pol in pol_lst ]
-        SETools.p( 'out_lst =', out_lst )
-
-        return out_lst
-
-
     @staticmethod
     def random_ZZ( val ):
         '''

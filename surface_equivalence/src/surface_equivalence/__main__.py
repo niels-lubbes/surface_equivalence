@@ -996,34 +996,6 @@ def usecase_invert_map():
     '''
     Inversion of maps using Groebner basis.
     '''
-
-#     RP = sage_PolynomialRing( sage_QQ, 'y0,y1,y2,y3', order = 'deglex' )
-#     y0, y1, y2, y3 = RP.gens()
-#     RH = sage_PolynomialRing( sage_FractionField( RP ), 'x0,x1,x2,x3,x4', order = 'deglex' )
-#     x0, x1, x2, x3, x4 = RH.gens()
-#
-#     X = [x1 ** 2 + x2 ** 2 + x3 ** 2 + x4 ** 2 - x0 ** 2]
-#     f = [y0 - ( x0 - x4 ), y1 - x1, y2 - x2, y3 - x3]
-#     G1 = sage_ideal( X + f ).groebner_basis()
-#     SETools.p( 'G1 =', G1 )
-#
-#
-#     RP = sage_PolynomialRing( sage_QQ, 'y1,y2,y3,y4', order = 'deglex' )
-#     y1, y2, y3, y4 = RP.gens()
-#     S = RP.quotient_ring( [ y1 ** 2 + y2 ** 2 + y3 ** 2 + y4 ** 2 - 1] )
-#     RH = sage_PolynomialRing( sage_FractionField( S ), 'x1,x2,x3,x4', order = 'deglex' )
-#     x1, x2, x3, x4 = RH.gens()
-#
-#     d = x1 ** 2 + x2 ** 2 + x3 ** 2
-#     g = [ ( d + 1 ) * x4 - 1,
-#           2 * x1 * x4 - y1,
-#           2 * x2 * x4 - y2,
-#           2 * x3 * x4 - y3,
-#           ( d - 1 ) * x4 - y4]
-#     G2 = sage_ideal( g ).groebner_basis()
-#     SETools.p( 'G2 =', str( G2 ).replace( 'bar', '' ) )
-
-
     R = sage_PolynomialRing( sage_QQ, 'x0,x1,x2,x3,z0,z1,z2,z3,z4,t', order = 'deglex' )
     x0, x1, x2, x3, z0, z1, z2, z3, z4, t = R.gens()
 
@@ -1088,8 +1060,8 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    # usecase_B1()
-    usecase_B1_P1xP1()
+    usecase_B1()
+    # usecase_B1_P1xP1()
     # usecase_B2()
     # usecase_B4()
     # usecase_B5()

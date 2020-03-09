@@ -16,7 +16,7 @@ def readme():
         return f.read()
 
 
-setup( name = 'linkage',  # to change!
+setup( name = 'surface_equivalence',
        version = '1.0',
        description = 'Finding surface equivalences',
        long_description = readme(),
@@ -27,7 +27,7 @@ setup( name = 'linkage',  # to change!
            'Programming Language :: Python :: 3',
            'Topic :: Scientific/Engineering :: Mathematics',
            ],
-      keywords = 'surface equivalence isomorphism rational',
+      keywords = 'surface equivalences isomorphisms rational projective',
       url = 'http://github.com/niels-lubbes/surface_equivalence',
       author = 'Niels Lubbes',
       license = 'MIT',

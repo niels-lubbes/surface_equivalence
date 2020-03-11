@@ -132,11 +132,11 @@ def usecase_B1_P1xP1( case = 1 ):
     ######################################################################
 
 
-    # f is of bidegree (d1, d2) with coefficent matrix matf
-    # The surfaces are in P^m
+    # f is of bidegree (d1, d2) with coefficent matrix matf.
+    # The image of f is a surface in P^m.
     # g is constructed as the composition U o f o P
     # where the reparametrization P: P1xP1-->P1xP1 is defined by two 2x2 matrices L and R
-    # and U is defined by a 4x4 matrix U
+    # and U is defined by a 4x4 matrix.
     d1, d2, m = SERing.random_elt( [2, 3] ), SERing.random_elt( [2, 3] ), 3
     matf = SERing.random_matrix_QQ( m + 1, len( SERing.get_mon_P1xP1( d1, d2 ) ) )
     matU = SERing.random_inv_matrix_QQ( m + 1 )
@@ -170,7 +170,7 @@ def usecase_B1_P1xP1( case = 1 ):
     s = {y[0]:L[0] * y[0] + L[1] * y[1], y[1]:L[2] * y[0] + L[3] * y[1],
          y[2]:R[0] * y[2] + R[1] * y[3], y[3]:R[2] * y[2] + R[3] * y[3]}
     f = list( matf * sage_vector( mon_lst ) )
-    g = matU * sage_vector( [ comp.subs( s ) for comp in f ] )
+    g = list( matU * sage_vector( [ comp.subs( s ) for comp in f ] ) )
     assert set( SERing.get_bidegree( f ) ) == set( SERing.get_bidegree( g ) )
     SETools.p( 'case      =', case )
     SETools.p( '(d1,d2,m) =', ( d1, d2, m ) )
@@ -692,7 +692,7 @@ def usecase_B4():
     assert ( UpI.submatrix( 5, 5 ) - sage_identity_matrix( 5 ) ).is_zero()
     U = UpI.submatrix( 0, 0, 5, 5 )
     SETools.p( 'UpI =', UpI.dimensions(), list( UpI ) )
-    SETools.p( 'U   =', U.dimensions(), list( U ) )
+    SETools.p( 'U   =', U.dimensions(), list( U ), '\n' + str( U ) )
 
     # verify whether U*f is a parametrization for X for all (c0,...,c7)
     Uf = list( U * sage_vector( f ) )
@@ -1060,11 +1060,11 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    usecase_B1()
+    # usecase_B1()
     # usecase_B1_P1xP1()
     # usecase_B2()
     # usecase_B4()
-    # usecase_B5()
+    usecase_B5()
     # usecase_invert_map()
 
     #########################################

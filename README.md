@@ -993,6 +993,7 @@ from surface_equivalence.sage_interface import sage_ideal
 from surface_equivalence.sage_interface import sage_QQ
 from surface_equivalence.sage_interface import sage_SR
 from surface_equivalence.sage_interface import sage_solve
+from surface_equivalence.sage_interface import sage_Compositions
 from linear_series.class_poly_ring import PolyRing
 from linear_series.class_base_points import BasePointTree
 from linear_series.class_linear_series import LinearSeries
@@ -1002,149 +1003,209 @@ os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/b
 ```
 
 We compute the projective isomorphism between two 
-conic bundles that are parametrized by the 
-birational maps 
-`ff: P2 ---> X` and `gg: P1xP1 ---> Y`
+conic bundles X and Y that are parametrized by the 
+birational maps `ff` and `gg`, respectively.
+The domain of `ff` is the projective plane in coordinates `(x0:x1:x2)`
+and the domain of `gg` is the fiber product of the projective line with itself with 
+coordinates `(y0:y1;y2:y3)`.
 
 ```python
-# we construct linear series associated to ff in order to determine
-# the generators of the graded coordinate ring of conic bundle X
+ff = ring("[-x0^2*x1^2 + x1^4, x1^3*x2, -x0^2*x1^2 + x0*x1^3, x1^2*x2^2, x0*x1^2*x2, x1*x2^3, x0*x1*x2^2, x0^2*x1*x2, -x0^2*x2^2 + x2^4, -x0^2*x2^2 + x0*x2^3]")
+gg = ring("[y0^2*y1^2*y2*y3, y0*y1^3*y3^2, y0^2*y1^2*y2^2, y1^4*y2*y3 - y1^4*y3^2, y0*y1^3*y2*y3, y0*y1^3*y2^2, y1^4*y2^2 - y1^4*y3^2, y0^3*y1*y2*y3 - y0^2*y1^2*y3^2, y0^3*y1*y2^2, y0^4*y2^2 - y0^2*y1^2*y3^2]")
+```
+
+#### Graded coordinate ring associated to `ff`
+
+```python
+print( LinearSeries( SERing.conv( ff ), PolyRing( 'x,y,v,w' ) ).get_bp_tree() )
+```
+Output:
+```
+
+```
+We construct linear series associated to `ff` in order to determine
+the generators of a graded coordinate ring associated to `ff`.
+
+```python
+PolyRing.reset_base_field()
 
 # basepoints in chart x0!=0;
-p1 = ( 0, 0 );p2 = ( 0, 1 );p3 = ( 1, 0 )
+p1 = ( 0, 0 ); p2 = ( 0, 1 ); p3 = ( 1, 0 )
 
 # 0f+p = e0-e1
-PolyRing.reset_base_field()
-bp_tree = BasePointTree()
-bp = bp_tree.add( 'z', p1, 1 )
+bp_tree = BasePointTree(); bp_tree.add( 'z', p1, 1 )
 f0p1 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
-SETools.p( 'f0p1 =', len( f0p1 ), f0p1 )
 
 # 1f-3p = e0+e1-e2-e3
-bp_tree = BasePointTree()
-bp = bp_tree.add( 'z', p2, 1 )
-bp = bp_tree.add( 'z', p3, 1 )
+bp_tree = BasePointTree(); bp_tree.add( 'z', p2, 1 ); bp_tree.add( 'z', p3, 1 )
 f1m3 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
-SETools.p( 'f1m3 =', len( f1m3 ), f1m3 )
 
 # 1f-2p = 2e0-e2-e3
-bp_tree = BasePointTree()
-bp = bp_tree.add( 'z', p2, 1 )
-bp = bp_tree.add( 'z', p3, 1 )
+bp_tree = BasePointTree(); bp_tree.add( 'z', p2, 1 ); bp_tree.add( 'z', p3, 1 )
 f1m2 = SERing.conv( LinearSeries.get( [2], bp_tree ).pol_lst )
-SETools.p( 'f1m2 =', len( f1m2 ), f1m2 )
 
 # 1f-1p = 3e0-e1-e2-e3
-bp_tree = BasePointTree()
-bp = bp_tree.add( 'z', p1, 1 )
-bp = bp_tree.add( 'z', p2, 1 )
-bp = bp_tree.add( 'z', p3, 1 )
+bp_tree = BasePointTree(); bp_tree.add( 'z', p1, 1 ); bp_tree.add( 'z', p2, 1 ); bp_tree.add( 'z', p3, 1 )
 f1m1 = SERing.conv( LinearSeries.get( [3], bp_tree ).pol_lst )
-SETools.p( 'f1m1 =', len( f1m1 ), f1m1 )
 
 # 1f-0p = 4e0-2e1-e2-e3
-bp_tree = BasePointTree()
-bp = bp_tree.add( 'z', p1, 2 )
-bp = bp_tree.add( 'z', p2, 1 )
-bp = bp_tree.add( 'z', p3, 1 )
+bp_tree = BasePointTree(); bp_tree.add( 'z', p1, 2 ); bp_tree.add( 'z', p2, 1 ); bp_tree.add( 'z', p3, 1 )
 f1m0 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
-SETools.p( 'f1m0 =', len( f1m0 ), f1m0 )
 
 # 2f-4p = 4e0-2e2-2e3
-bp_tree = BasePointTree()
-bp = bp_tree.add( 'z', p2, 2 )
-bp = bp_tree.add( 'z', p3, 2 )
+bp_tree = BasePointTree(); bp_tree.add( 'z', p2, 2 ); bp_tree.add( 'z', p3, 2 )
 f2m4 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
-SETools.p( 'f2m4 =', len( f2m4 ), f2m4 )
 
-# by inspection we recover the generators of graded ring of ff
+print( 'f0p1 =', len( f0p1 ), f0p1 )
+print( 'f1m3 =', len( f1m3 ), f1m3 )
+print( 'f1m2 =', len( f1m2 ), f1m2 )
+print( 'f1m1 =', len( f1m1 ), f1m1 )
+print( 'f1m0 =', len( f1m0 ), f1m0 )
+print( 'f2m4 =', len( f2m4 ), f2m4 )
+```
+Output:
+```
+f0p1 = 2 [x1, x2] 
+f1m3 = 1 [-x0 + x1 + x2] 
+f1m2 = 4 [-x0^2 + x1^2 + x0*x2, x1*x2, -x0^2 + x0*x1 + x0*x2, -x0*x2 + x2^2] 
+f1m1 = 7 [-x0^2*x1 + x1^3, x1^2*x2, -x0^2*x1 + x0*x1^2, x1*x2^2, x0*x1*x2, -x0^2*x2 + x2^3, -x0^2*x2 + x0*x2^2] 
+f1m0 = 10 [-x0^2*x1^2 + x1^4, x1^3*x2, -x0^2*x1^2 + x0*x1^3, x1^2*x2^2, x0*x1^2*x2, x1*x2^3, x0*x1*x2^2, x0^2*x1*x2, -x0^2*x2^2 + x2^4, -x0^2*x2^2 + x0*x2^3] 
+f2m4 = 9 [3*x0^4 - 4*x0^3*x1 + x1^4 - 4*x0^3*x2 + 4*x0^2*x1*x2 - x0^2*x2^2 + 2*x0*x2^3, -x0^3*x2 + x1^3*x2 + 2*x0^2*x2^2 - x0*x2^3, 2*x0^4 - 3*x0^3*x1 + x0*x1^3 - 3*x0^3*x2 + 3*x0^2*x1*x2 + x0*x2^3, x1^2*x2^2, -x0^3*x2 + x0*x1^2*x2 + 2*x0^2*x2^2 - x0*x2^3, x0^4 - 2*x0^3*x1 + x0^2*x1^2 - 2*x0^3*x2 + 2*x0^2*x1*x2 + x0^2*x2^2, x0^3*x2 - x0^2*x1*x2 - 2*x0^2*x2^2 + x0*x2^3 + x1*x2^3, x0^3*x2 - x0^2*x1*x2 - 2*x0^2*x2^2 + x0*x1*x2^2 + x0*x2^3, x0^2*x2^2 - 2*x0*x2^3 + x2^4] 
+```
+
+By inspection we recover the generators of graded ring associated to `ff`.
+
+```python
 U = U0, U1, U2, U3, U4 = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
+```
 
-# compute bidegree (2,d) in order to find a relation between the generators
+We compute smallest `d` such that there is a relation between the generators of weight (2,d). 
+The idea is to compare the number of monomials of given bi-weight 
+with the dimension predicted by the Riemann-Roch formula.
+
+```python
 u = u0, u1, u2, u3, u4 = ring( 'u0,u1,u2,u3,u4' )
-SETools.p( 'Compare number of monomials of given bi-weight with dimension predicted by the Riemann-Roch formula...' )
 for d in reversed( [-i for i in range( 8 )] ):
     w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -3 ), ( 1, -2 ), ( 1, -2 )]
-    SETools.p( '\tweight=', ( 2, d ), ',\t#monomials=', len( SERing.get_wmon_lst( u, w_lst, 2, d ) ), ',\tRR=', 29 + 5 * d )
+    print( '\tweight=', ( 2, d ), ',\t#monomials =', len( SERing.get_wmon_lst( u, w_lst, 2, d ) ), ',\tRiemann-Roch =', 29 + 5 * d )
+```
+Output:
+```
+weight= (2, -7) ,	#monomials = 0  ,	Riemann-Roch = -6 
+weight= (2, -6) ,	#monomials = 1  ,	Riemann-Roch = -1 
+weight= (2, -5) ,	#monomials = 4  ,	Riemann-Roch = 4 
+weight= (2, -4) ,	#monomials = 10 ,	Riemann-Roch = 9 
+weight= (2, -3) ,	#monomials = 16 ,	Riemann-Roch = 14
+weight= (2, -2) ,	#monomials = 22 ,	Riemann-Roch = 19
+weight= (2, -1) ,	#monomials = 28 ,	Riemann-Roch = 24
+weight= (2,  0) ,	#monomials = 34 ,	Riemann-Roch = 29
 
-# template for generators of coordinate ring for weight (2,-1) and (1,0)
+```
+We conclude from the above output that `d` is equal to -4
+and we proceed by computing the polynomial relation between the monomials of weight (2,-4).
+
+```python
 T2m4 = ring( '[u3^2,u3*u4,u4^2,u0*u2*u3,u0*u2*u4,u1*u2*u3,u1*u2*u4,u0^2*u2^2,u0*u1*u2^2,u1^2*u2^2]' )
 T1m0 = ring( '[u1^2*u4,u1^2*u3,u1^3*u2,u0*u1*u4,u0*u1*u3,u0*u1^2*u2,u0^2*u4,u0^2*u3,u0^2*u1*u2,u0^3*u2]' )
-SETools.p( 'T2m4 =', T2m4 )
-SETools.p( 'T1m0 =', T1m0 )
-
-# find linear relation for f2m4
 a = a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 = [elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T2m4 ]
 mata = sage_matrix( sage_QQ, SERing.get_matrix_P2( a ) )
 kera = mata.transpose().right_kernel().matrix()
-SETools.p( 'kera =', kera )
 assert kera * sage_vector( a ) == sage_vector( [0] )
+assert list(kera) == [(0, 1, 0, 0, 0, 0, 0, 0, -1, 0)]
 assert a1 - a8 == 0
+```
 
-# construct map gg from ff
-# sage_Permutations(10).random_element().to_matrix().rows()
-ff = f1m0
-matp = [( 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ), ( 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ), ( 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ),
-        ( 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ), ( 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ), ( 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ),
-        ( 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 ), ( 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ), ( 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ),
-        ( 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 )]
-matp = sage_matrix( matp )
-x0, x1, x2, y0, y1, y2, y3 = ring( 'x0,x1,x2,y0,y1,y2,y3' )  # P2(x0:x1:x2) and P1xP1(y0:y1;y2:y3)
-gg = [comp.subs( {x0:y1 * y3, x1:y0 * y2, x2 :y1 * y2} ) for comp in ff]
-gg = list( matp * sage_vector( gg ) )
-gcd_gg = sage_gcd( gg )
-gg = [comp / gcd_gg for comp in gg]
-SETools.p( 'gcd_gg =', gcd_gg )
-SETools.p( 'ff     =', len( ff ), ff )
-SETools.p( 'gg     =', len( gg ), gg )
+Thus the relation between the monomials `a0`,...,`a9` of weight (2,-4) in 
+the graded coordinate ring associated to `ff` is `a1 - a8==0`.
 
-# we construct linear series associated to gg in order to determine
-# the generators of the graded coordinate ring of conic bundle Y
 
-# determine and set basepoint tree
-ls = LinearSeries( SERing.conv( gg ), PolyRing( 'x,y,v,w' ) )
-bp_tree = ls.get_bp_tree()
-SETools.p( 'bp_tree(gg) =', bp_tree )
+#### Graded coordinate ring associated to `gg`
+
+We now proceed to do the same procedure for the map `gg`.
+Thus we construct linear series associated to `gg` in order to determine
+the generators of a graded coordinate ring associated to `gg`.
+
+```python
+print( LinearSeries( SERing.conv( gg ), PolyRing( 'x,y,v,w' ) ).get_bp_tree() )
+```
+Output:
+```
+{ 10, <<x^2*y^2*v*w, x*y^3*w^2, x^2*y^2*v^2, y^4*v*w - y^4*w^2, x*y^3*v*w, x*y^3*v^2, y^4*v^2 - y^4*w^2, x^3*y*v*w - x^2*y^2*w^2, x^3*y*v^2, x^4*v^2 - x^2*y^2*w^2>>, QQ[x, y, v, w] }
+chart=xw, depth=0, mult=2, sol=(0, 0), { 10, <<y^2*v, y^3, y^2*v^2, y^4*v - y^4, y^3*v, y^3*v^2, y^4*v^2 - y^4, -y^2 + y*v, y*v^2, -y^2 + v^2>>, QQ[y, v] }
+    chart=t, depth=1, mult=1, sol=(1, 0), { 10, <<y^2*v, y^3*v, y^2*v^2, y^4*v^3 - y^4*v^2, y^3*v^2, y^3*v^3, y^4*v^4 - y^4*v^2, -y^2 + y, y*v, -y^2 + 1>>, QQ[y, v] }
+chart=yv, depth=0, mult=1, sol=(0, 1), { 10, <<x^2*w, x*w^2, x^2, -w^2 + w, x*w, x, -w^2 + 1, x^3*w - x^2*w^2, x^3, x^4 - x^2*w^2>>, QQ[x, w] } 
+
+```
+
+```python
 tree_211 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
 tree_211.add( 'xw', ( 0, 0 ), 2 ).add( 't', ( 1, 0 ), 1 )
 tree_211.add( 'yv', ( 0, 1 ), 1 )
 
-# 1g+0q = 4l0+2l1-2e1-e2-e3
-g1m0 = SERing.conv( LinearSeries.get( [4, 2], tree_211 ).pol_lst )
-SETools.p( 'g1m0 =', len( g1m0 ), g1m0 )
-
-# 1g-3q = (l0+l1-e1-e2-e3) + (b-e1)
-g1m3 = SERing.conv( LinearSeries.get( [1, 2], tree_211 ).pol_lst )
-SETools.p( 'g1m3 =', len( g1m3 ), g1m3 )
-
-# 1g-2q = 2l0+2l1-2e1-e2-e3
-g1m2 = SERing.conv( LinearSeries.get( [2, 2], tree_211 ).pol_lst )
-SETools.p( 'g1m2 =', len( g1m2 ), g1m2 )
-
-# 1g-1q = 3l0+2l1-2e1-e2-e3
-g1m1 = SERing.conv( LinearSeries.get( [3, 2], tree_211 ).pol_lst )
-SETools.p( 'g1m1 =', len( g1m1 ), g1m1 )
-
-# 2g-4q = 4l0+4l1-4e1-2e2-2e3
 tree_422 = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
 tree_422.add( 'xw', ( 0, 0 ), 4 ).add( 't', ( 1, 0 ), 2 )
 tree_422.add( 'yv', ( 0, 1 ), 2 )
+
+# 1g+0q = 4l0+2l1-2e1-e2-e3
+g1m0 = SERing.conv( LinearSeries.get( [4, 2], tree_211 ).pol_lst )
+# 1g-3q = (l0+l1-e1-e2-e3) + (b-e1)
+g1m3 = SERing.conv( LinearSeries.get( [1, 2], tree_211 ).pol_lst )
+# 1g-2q = 2l0+2l1-2e1-e2-e3
+g1m2 = SERing.conv( LinearSeries.get( [2, 2], tree_211 ).pol_lst )
+# 1g-1q = 3l0+2l1-2e1-e2-e3
+g1m1 = SERing.conv( LinearSeries.get( [3, 2], tree_211 ).pol_lst )
+# 2g-4q = 4l0+4l1-4e1-2e2-2e3
 g2m4 = SERing.conv( LinearSeries.get( [4, 4], tree_422 ).pol_lst )
-SETools.p( 'g2m4 =', len( g2m4 ), g2m4 )
 
-# by inspection we recover the generators of graded ring of gg
+print( 'g1m0 =', len( g1m0 ), g1m0 )
+print( 'g1m3 =', len( g1m3 ), g1m3 )
+print( 'g1m2 =', len( g1m2 ), g1m2 )
+print( 'g1m1 =', len( g1m1 ), g1m1 )
+print( 'g2m4 =', len( g2m4 ), g2m4 )
+```
+Output:
+```
+g1m0 = 10 [y0^4*y2^2 - y0^2*y1^2*y3^2, y0^3*y1*y2^2, y0^3*y1*y2*y3 - y0^2*y1^2*y3^2, y0^2*y1^2*y2^2, y0^2*y1^2*y2*y3, y0*y1^3*y2^2, y0*y1^3*y2*y3, y0*y1^3*y3^2, y1^4*y2^2 - y1^4*y3^2, y1^4*y2*y3 - y1^4*y3^2] 
+g1m3 = 1 [y0*y2^2 + y1*y2^2 - y1*y2*y3] 
+g1m2 = 4 [y0^2*y2^2 + y1^2*y2*y3 - y1^2*y3^2, y0*y1*y2^2, y0*y1*y2*y3 + y1^2*y2*y3 - y1^2*y3^2, y1^2*y2^2 - y1^2*y2*y3] 
+g1m1 = 7 [y0^3*y2^2 - y0*y1^2*y3^2, y0^2*y1*y2^2, y0^2*y1*y2*y3 - y0*y1^2*y3^2, y0*y1^2*y2^2, y0*y1^2*y2*y3, y1^3*y2^2 - y1^3*y3^2, y1^3*y2*y3 - y1^3*y3^2] 
+g2m4 = 9 [y0^4*y2^4 + 2*y1^4*y2^3*y3 + 4*y0*y1^3*y2^2*y3^2 - y1^4*y2^2*y3^2 - 4*y0*y1^3*y2*y3^3 - 4*y1^4*y2*y3^3 + 3*y1^4*y3^4, y0^3*y1*y2^4 - y1^4*y2^3*y3 + 2*y1^4*y2^2*y3^2 - y1^4*y2*y3^3, y0^3*y1*y2^3*y3 + y1^4*y2^3*y3 + 3*y0*y1^3*y2^2*y3^2 - 3*y0*y1^3*y2*y3^3 - 3*y1^4*y2*y3^3 + 2*y1^4*y3^4, y0^2*y1^2*y2^4, y0^2*y1^2*y2^3*y3 - y1^4*y2^3*y3 + 2*y1^4*y2^2*y3^2 - y1^4*y2*y3^3, y0^2*y1^2*y2^2*y3^2 + 2*y0*y1^3*y2^2*y3^2 + y1^4*y2^2*y3^2 - 2*y0*y1^3*y2*y3^3 - 2*y1^4*y2*y3^3 + y1^4*y3^4, y0*y1^3*y2^4 + y1^4*y2^3*y3 - y0*y1^3*y2^2*y3^2 - 2*y1^4*y2^2*y3^2 + y1^4*y2*y3^3, y0*y1^3*y2^3*y3 + y1^4*y2^3*y3 - y0*y1^3*y2^2*y3^2 - 2*y1^4*y2^2*y3^2 + y1^4*y2*y3^3, y1^4*y2^4 - 2*y1^4*y2^3*y3 + y1^4*y2^2*y3^2] 
+
+```
+
+By inspection we recover the generators of graded ring associated to `gg`.
+
+
+```python
 V = V0, V1, V2, V3, V4 = ring( 'y0' ), ring( 'y1' ), ring( 'y0*y2^2+y1*y2^2-y1*y2*y3' ), ring( 'y0*y1*y2^2' ), ring( 'y0^2*y2^2+y1^2*y2^2-y1^2*y3^2' )
+```
 
-# find linear relation for g2m4
+Since `ff` and `gg` parametrize conic bundles that are projectively isomorphic
+we know that that there exists a relation between the monomials of bidegree (2,-4)
+in the coordinate associated to `gg`.
+
+```python
 b = b0, b1, b2, b3, b4, b5, b6, b7, b8, b9 = [elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T2m4 ]
 matb = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( b ) )
 kerb = matb.transpose().right_kernel().matrix()
-SETools.p( 'kerb =', kerb )
 assert kerb * sage_vector( b ) == sage_vector( [0] )
+assert list(kerb) == ring("[(1, 1/2, 0, -1, 0, -1, 0, 0, 1/2, 0]")
 assert 2 * b0 + b1 - 2 * b3 - 2 * b5 + b8 == 0
+```
 
-# compute inverse of G
+#### Computing projective isomorphism
+
+Let `F` and `G` be the maps whose components form a basis for the 
+monomials of weight (1,0).
+
+```python
+F = [ elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T1m0]
 G = [ elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T1m0]
+```
+
+We compute the inverse `Q` of the map `G`.
+
+```python
 z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
 t = ring( 't' )
 id = [ G[i] * z[0] - z[i] * G[0] for i in range( 10 ) ] + [t * G[0] - 1]
@@ -1157,127 +1218,187 @@ Q1 = -I01.coefficient( y0 )
 Q2 = I23.coefficient( y3 )
 Q3 = -I23.coefficient( y2 )
 Q = [Q0, Q1, Q2, Q3]
-SETools.p( 'Q =', Q )  # [-z9, -z8, -z8, -z6 - 2*z7 + z8 + z9]
+assert Q == ring("[-z9, -z8, -z8, -z6 - 2*z7 + z8 + z9]")
 
-# check the inverse
+# check whether Q is the inverse of G
 QoG = [q.subs( { z[i]:G[i] for i in range( 10 ) } ) for q in Q ]
 gcd01 = sage_gcd( QoG[0], QoG[1] )
 gcd23 = sage_gcd( QoG[2], QoG[3] )
 QoG = [QoG[0] / gcd01, QoG[1] / gcd01, QoG[2] / gcd23, QoG[3] / gcd23]
-SETools.p( 'QoG =', QoG )
 assert QoG == [y0, y1, y2, y3]
+```
 
-# compose F with projective isomorphism P
+We compute the composition`QoPoF` of `F` with `P` and `Q`.
+
+```python
 c = c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12 = [ring( 'c' + str( i ) ) for i in range( 13 )]
 dctZ = { u[i]:z[i] for i in range( 5 )}
-dctP = { z[0]:c0 * u0 + c1 * u1,
-         z[1]:c2 * u0 + c3 * u1,
-         z[2]:c4 * u2,
-         z[3]:c5 * u3 + c6 * u4 + c7 * u0 * u2 + c8 * u1 * u2,
-         z[4]:c9 * u3 + c10 * u4 + c11 * u0 * u2 + c12 * u1 * u2 }
+dctP = { z[0]:c0 * u0 + c1 * u1, z[1]:c2 * u0 + c3 * u1, z[2]:c4 * u2, z[3]:c5 * u3 + c6 * u4 + c7 * u0 * u2 + c8 * u1 * u2, z[4]:c9 * u3 + c10 * u4 + c11 * u0 * u2 + c12 * u1 * u2 }
 PoF = [ comp.subs( dctZ ).subs( dctP ) for comp in T1m0]
 PoF = [ comp.subs( {u[i]:U[i] for i in range( 5 )} ) for comp in PoF]
 PoF = [ comp / sage_gcd( PoF ) for comp in PoF]
-SETools.p( 'PoF =', len( PoF ), PoF )
-
-# compose PoF with Q
 QoPoF = [ comp.subs( {z[i]:PoF[i] for i in range( 10 )} ) for comp in Q]
 gcd01 = sage_gcd( QoPoF[0], QoPoF[1] )
 gcd23 = sage_gcd( QoPoF[2], QoPoF[3] )
 QoPoF = [QoPoF[0] / gcd01, QoPoF[1] / gcd01, QoPoF[2] / gcd23, QoPoF[3] / gcd23]
-SETools.p( 'QoPoF =', len( QoPoF ), QoPoF )
+print( 'QoPoF =', len( QoPoF ), QoPoF )
+```
+Output:
 
-# create a list of equations for the ci
+```
+QoPoF = 4 [-c0*x1 - c1*x2, -c2*x1 - c3*x2, c2*c4*x0*x1 - c2*c4*x1^2 + c3*c4*x0*x2 - c2*c4*x1*x2 - c3*c4*x1*x2 - c3*c4*x2^2, -c0*c4*x0*x1 - c2*c4*x0*x1 + c0*c4*x1^2 + c2*c4*x1^2 - c1*c4*x0*x2 - c3*c4*x0*x2 + c0*c4*x1*x2 + c1*c4*x1*x2 + c2*c4*x1*x2 + c3*c4*x1*x2 + c1*c4*x2^2 + c3*c4*x2^2 - 2*c6*x0^2 - c10*x0^2 + 4*c6*x0*x1 + 2*c7*x0*x1 + 2*c10*x0*x1 + c11*x0*x1 - 2*c6*x1^2 - 2*c7*x1^2 - c10*x1^2 - c11*x1^2 + 4*c6*x0*x2 + 2*c8*x0*x2 + 2*c10*x0*x2 + c12*x0*x2 - 2*c5*x1*x2 - 4*c6*x1*x2 - 2*c7*x1*x2 - 2*c8*x1*x2 - c9*x1*x2 - 2*c10*x1*x2 - c11*x1*x2 - c12*x1*x2 - 2*c6*x2^2 - 2*c8*x2^2 - c10*x2^2 - c12*x2^2] 
+
+```
+
+We create a list `rel_lst` of equations in `c`.
+
+```python
 b = T2m4
 rel_g4m2 = 2 * b[0] + b[1] - 2 * b[3] - 2 * b[5] + b[8]
-SETools.p( 'rel_g4m2 =', rel_g4m2 )
 rel_g4m2 = rel_g4m2.subs( dctZ ).subs( dctP ).subs( {u[i]:U[i] for i in range( 5 )} )
-SETools.p( 'rel_g4m2 =', rel_g4m2 )
-rel_lst = []
-x = ring( '[x0,x1,x2]' )
+rel_lst = []; x = ring( '[x0,x1,x2]' )
 for exp in sage_Compositions( 4 + 3, length = 3 ):
     rel_lst += [rel_g4m2.coefficient( {x[i]:exp[i] - 1 for i in range( 3 )} )]
-SETools.p( 'rel_lst =', len( rel_lst ), rel_lst )
-t = ring( 't' )
-rel_lst += [ ( c0 * c3 - c1 * c2 ) * c4 * ( c5 * c10 - c9 * c6 ) * t - 1 ]
+rel_lst += [ ( c0 * c3 - c1 * c2 ) * c4 * ( c5 * c10 - c9 * c6 ) * ring('t') - 1 ]
+```
 
-# solve for ci and put the solutions in dictionary form
+We solve the equations `rel_lst` for `c` by computing a primary decomposition.
+
+```python
 prime_lst = sage_ideal( rel_lst ).elimination_ideal( t ).primary_decomposition()
-SETools.p( 'prime_lst =', len( prime_lst ) )
-for prime in prime_lst:
-    SETools.p( '\t', prime.gens() )
-for gen_lst in [prime.gens() for prime in prime_lst]:
-    sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
-    SETools.p( '\t sol_dct =', sol_dct )
-    assert len( sol_dct ) == 1
-prime_lst2 = []
-prime_lst2 += [prime_lst[0].gens() + [c0 - 1, c4 - 1]]
-prime_lst2 += [prime_lst[1].gens() + [c1 - 1, c4 - 1]]
-prime_lst2 += [prime_lst[2].gens() + [c1 - 1, c4 - 1]]
-prime_lst2 += [prime_lst[3].gens() + [c0 - 1, c4 - 1]]
-SETools.p( 'Added equations to prime_lst to simplify solutions:' )
-for prime in prime_lst2:
-    SETools.p( '\t', prime )
-SETools.p( 'Simplified solutions:' )
-for gen_lst in prime_lst2:
-    sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
-    SETools.p( '\t sol_dct =', sol_dct )
-    assert len( sol_dct ) == 1
-r0, r1 = ring( 'r0,r1' )
-sol0 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:2, c12:-2 * r0 * r1}
-sol1 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:-2 * r0 * r1, c12:2}
-sol2 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:r0, c6:0, c7:0, c8:0, c9:-2 * r0, c10:r1, c11:-2 * r0 * r1, c12:2}
-sol3 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:r0, c6:0, c7:0, c8:0, c9:-2 * r0, c10:r1, c11:2, c12:-2 * r0 * r1}
-sol_lst = [sol0, sol1, sol2, sol3]
-SETools.p( 'Simplified solutions by hand:' )
-for sol in sol_lst:
-    SETools.p( '\t', sol )
+assert len(prime_lst) == 4
+prime0, prime1, prime2, prime3 = [prime.gens() for prime in prime_lst]
+sol0 = sage_solve( [sage_SR( gen ) for gen in prime0], [sage_SR( elt ) for elt in c], solution_dict = True )
+sol1 = sage_solve( [sage_SR( gen ) for gen in prime1], [sage_SR( elt ) for elt in c], solution_dict = True )
+sol2 = sage_solve( [sage_SR( gen ) for gen in prime2], [sage_SR( elt ) for elt in c], solution_dict = True )
+sol3 = sage_solve( [sage_SR( gen ) for gen in prime3], [sage_SR( elt ) for elt in c], solution_dict = True )
+print('prime0 =', prime0)
+print('sol0   =', sol0)
+print('prime1 =', prime1)
+print('sol1   =', sol1)
+print('prime2 =', prime2)
+print('sol2   =', sol2)
+print('prime3 =', prime3)
+print('sol3   =', sol3)
+```
+Output:
+```
+prime0 = [c8, c7, 2*c6 + c10, c5, c2, c1, c3*c11 - c0*c12, 2*c9*c10 - c11*c12, 2*c3*c4 - c12, 2*c0*c4 - c11] 
+sol0   = {c10: -2*r2, c12: -4*r2*r3/r4, c6: r2, c8: 0, c2: 0, c4: r1, c0: 1/2*r4/r1, c11: r4, c7: 0, c9: r3, c3: -2*r2*r3/(r1*r4), c5: 0, c1: 0} 
+prime1 = [c8, c7, 2*c6 + c10, c5, c3, c0, c1*c11 - c2*c12, 2*c9*c10 - c11*c12, 2*c2*c4 - c11, 2*c1*c4 - c12] 
+sol1   = {c10: -2*r6, c12: r8, c6: r6, c8: 0, c2: -2*r6*r7/(r5*r8), c4: r5, c0: 0, c11: -4*r6*r7/r8, c7: 0, c9: r7, c3: 0, c5: 0, c1: 1/2*r8/r5} 
+prime2 = [c8, c7, c6, 2*c5 + c9, c3, c0, c1*c11 - c2*c12, 2*c9*c10 - c11*c12, 2*c2*c4 - c11, 2*c1*c4 - c12] 
+sol2   = {c10: r11, c12: r12, c6: 0, c8: 0, c2: -2*r10*r11/(r12*r9), c4: r9, c0: 0, c11: -4*r10*r11/r12, c7: 0, c9: -2*r10, c3: 0, c5: r10, c1: 1/2*r12/r9} 
+prime3 = [c8, c7, c6, 2*c5 + c9, c2, c1, c3*c11 - c0*c12, 2*c9*c10 - c11*c12, 2*c3*c4 - c12, 2*c0*c4 - c11] 
+sol3   = {c10: r15, c12: -4*r14*r15/r16, c6: 0, c8: 0, c2: 0, c4: r13, c0: 1/2*r16/r13, c11: r16, c7: 0, c9: -2*r14, c3: -2*r14*r15/(r13*r16), c5: r14, c1: 0} 
+```
 
-#  compose compatible reparametrizations with gg
+After normalization we may assume that some of the nonzero `c` is equal to 1. 
+We add the corresponding equations in order to simplify the solutions.
+
+```python
+prime0 += [c0 - 1, c4 - 1]
+prime1 += [c1 - 1, c4 - 1]
+prime2 += [c1 - 1, c4 - 1]
+prime3 += [c0 - 1, c4 - 1]
+sol0 = sage_solve( [sage_SR( gen ) for gen in prime0], [sage_SR( elt ) for elt in c], solution_dict = True )
+sol1 = sage_solve( [sage_SR( gen ) for gen in prime1], [sage_SR( elt ) for elt in c], solution_dict = True )
+sol2 = sage_solve( [sage_SR( gen ) for gen in prime2], [sage_SR( elt ) for elt in c], solution_dict = True )
+sol3 = sage_solve( [sage_SR( gen ) for gen in prime3], [sage_SR( elt ) for elt in c], solution_dict = True )
+print('sol0   =', sol0)
+print('sol1   =', sol1)
+print('sol2   =', sol2)
+print('sol3   =', sol3)
+```
+Output
+```
+sol0 = {c10: -2*r17, c12: -2*r17*r18, c6: r17, c8: 0, c2: 0, c4: 1, c0: 1, c11: 2, c7: 0, c9: r18, c3: -r17*r18, c5: 0, c1: 0} 
+sol1 = {c10: -2*r19, c12: 2, c6: r19, c8: 0, c2: -r19*r20, c4: 1, c0: 0, c11: -2*r19*r20, c7: 0, c9: r20, c3: 0, c5: 0, c1: 1} 
+sol2 = {c10: r22, c12: 2, c6: 0, c8: 0, c2: -r21*r22, c4: 1, c0: 0, c11: -2*r21*r22, c7: 0, c9: -2*r21, c3: 0, c5: r21, c1: 1} 
+sol3 = {c10: r24, c12: -2*r23*r24, c6: 0, c8: 0, c2: 0, c4: 1, c0: 1, c11: 2, c7: 0, c9: -2*r23, c3: -r23*r24, c5: r23, c1: 0} 
+```
+We set declare the above solutions manualy:
+
+```python    
+r0, r1 = ring( 'r0,r1' )
+sol0 = {c0:1, c1:0, c2:0     , c3:-r0*r1, c4:1, c5:0 , c6:r0, c7:0, c8:0, c9:r1   , c10:-2*r0, c11:2       , c12:-2*r0*r1}
+sol1 = {c0:0, c1:1, c2:-r0*r1, c3:0     , c4:1, c5:0 , c6:r0, c7:0, c8:0, c9:r1   , c10:-2*r0, c11:-2*r0*r1, c12:2       }
+sol2 = {c0:0, c1:1, c2:-r0*r1, c3:0     , c4:1, c5:r0, c6:0 , c7:0, c8:0, c9:-2*r0, c10:r1   , c11:-2*r0*r1, c12:2       }
+sol3 = {c0:1, c1:0, c2:0     , c3:-r0*r1, c4:1, c5:r0, c6:0 , c7:0, c8:0, c9:-2*r0, c10:r1   , c11:2       , c12:-2*r0*r1}
+sol_lst = [sol0, sol1, sol2, sol3]
+```
+
+For each of the four solutions we compose the corresponding
+compatible reparametrization with `gg`. Notice that after 
+we substitute a solution the components have a non-trivial 
+greatest common divisor.
+
+```python
 y = ring( '[y0,y1,y2,y3]' )
 gr_lst = []
-SETools.p( 'Computing (gg o r) for each sol in sol_lst...' )
 for sol in sol_lst:
     gr = [ comp.subs( {y[i]:QoPoF[i] for i in range( 4 )} ).subs( sol ) for comp in gg ]
-    SETools.p( '\t gr =', gr )
     gcd_gr = sage_gcd( gr )
-    SETools.p( '\t\tgcd_gr =', gcd_gr )
     gr_lst += [[ comp / gcd_gr for comp in gr ]]
-SETools.p( 'gr_lst =', len( gr_lst ) )
-for gr in gr_lst:
-    SETools.p( '\t gr =', gr )
+    print( gcd_gr )    
+```
+Output:
+```
+r0^2*r1^3*x1*x2^3 
+r0^2*r1^3*x1^3*x2 
+r0^2*r1^3*x0^2*x1^2 - 2*r0^2*r1^3*x0*x1^3 + r0^2*r1^3*x1^4 - 2*r0^2*r1^3*x0*x1^2*x2 + 2*r0^2*r1^3*x1^3*x2 + r0^2*r1^3*x1^2*x2^2 
+r0^2*r1^3*x0^2*x2^2 - 2*r0^2*r1^3*x0*x1*x2^2 + r0^2*r1^3*x1^2*x2^2 - 2*r0^2*r1^3*x0*x2^3 + 2*r0^2*r1^3*x1*x2^3 + r0^2*r1^3*x2^4 
+```
 
-# get coefficient matrix of ff and its kernel
-mff = SERing.get_matrix_P2( ff )
-kff = mff.right_kernel_matrix().T
-SETools.p( 'mff =', mff.dimensions(), list( mff ) )
-SETools.p( 'kff =', kff.dimensions(), list( kff ) )
-assert ( mff * kff ).is_zero()
+In order to test our result we compute the implicit equations for the image Y of `gg`. 
+However, this is not required for computing the projective isomorphisms between X and Y.
 
-# get implicit equations for image of gg
+```python
 z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
 y = ring( 'y0,y1,y2,y3' )
 igg = SERing.R.ideal( [ z[i] - gg[i] for i in range( 10 )  ] ).elimination_ideal( [y[i] for i in range( 4 )] )
-SETools.p( 'igg =', igg )
+print( 'igg =', list(igg.gens()) )
+```
+Output:
+```
+igg = [z1*z8 - z8^2 + z2*z9, z6*z7 + z0*z8 - z2*z8 - z3*z8 + z5*z8 - z8^2 + z2*z9 - z4*z9 + z5*z9 - z6*z9, z5*z7 + z2*z8 - z4*z8 - z5*z9, z4*z7 + z0*z8 - z8^2 + z2*z9 - z4*z9, z3*z7 + z0*z8 - z2*z8 + z4*z8 - z8^2 + z2*z9 - z3*z9 - z4*z9 + z5*z9, z2*z7 - z0*z8 + z8^2 - z2*z9, z1*z7 - z7*z8 + z0*z9 - z1*z9, z0*z7 + z7*z8 - z0*z9, z4*z5 - z5^2 - z0*z6 + z2*z6 - z4*z8 + z5*z8 + z3*z9 - z6*z9, z2*z5 - z2*z8 - z6*z8 + z5*z9, z1*z5 - z5^2 + z2*z6, z0*z5 - z2*z8 - z3*z8 + z5*z9, z4^2 - z5^2 + z2*z6, z3*z4 + z3*z5 - z4*z6, z2*z4 - z2*z8 - z3*z8 + z5*z9, z1*z4 - z5^2 + z2*z6 - z4*z8 + z5*z8 + z3*z9 - z6*z9, z0*z4 - z2*z8 + z5*z9, z2*z3 - z0*z6 - z4*z8 + z5*z8 + z3*z9 - z6*z9, z1*z3 - z3*z5 - z1*z6 + z4*z6, z0*z3 + z4*z8 - z5*z8 - z3*z9 + z6*z9, z2^2 - z5*z8, z1*z2 - z2*z8 + z5*z9, z0*z2 - z4*z8, z1^2 - z5^2 + z2*z6 + z5*z8 - z8^2 + z2*z9 - z6*z9, z0*z1 - z0*z8 + z4*z9, z0^2 - z8^2 + z2*z9, z5^2*z8 - z2*z6*z8 - z5*z8^2 + z2*z8*z9 + z6*z8*z9 - z5*z9^2, z3*z5*z8 - z4*z6*z8 - z3*z8^2 + z6*z8^2 + z0*z6*z9 - z2*z6*z9 + z4*z8*z9 - z5*z8*z9 - z3*z9^2 + z6*z9^2, z3^2*z8 + 2*z0*z6*z8 - z2*z6*z8 + 2*z4*z8^2 - 2*z5*z8^2 - 2*z3*z5*z9 + z5*z6*z9 - 2*z3*z8*z9 + 2*z6*z8*z9, 2*z3*z5^2 - z5^2*z6 - 2*z0*z6^2 + z2*z6^2 - 4*z4*z6*z8 + 3*z5*z6*z8 - 2*z3*z8^2 + 2*z6*z8^2 - z3^2*z9 + 2*z0*z6*z9 - 2*z2*z6*z9 + 4*z3*z6*z9 - 3*z6^2*z9 + 2*z4*z8*z9 - 2*z5*z8*z9 - 2*z3*z9^2 + 2*z6*z9^2] 
+```
 
-# Compute isomorphisms for each gr
-SETools.p( 'Compute projective isomorphism for each gr in gr_lst:' )
+For each `gr` in `gr_lst` we recover 
+the corresponding projective isomorphism between X and Y
+in terms of a parametrized matrix `U`.
+ 
+```python
+# compute the coefficient matrix of ff and its kernel
+mff = SERing.get_matrix_P2( ff )
+kff = mff.right_kernel_matrix().T
+assert ( mff * kff ).is_zero()
+
+# Compute isomorphism U for each gr in gr_lst
 for gr in gr_lst:
 
+    # compute the coefficient matrix of gr
     mgr = SERing.get_matrix_P2( gr )
     mgk = mgr * kff
-    assert mgk.is_zero()  # because the surfaces in P^9 are linearly normal
-
+    assert mgk.is_zero()  # because the surfaces X and Y in P^9 are already linearly normal
+    
+    # compute isomorphism U
     Ef = sage_matrix( sage_QQ, mff.rows() + kff.T.rows() )
     Egr = sage_matrix( mgr.rows() + kff.T.rows() )
     UpI = Egr * Ef.inverse()
     assert ( UpI.submatrix( 10, 10 ) - sage_identity_matrix( 5 ) ).is_zero()
     U = UpI.submatrix( 0, 0, 10, 10 )
-    SETools.p( '\tU =', U.dimensions(), list( U ) )
-
-    # check if the answer is correct by substituting into the equations of Y
+    print( 'U =', U.dimensions(), list( U ) )
+    
+    # check U by using the equations of Y
     Uff = list( U * sage_vector( ff ) )
     iggs = igg.subs( {z[i]:Uff[i] for i in range( 10 )} )
     assert iggs.is_zero()
-
+```
+Output:
+```
+U = (10, 10) [(-r0, r0^2*r1 - r0*r1 - 2*r0, 2*r0, 2*r0^2*r1 - r0*r1 - r0, -2*r0^2*r1 + r0*r1 + 2*r0, r0^2*r1, -2*r0^2*r1, r0^2*r1, 0, 0), (-r0, 2*r0^2*r1 - 2*r0*r1 - 2*r0, 2*r0, -r0^3*r1^2 + 2*r0^2*r1^2 + 4*r0^2*r1 - r0*r1^2 - 2*r0*r1 - r0, -4*r0^2*r1 + 2*r0*r1 + 2*r0, -2*r0^3*r1^2 + 2*r0^2*r1^2 + 2*r0^2*r1, 2*r0^3*r1^2 - 2*r0^2*r1^2 - 4*r0^2*r1, 2*r0^2*r1, -r0^3*r1^2, 2*r0^3*r1^2), (0, r0^2*r1, 0, 2*r0^2*r1, -2*r0^2*r1, r0^2*r1, -2*r0^2*r1, r0^2*r1, 0, 0), (0, -r0^2*r1, 0, r0^3*r1^2 - 2*r0^2*r1^2 - 2*r0^2*r1, 2*r0^2*r1, r0^3*r1^3 + 2*r0^3*r1^2 - r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, -2*r0^3*r1^2 + 2*r0^2*r1^2 + 2*r0^2*r1, -r0^2*r1, r0^3*r1^3 + r0^3*r1^2, -r0^3*r1^3 - 2*r0^3*r1^2), (0, r0^2*r1, 0, -r0^3*r1^2 + r0^2*r1^2 + 2*r0^2*r1, -2*r0^2*r1, -2*r0^3*r1^2 + r0^2*r1^2 + r0^2*r1, 2*r0^3*r1^2 - r0^2*r1^2 - 2*r0^2*r1, r0^2*r1, -r0^3*r1^2, 2*r0^3*r1^2), (0, 0, 0, -r0^3*r1^2, 0, -2*r0^3*r1^2, 2*r0^3*r1^2, 0, -r0^3*r1^2, 2*r0^3*r1^2), (0, -r0^2*r1, 0, 2*r0^3*r1^2 - 2*r0^2*r1^2 - 2*r0^2*r1, 2*r0^2*r1, 2*r0^3*r1^3 + 4*r0^3*r1^2 - r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, -4*r0^3*r1^2 + 2*r0^2*r1^2 + 2*r0^2*r1, -r0^2*r1, 2*r0^3*r1^3 + 2*r0^3*r1^2, -2*r0^3*r1^3 - 4*r0^3*r1^2), (r0 - 1, -r0^2*r1 + 2*r0*r1 + 2*r0 - r1 - 1, -2*r0 + 1, -2*r0^2*r1 + 2*r0*r1 + r0, 2*r0^2*r1 - 2*r0*r1 - 2*r0, -r0^2*r1, 2*r0^2*r1, -r0^2*r1, 0, 0), (-r0, -2*r0, 2*r0, -r0, 2*r0, 0, 0, 0, 0, 0), (2*r0 - 2, -r0^2*r1 + 2*r0*r1 + 4*r0 - r1 - 2, -4*r0 + 2, -2*r0^2*r1 + 2*r0*r1 + 2*r0, 2*r0^2*r1 - 2*r0*r1 - 4*r0, -r0^2*r1, 2*r0^2*r1, -r0^2*r1, 0, 0)] 
+U = (10, 10) [(0, r0^2*r1, 0, 2*r0^2*r1 - r0*r1 - r0, -2*r0^2*r1, r0^2*r1 - r0*r1 - 2*r0, -2*r0^2*r1 + r0*r1 + 2*r0, r0^2*r1, -r0, 2*r0), (-r0^3*r1^2, -2*r0^3*r1^2 + 2*r0^2*r1^2 + 2*r0^2*r1, 2*r0^3*r1^2, -r0^3*r1^2 + 2*r0^2*r1^2 + 4*r0^2*r1 - r0*r1^2 - 2*r0*r1 - r0, 2*r0^3*r1^2 - 2*r0^2*r1^2 - 4*r0^2*r1, 2*r0^2*r1 - 2*r0*r1 - 2*r0, -4*r0^2*r1 + 2*r0*r1 + 2*r0, 2*r0^2*r1, -r0, 2*r0), (0, r0^2*r1, 0, 2*r0^2*r1, -2*r0^2*r1, r0^2*r1, -2*r0^2*r1, r0^2*r1, 0, 0), (r0^3*r1^3 + r0^3*r1^2, r0^3*r1^3 + 2*r0^3*r1^2 - r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, -r0^3*r1^3 - 2*r0^3*r1^2, r0^3*r1^2 - 2*r0^2*r1^2 - 2*r0^2*r1, -2*r0^3*r1^2 + 2*r0^2*r1^2 + 2*r0^2*r1, -r0^2*r1, 2*r0^2*r1, -r0^2*r1, 0, 0), (-r0^3*r1^2, -2*r0^3*r1^2 + r0^2*r1^2 + r0^2*r1, 2*r0^3*r1^2, -r0^3*r1^2 + r0^2*r1^2 + 2*r0^2*r1, 2*r0^3*r1^2 - r0^2*r1^2 - 2*r0^2*r1, r0^2*r1, -2*r0^2*r1, r0^2*r1, 0, 0), (-r0^3*r1^2, -2*r0^3*r1^2, 2*r0^3*r1^2, -r0^3*r1^2, 2*r0^3*r1^2, 0, 0, 0, 0, 0), (2*r0^3*r1^3 + 2*r0^3*r1^2, 2*r0^3*r1^3 + 4*r0^3*r1^2 - r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, -2*r0^3*r1^3 - 4*r0^3*r1^2, 2*r0^3*r1^2 - 2*r0^2*r1^2 - 2*r0^2*r1, -4*r0^3*r1^2 + 2*r0^2*r1^2 + 2*r0^2*r1, -r0^2*r1, 2*r0^2*r1, -r0^2*r1, 0, 0), (0, -r0^2*r1, 0, -2*r0^2*r1 + 2*r0*r1 + r0, 2*r0^2*r1, -r0^2*r1 + 2*r0*r1 + 2*r0 - r1 - 1, 2*r0^2*r1 - 2*r0*r1 - 2*r0, -r0^2*r1, r0 - 1, -2*r0 + 1), (0, 0, 0, -r0, 0, -2*r0, 2*r0, 0, -r0, 2*r0), (0, -r0^2*r1, 0, -2*r0^2*r1 + 2*r0*r1 + 2*r0, 2*r0^2*r1, -r0^2*r1 + 2*r0*r1 + 4*r0 - r1 - 2, 2*r0^2*r1 - 2*r0*r1 - 4*r0, -r0^2*r1, 2*r0 - 2, -4*r0 + 2)] 
+U = (10, 10) [(0, 0, 0, r0^2*r1 - r0*r1, 0, -r0*r1 - r0, r0*r1, 0, 0, 0), (0, -r0^3*r1^2 + 2*r0^2*r1^2 - r0*r1^2, 0, 2*r0^2*r1^2 + 2*r0^2*r1 - 2*r0*r1^2 - 2*r0*r1, -2*r0^2*r1^2 + 2*r0*r1^2, -r0*r1^2 - 2*r0*r1 - r0, 2*r0*r1^2 + 2*r0*r1, -r0*r1^2, 0, 0), (0, 0, 0, r0^2*r1, 0, 0, 0, 0, 0, 0), (r0^3*r1^3 - r0^2*r1^3, r0^3*r1^3 + r0^3*r1^2 - 2*r0^2*r1^3 - 2*r0^2*r1^2, -r0^3*r1^3 + 2*r0^2*r1^3, -r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, 2*r0^2*r1^3 + 2*r0^2*r1^2, 0, 0, 0, 0, 0), (0, -r0^3*r1^2 + r0^2*r1^2, 0, r0^2*r1^2 + r0^2*r1, -r0^2*r1^2, 0, 0, 0, 0, 0), (0, -r0^3*r1^2, 0, 0, 0, 0, 0, 0, 0, 0), (2*r0^3*r1^3 - r0^2*r1^3, 2*r0^3*r1^3 + 2*r0^3*r1^2 - 2*r0^2*r1^3 - 2*r0^2*r1^2, -2*r0^3*r1^3 + 2*r0^2*r1^3, -r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, 2*r0^2*r1^3 + 2*r0^2*r1^2, 0, 0, 0, 0, 0), (0, 0, 0, -r0^2*r1 + 2*r0*r1 - r1, 0, 2*r0*r1 + r0 - 2*r1 - 1, -2*r0*r1 + 2*r1, 0, -r1 - 1, 2*r1 + 1), (0, 0, 0, 0, 0, -r0, 0, 0, 0, 0), (0, 0, 0, -r0^2*r1 + 2*r0*r1 - r1, 0, 2*r0*r1 + 2*r0 - 2*r1 - 2, -2*r0*r1 + 2*r1, 0, -r1 - 2, 2*r1 + 2)] 
+U = (10, 10) [(0, -r0*r1 - r0, 0, r0^2*r1 - r0*r1, r0*r1, 0, 0, 0, 0, 0), (0, -r0*r1^2 - 2*r0*r1 - r0, 0, 2*r0^2*r1^2 + 2*r0^2*r1 - 2*r0*r1^2 - 2*r0*r1, 2*r0*r1^2 + 2*r0*r1, -r0^3*r1^2 + 2*r0^2*r1^2 - r0*r1^2, -2*r0^2*r1^2 + 2*r0*r1^2, -r0*r1^2, 0, 0), (0, 0, 0, r0^2*r1, 0, 0, 0, 0, 0, 0), (0, 0, 0, -r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, 0, r0^3*r1^3 + r0^3*r1^2 - 2*r0^2*r1^3 - 2*r0^2*r1^2, 2*r0^2*r1^3 + 2*r0^2*r1^2, 0, r0^3*r1^3 - r0^2*r1^3, -r0^3*r1^3 + 2*r0^2*r1^3), (0, 0, 0, r0^2*r1^2 + r0^2*r1, 0, -r0^3*r1^2 + r0^2*r1^2, -r0^2*r1^2, 0, 0, 0), (0, 0, 0, 0, 0, -r0^3*r1^2, 0, 0, 0, 0), (0, 0, 0, -r0^2*r1^3 - 2*r0^2*r1^2 - r0^2*r1, 0, 2*r0^3*r1^3 + 2*r0^3*r1^2 - 2*r0^2*r1^3 - 2*r0^2*r1^2, 2*r0^2*r1^3 + 2*r0^2*r1^2, 0, 2*r0^3*r1^3 - r0^2*r1^3, -2*r0^3*r1^3 + 2*r0^2*r1^3), (-r1 - 1, 2*r0*r1 + r0 - 2*r1 - 1, 2*r1 + 1, -r0^2*r1 + 2*r0*r1 - r1, -2*r0*r1 + 2*r1, 0, 0, 0, 0, 0), (0, -r0, 0, 0, 0, 0, 0, 0, 0, 0), (-r1 - 2, 2*r0*r1 + 2*r0 - 2*r1 - 2, 2*r1 + 2, -r0^2*r1 + 2*r0*r1 - r1, -2*r0*r1 + 2*r1, 0, 0, 0, 0, 0)] 
 ```

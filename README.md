@@ -72,7 +72,7 @@ might be informative for how to call each function.
 ### Example 1: Projective automorphisms of a Roman surface (case B1)
 
 For an explanation of the underlying theory behind the code we refer to
-[Example 3](https://arxiv.org/abs/).
+[(Example 3, arxiv????)](https://arxiv.org/abs/).
 
 We start by importing the required libraries and initialize parameters.
 
@@ -93,21 +93,19 @@ x = ring( 'x0,x1,x2' )
 c = ring( 'c0,c1,c2,c3,c4,c5,c6,c7,c8' )
 ```
 
-We denote the parametrizations of the two [Roman surfaces](https://en.wikipedia.org/wiki/Roman_surface) by `f` and `g`.
+We denote the parametrizations of the two [Roman surfaces](https://en.wikipedia.org/wiki/Roman_surface) by f and g.
 
 ```python
 f = ring( '[x0^2+x1^2+x2^2,x0*x1,x0*x2,x1*x2]' )
 g = f
 ```
 
-Our goal is to recover matrices `U` that define the projective automorphisms of the Roman surface.
+Our goal is to recover matrices U that define the projective automorphisms of the Roman surface.
 For this purpose we first compute coefficient matrices.
 
 ```python
 # compatible reparametrizations are linear and indexed by c
-r = {x[0]:c[0] * y[0] + c[1] * y[1] + c[2] * y[2],
-     x[1]:c[3] * y[0] + c[4] * y[1] + c[5] * y[2],
-     x[2]:c[6] * y[0] + c[7] * y[1] + c[8] * y[2]}
+r = {x[0]:c[0] * y[0] + c[1] * y[1] + c[2] * y[2], x[1]:c[3] * y[0] + c[4] * y[1] + c[5] * y[2], x[2]:c[6] * y[0] + c[7] * y[1] + c[8] * y[2]}
 
 # compute kernel and coefficient matrix of f
 Mf = SERing.get_matrix_P2( f )
@@ -143,7 +141,7 @@ Mgr  = (4, 6) [(c0^2 + c3^2 + c6^2, 2*c0*c1 + 2*c3*c4 + 2*c6*c7, 2*c0*c2 + 2*c3*
 [                      c3*c6               c4*c6 + c3*c7               c5*c6 + c3*c8                       c4*c7               c5*c7 + c4*c8                       c5*c8] 
  ```   
 
-We compute all solutions for `c` such that `Mgr*Kf==0`. This takes a few seconds.
+We compute all solutions for c such that `Mgr*Kf==0`. This takes a few seconds.
 
 ```python
 ec_lst = ( Mgr * Kf ).list() + [  sage_matrix( SERing.R, 3, 3, c ).det() * ring( 't' ) - 1 ]
@@ -184,7 +182,7 @@ Output:
 [c0, c1, c2 + c6, c3, c4 + c6, c5, c7, c8] --> {c3: 0, c8: 0, c4: r24, c5: 0, c0: 0, c1: 0, c6: -r24, c7: 0, c2: r24} 
 ```
 
-We testing the outcome below we first compute the ideal of the Roman surface parametrized by `g`.
+We testing the outcome below we first compute the ideal of the Roman surface parametrized by g.
 
 ```python
 eqg = sage_ideal( [y[i] - g[i] for i in range( 4 )] ).elimination_ideal( x ).gens()
@@ -198,7 +196,7 @@ Output:
 [x^2*y^2 + x^2*z^2 + y^2*z^2 - x*y*z] 
 ```
  
-For each of the 24 solutions in `sol_lst` obtained, we recover the corresponding projective automorphism `U`.
+For each of the 24 solutions in `sol_lst` obtained, we recover the corresponding projective automorphism U.
 Each of the 24 symmetries of the [Roman surface](https://en.wikipedia.org/wiki/Roman_surface) corresponds to the symmetries of a tetrahedron.
 
 ```python
@@ -275,7 +273,7 @@ from surface_equivalence.sage_interface import sage_solve
 os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/maple/link/bin' # edit PATH
 ```
 
-Initialize the parameters for the parametrizations `f` and `g`.
+Initialize the parameters for the parametrizations f and g.
 See [this file](https://github.com/niels-lubbes/surface_equivalence/blob/master/surface_equivalence/src/surface_equivalence/__main__.py)
 for code for obtaining random parameters.
 
@@ -295,7 +293,7 @@ y = [ring( 'y' + str( i ) ) for i in range( 4 )]
 s = {y[0]:L[0] * y[0] + L[1] * y[1], y[1]:L[2] * y[0] + L[3] * y[1], y[2]:R[0] * y[2] + R[1] * y[3], y[3]:R[2] * y[2] + R[3] * y[3]}
 ```
 
-Construct `f` and `g` from the parameters.
+Construct f and g from the parameters.
 
 ```python
 f = list( matf * sage_vector( SERing.get_mon_P1xP1( d1, d2 ) ) )
@@ -311,7 +309,9 @@ g = [-54908/37845*y0^2*y2^2 + 18683/870*y0*y1*y2^2 + 106/5*y1^2*y2^2 + 13606207/
 
 ```
 
-We will now recover the projective automorphism defined by the matrix `matU` from only `f` and `g`.
+#### Compute projective isomorphisms
+
+We will now recover the projective automorphism defined by the matrix `matU` from only f and g.
 
 ```python
 # Superset of compatible reparametrizations P^1xP^1--->P^1xP^1 consists of two families r0 and r1 parametrized by c.
@@ -322,7 +322,7 @@ r0 = {y[0]:c[0] * y[0] + c[1] * y[1], y[1]:c[2] * y[0] + c[3] * y[1], y[2]:c[4] 
 r1 = {y[2]:c[0] * y[0] + c[1] * y[1], y[3]:c[2] * y[0] + c[3] * y[1], y[0]:c[4] * y[2] + c[5] * y[3], y[1]:c[6] * y[2] + c[7] * y[3]}
 ```
 
-We check whether we can find a solution for `c` with compatible reparametrization `r0`.
+We check whether we can find a solution for c with compatible reparametrization r0.
 
 ```python
 r=r0
@@ -358,8 +358,7 @@ sol_lst = [{c3: 2*r3, c4: sqrt(2)*r3, c5: -1/2*sqrt(2)*r3, c0: r3, c1: 0, c6: 0,
 sol     = {c3: 2*r3, c4: sqrt(2)*r3, c5: -1/2*sqrt(2)*r3, c0: r3, c1: 0, c6: 0, c7: sqrt(2)*r3, c2: -2/87*r3}
 ```
 
-We now compute from the solution `sol` for `c` the matrix `U`, which defines a projective isomorphisms.
-
+We now compute from the solution sol for c the matrix U, which defines a projective isomorphisms.
 
 ```python
 Ef = sage_matrix( sage_QQ, list( Mf ) + list( Kf.T ) )
@@ -418,7 +417,7 @@ z = [ring( 'z' + str( i ) ) for i in range( 4 )]
 c = [ring( 'c' + str( i ) ) for i in range( 8 )]
 ```
 
-We initialize the parametric maps `f` and `g`.
+We initialize the parametric maps f and g.
 
 ```python
 f = ring( '[x0^6*x1^2,x0*x1^5*x2^2,x1^3*x2^5,x0^5*x2^3+x0^5*x2^3+x0^5*x1*x2^2]' )
@@ -427,7 +426,10 @@ g = [g[0], g[1] + g[0], g[2], g[3] + g[2]]
 assert sage_gcd( f ) == 1
 assert sage_gcd( g ) == 1
 ```
-We do a a basepoint analysis for `f` and `g`.
+
+#### Basepoint analysis for the maps f and g
+
+We do a a basepoint analysis for f and g.
 
 ```python
 bf = LinearSeries( SERing.conv( f ), PolyRing( 'x,y,z', True ) ).get_bp_tree()
@@ -469,7 +471,9 @@ bg =
 	        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^8*v^6, x^8*v^6 + v, x, x^9*v^5 + x^8*v^5 + x>>, QQ[x, v] }
 ```
 
-We compute the implicit equations of the images of the maps `f` and `g` for testing purposes.
+#### Computing implicit equations for testing purposes
+
+We compute the implicit equations of the images of the maps f and g for testing purposes.
 This is not required for the algorithm.
 
 ```python
@@ -490,8 +494,10 @@ eqg = [z0^18*z2^8 - 6*z0^17*z1*z2^8 + 15*z0^16*z1^2*z2^8 - 20*z0^15*z1^3*z2^8 + 
 
 ```
 
-We declare a method which takes as input a map `gr` with parameters `c`
-and outputs conditions on `c` such that `gr` has the same basepoints as `f` (see `bf`):
+#### Declare method for enforcing basepoints
+
+We declare a method which takes as input a map gr with parameters c
+and outputs conditions on c such that gr has the same basepoints as f (see `bf`):
 
 ```python
 # use "%paste" to paste this code in a Sage or Python terminal.
@@ -561,7 +567,7 @@ def usecase_B2_helper_bp( gr ):
     return eqn_lst
 ```
 
-The superset of the compatible reparametrizations consist of two components `r0` and `r1`.
+The superset of the compatible reparametrizations consist of two components r0 and r1.
 
 ```python
 # we compute maps to P1xP1 from two pencils
@@ -595,7 +601,7 @@ pen1 = [x1, x0]
 pen2 = [x2, x0] 
 ```
 
-We compute the coefficient matrix `Mf` for `f` and its kernel `Kf`.
+We compute the coefficient matrix Mf for f and its kernel Kf.
 
 ```python
 Mf = SERing.get_matrix_P2( f )
@@ -605,7 +611,9 @@ assert Mf.dimensions() == (4, 45)
 assert Kf.dimensions() == (45, 41)
 ```
 
-We first consider the reparametrization `r0` and we find the coefficient matrix `Mgr00`.
+#### r0
+
+We first consider the reparametrization r0 and we find the coefficient matrix Mgr00.
 
 ```python
 # compose g with reparametrization r0
@@ -663,7 +671,9 @@ gr00 = 4 x0^2 [c3^2*x0^6*x1^2, c3^5*c7^2*x0*x1^5*x2^2 + c3^2*x0^6*x1^2, c3^3*c7^
 Mgr00 = (4, 45) [(0, 0, 0, c3^2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, c3^2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4*c3^7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32*c3^8, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0, 4*c3^3, 8*c3^3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32*c3^8, 0, 0, 0)] 
 ```
 
-We do the same for the reparametrization `r1`, but here we do not find a solution.
+#### r1
+
+We do the same for the reparametrization r1, but here we do not find a solution.
 
 ```python
 # compose g with reparametrization r1
@@ -715,7 +725,9 @@ gr10 = 4 x0^2 [c2^2*x0^5*x2^3, c2^5*c7^2*x0^6*x1^2 + c2^2*x0^5*x2^3, c2^3*c7^5*x
 gr11 = 4 x0^2 [c3^2*x0*x1^5*x2^2, c3^5*c6^2*x1^3*x2^5 + c3^2*x0*x1^5*x2^2, c3^3*c6^5*x0^5*x2^3, c3^3*c6^5*x0^5*x2^3 + c6^3*x0^6*x1^2 + c3*c6^2*x0^4*x1^3*x2] 
 ```
 
-We recover from `Mgr00` the projective isomorphisms in terms of a parametrized matrix `U`.
+#### Computing projective isomorphisms
+
+We recover from Mgr00 the projective isomorphisms in terms of a parametrized matrix U.
 
 
 ```python
@@ -749,7 +761,7 @@ U =
     
 We compute the projective automorphism of the 
 rational normal scrolls that is parametrized 
-the birational map `f`.
+the birational map f.
 Further explanation of this example can be found 
 in the accompanying [arxiv article (not yet online)](https://arxiv.org).
 
@@ -774,7 +786,7 @@ from linear_series.class_ls_tools import LSTools
 os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/bin' # edit path
 ```
 
-We let `f` to be the parametrization of a rational normal scroll and 
+We let f to be the parametrization of a rational normal scroll and 
 we assume that `f==g`.
 
 ```python
@@ -782,7 +794,7 @@ f = ring('[-x0*x1^2 + x1^3, x1^2*x2, x1*x2^2, x0*x1*x2, -x0*x2^2 + x2^3]')
 g = f
 ```
 
-We start by doing a basepoint analysis for `f`.
+We start by doing a basepoint analysis for f.
 
 ```python
 print( LinearSeries( SERing.conv( f ), PolyRing( 'x,y,z', True ) ).get_bp_tree() )
@@ -794,32 +806,23 @@ Output:
 We compute the generators of bigraded Cox rings associated to `f`.
     
 ```python
-p1 = ( 0, 0 );p2 = ( 1, 0 );p3 = ( 0, 1 )
+PolyRing.reset_base_field()
+p1 = ( 0, 0 ); p2 = ( 1, 0 ); p3 = ( 0, 1 )
 
 # e0-e1
-PolyRing.reset_base_field()
-bpt = BasePointTree()
-bpt.add( 'z', p1, 1 )
+bpt = BasePointTree(); bpt.add( 'z', p1, 1 )
 f0p1 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
 
 # e0-e2-e3
-bpt = BasePointTree()
-bpt.add( 'z', p2, 1 )
-bpt.add( 'z', p3, 1 )
+bpt = BasePointTree(); bpt.add( 'z', p2, 1 ); bpt.add( 'z', p3, 1 )
 f1m2 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
 
 # 2e0-e1-e2-e3
-bpt = BasePointTree()
-bpt.add( 'z', p1, 1 )
-bpt.add( 'z', p2, 1 )
-bpt.add( 'z', p3, 1 )
+bpt = BasePointTree(); bpt.add( 'z', p1, 1 ); bpt.add( 'z', p2, 1 ); bpt.add( 'z', p3, 1 )
 f1m1 = SERing.conv( LinearSeries.get( [2], bpt ).pol_lst )
 
 # 3e0-2e1-e2-e3
-bpt = BasePointTree()
-bpt.add( 'z', p1, 2 )
-bpt.add( 'z', p2, 1 )
-bpt.add( 'z', p3, 1 )
+bpt = BasePointTree(); bpt.add( 'z', p1, 2 ); bpt.add( 'z', p2, 1 ); bpt.add( 'z', p3, 1 )
 f1m0 = SERing.conv( LinearSeries.get( [3], bpt ).pol_lst )
 
 print( 'f0p1 =', len( f0p1 ), f0p1 )
@@ -835,12 +838,11 @@ f1m1 = 3 [-x0*x1 + x1^2, x1*x2, -x0*x2 + x2^2]
 f1m0 = 5 [-x0*x1^2 + x1^3, x1^2*x2, x1*x2^2, x0*x1*x2, -x0*x2^2 + x2^3]
 ```
 
-From the output we obtain the following generators for the Cox ring associated to `f`:
-`u0`, `u1`, `u2` and `u3` with weights (0,1), (0,1), (1,-2) and (1,-1), respectively. 
-We compute the list `M1m0` of monomials of weight (1,0) in these generators.
+From the output we obtain the following generators for the Cox ring associated to f:
+u0, u1, u2 and u3 with weights (0,1), (0,1), (1,-2) and (1,-1), respectively. 
+We compute the list M1m0 of monomials of weight (1,0) in these generators.
 
 ```python
-# obtain monomials of weight (1,0)
 U = [ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' )]
 u = ring( 'u0,u1,u2,u3' )
 w_lst = [( 0, 1 ), ( 0, 1 ), ( 1, -2 ), ( 1, -1 )]
@@ -852,12 +854,13 @@ Output:
 M1m0 = [u1*u3, u0*u3, u1^2*u2, u0*u1*u2, u0^2*u2]
 ```
 
-Let `F` be the map whose components are defined by `M1m0`.
-We compose `F` with a parametrized map
-`P: (u0,u1,u2,u3)|-->(c0*u0+c1*u1, c2*u0+c3*u1, c4*u2, c5*u3+c6*u0*u2+c7*u1*u2)`
-in indeterminates `c`. 
-We obtain the composition `PoF` after we replace `u0`, `u1`, `u2` and `u3` 
-with `x1`, `x2`, `x1+x2-x0` and `x1*x2`, respectively.
+Let F be the map whose components are defined by M1m0.
+We compose F with a parametrized map
+
+P: (u0,u1,u2,u3)|-->(c0*u0+c1*u1, c2*u0+c3*u1, c4*u2, c5*u3+c6*u0*u2+c7*u1*u2).
+ 
+We obtain the composition PoF after we replace u0, u1, u2 and u3 
+with x1, x2, x1+x2-x0 and x1*x2, respectively.
 
 
 ```python
@@ -869,17 +872,18 @@ dctP = { z[0]:c[0] * u[0] + c[1] * u[1], z[1]:c[2] * u[0] + c[3] * u[1], z[2]:c[
 PoF = [ comp.subs( dctZ ).subs( dctP ) for comp in F ]
 PoF = [ comp.subs( {u[i]:U[i] for i in range( 4 )} ) for comp in PoF]
 PoF = [ comp / sage_gcd( PoF ) for comp in PoF]
-SETools.p( 'PoF =', PoF )
+print( 'PoF =', PoF )
+
 ```
 Output:
-
 ```
 PoF = [-c2*c6*x0*x1^2 + c2*c6*x1^3 - c3*c6*x0*x1*x2 - c2*c7*x0*x1*x2 + c2*c5*x1^2*x2 + c2*c6*x1^2*x2 + c3*c6*x1^2*x2 + c2*c7*x1^2*x2 - c3*c7*x0*x2^2 + c3*c5*x1*x2^2 + c3*c6*x1*x2^2 + c2*c7*x1*x2^2 + c3*c7*x1*x2^2 + c3*c7*x2^3, -c0*c6*x0*x1^2 + c0*c6*x1^3 - c1*c6*x0*x1*x2 - c0*c7*x0*x1*x2 + c0*c5*x1^2*x2 + c0*c6*x1^2*x2 + c1*c6*x1^2*x2 + c0*c7*x1^2*x2 - c1*c7*x0*x2^2 + c1*c5*x1*x2^2 + c1*c6*x1*x2^2 + c0*c7*x1*x2^2 + c1*c7*x1*x2^2 + c1*c7*x2^3, -c2^2*c4*x0*x1^2 + c2^2*c4*x1^3 - 2*c2*c3*c4*x0*x1*x2 + c2^2*c4*x1^2*x2 + 2*c2*c3*c4*x1^2*x2 - c3^2*c4*x0*x2^2 + 2*c2*c3*c4*x1*x2^2 + c3^2*c4*x1*x2^2 + c3^2*c4*x2^3, -c0*c2*c4*x0*x1^2 + c0*c2*c4*x1^3 - c1*c2*c4*x0*x1*x2 - c0*c3*c4*x0*x1*x2 + c0*c2*c4*x1^2*x2 + c1*c2*c4*x1^2*x2 + c0*c3*c4*x1^2*x2 - c1*c3*c4*x0*x2^2 + c1*c2*c4*x1*x2^2 + c0*c3*c4*x1*x2^2 + c1*c3*c4*x1*x2^2 + c1*c3*c4*x2^3, -c0^2*c4*x0*x1^2 + c0^2*c4*x1^3 - 2*c0*c1*c4*x0*x1*x2 + c0^2*c4*x1^2*x2 + 2*c0*c1*c4*x1^2*x2 - c1^2*c4*x0*x2^2 + 2*c0*c1*c4*x1*x2^2 + c1^2*c4*x1*x2^2 + c1^2*c4*x2^3] 
 ```
 
-We now recover the matrix `M` that defines a projective automorphism induced by `P`.
+We now recover the matrix M that defines a projective automorphism induced by P.
 
 ```
+# type "%paste" to paste indented code in a Sage or Python terminal
 M = []
 for pol in [ comp.subs( dctZ ).subs( dctP ) for comp in M1m0]:
     row = []
@@ -901,8 +905,8 @@ M =
 [                  0                   0             c1^2*c4          2*c0*c1*c4             c0^2*c4]
 ```
 
-We compute the inverse `Q` of the map `F`
-and compute the composition `QoPoF` in order to obtain a compatible reparametrization from 
+We compute the inverse Q of the map F
+and compute the composition QoPoF in order to obtain a compatible reparametrization from 
 the projective plane to the projective plane.
 
 ```python
@@ -934,8 +938,8 @@ QoPoF = 3 [c0*c2*c4*x0*x1^2 - c0*c2*c4*x1^3 + c1*c2*c4*x0*x1*x2 + c0*c3*c4*x0*x1
 
 ```
 
-From the compatible reparametrizations `QoPoF` we compute the
-projective automorphisms `U` in terms of a 5x5 matrix parametrized by `c`.
+From the compatible reparametrizations QoPoF we compute the
+projective automorphisms U in terms of a 5x5 matrix parametrized by c.
 
 
 ```python
@@ -1004,10 +1008,10 @@ os.environ['PATH'] += os.pathsep + '/home/niels/Desktop/n/app/mathematica/link/b
 
 We compute the projective isomorphism between two 
 conic bundles X and Y that are parametrized by the 
-birational maps `ff` and `gg`, respectively.
-The domain of `ff` is the projective plane in coordinates `(x0:x1:x2)`
-and the domain of `gg` is the fiber product of the projective line with itself with 
-coordinates `(y0:y1;y2:y3)`.
+birational maps ff and gg, respectively.
+The domain of ff is the projective plane in coordinates (x0:x1:x2)
+and the domain of gg is the fiber product of the projective line with itself with 
+coordinates (y0:y1;y2:y3).
 
 ```python
 ff = ring("[-x0^2*x1^2 + x1^4, x1^3*x2, -x0^2*x1^2 + x0*x1^3, x1^2*x2^2, x0*x1^2*x2, x1*x2^3, x0*x1*x2^2, x0^2*x1*x2, -x0^2*x2^2 + x2^4, -x0^2*x2^2 + x0*x2^3]")
@@ -1023,8 +1027,8 @@ Output:
 ```
 
 ```
-We construct linear series associated to `ff` in order to determine
-the generators of a graded coordinate ring associated to `ff`.
+We construct linear series associated to ff in order to determine
+the generators of a graded coordinate ring associated to ff.
 
 ```python
 PolyRing.reset_base_field()
@@ -1073,13 +1077,13 @@ f1m0 = 10 [-x0^2*x1^2 + x1^4, x1^3*x2, -x0^2*x1^2 + x0*x1^3, x1^2*x2^2, x0*x1^2*
 f2m4 = 9 [3*x0^4 - 4*x0^3*x1 + x1^4 - 4*x0^3*x2 + 4*x0^2*x1*x2 - x0^2*x2^2 + 2*x0*x2^3, -x0^3*x2 + x1^3*x2 + 2*x0^2*x2^2 - x0*x2^3, 2*x0^4 - 3*x0^3*x1 + x0*x1^3 - 3*x0^3*x2 + 3*x0^2*x1*x2 + x0*x2^3, x1^2*x2^2, -x0^3*x2 + x0*x1^2*x2 + 2*x0^2*x2^2 - x0*x2^3, x0^4 - 2*x0^3*x1 + x0^2*x1^2 - 2*x0^3*x2 + 2*x0^2*x1*x2 + x0^2*x2^2, x0^3*x2 - x0^2*x1*x2 - 2*x0^2*x2^2 + x0*x2^3 + x1*x2^3, x0^3*x2 - x0^2*x1*x2 - 2*x0^2*x2^2 + x0*x1*x2^2 + x0*x2^3, x0^2*x2^2 - 2*x0*x2^3 + x2^4] 
 ```
 
-By inspection we recover the generators of graded ring associated to `ff`.
+By inspection we recover the generators of graded ring associated to ff.
 
 ```python
 U = U0, U1, U2, U3, U4 = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
 ```
 
-We compute smallest `d` such that there is a relation between the generators of weight (2,d). 
+We compute smallest d such that there is a relation between the generators of weight (2,d). 
 The idea is to compare the number of monomials of given bi-weight 
 with the dimension predicted by the Riemann-Roch formula.
 
@@ -1101,7 +1105,7 @@ weight= (2, -1) ,	#monomials = 28 ,	Riemann-Roch = 24
 weight= (2,  0) ,	#monomials = 34 ,	Riemann-Roch = 29
 
 ```
-We conclude from the above output that `d` is equal to -4
+We conclude from the above output that d is equal to -4
 and we proceed by computing the polynomial relation between the monomials of weight (2,-4).
 
 ```python
@@ -1115,15 +1119,15 @@ assert list(kera) == [(0, 1, 0, 0, 0, 0, 0, 0, -1, 0)]
 assert a1 - a8 == 0
 ```
 
-Thus the relation between the monomials `a0`,...,`a9` of weight (2,-4) in 
-the graded coordinate ring associated to `ff` is `a1 - a8==0`.
+Thus the relation between the monomials a0,...,a9 of weight (2,-4) in 
+the graded coordinate ring associated to ff is `a1 - a8==0`.
 
 
-#### Graded coordinate ring associated to `gg`
+#### Graded coordinate ring associated to gg
 
-We now proceed to do the same procedure for the map `gg`.
-Thus we construct linear series associated to `gg` in order to determine
-the generators of a graded coordinate ring associated to `gg`.
+We now proceed to do the same procedure for the map gg.
+Thus we construct linear series associated to gg in order to determine
+the generators of a graded coordinate ring associated to gg.
 
 ```python
 print( LinearSeries( SERing.conv( gg ), PolyRing( 'x,y,v,w' ) ).get_bp_tree() )
@@ -1172,17 +1176,14 @@ g1m1 = 7 [y0^3*y2^2 - y0*y1^2*y3^2, y0^2*y1*y2^2, y0^2*y1*y2*y3 - y0*y1^2*y3^2, 
 g2m4 = 9 [y0^4*y2^4 + 2*y1^4*y2^3*y3 + 4*y0*y1^3*y2^2*y3^2 - y1^4*y2^2*y3^2 - 4*y0*y1^3*y2*y3^3 - 4*y1^4*y2*y3^3 + 3*y1^4*y3^4, y0^3*y1*y2^4 - y1^4*y2^3*y3 + 2*y1^4*y2^2*y3^2 - y1^4*y2*y3^3, y0^3*y1*y2^3*y3 + y1^4*y2^3*y3 + 3*y0*y1^3*y2^2*y3^2 - 3*y0*y1^3*y2*y3^3 - 3*y1^4*y2*y3^3 + 2*y1^4*y3^4, y0^2*y1^2*y2^4, y0^2*y1^2*y2^3*y3 - y1^4*y2^3*y3 + 2*y1^4*y2^2*y3^2 - y1^4*y2*y3^3, y0^2*y1^2*y2^2*y3^2 + 2*y0*y1^3*y2^2*y3^2 + y1^4*y2^2*y3^2 - 2*y0*y1^3*y2*y3^3 - 2*y1^4*y2*y3^3 + y1^4*y3^4, y0*y1^3*y2^4 + y1^4*y2^3*y3 - y0*y1^3*y2^2*y3^2 - 2*y1^4*y2^2*y3^2 + y1^4*y2*y3^3, y0*y1^3*y2^3*y3 + y1^4*y2^3*y3 - y0*y1^3*y2^2*y3^2 - 2*y1^4*y2^2*y3^2 + y1^4*y2*y3^3, y1^4*y2^4 - 2*y1^4*y2^3*y3 + y1^4*y2^2*y3^2] 
 
 ```
-
-By inspection we recover the generators of graded ring associated to `gg`.
-
+By inspection we recover the generators of graded ring associated to gg.
 
 ```python
 V = V0, V1, V2, V3, V4 = ring( 'y0' ), ring( 'y1' ), ring( 'y0*y2^2+y1*y2^2-y1*y2*y3' ), ring( 'y0*y1*y2^2' ), ring( 'y0^2*y2^2+y1^2*y2^2-y1^2*y3^2' )
 ```
-
-Since `ff` and `gg` parametrize conic bundles that are projectively isomorphic
+Since ff and gg parametrize conic bundles that are projectively isomorphic
 we know that that there exists a relation between the monomials of bidegree (2,-4)
-in the coordinate associated to `gg`.
+in the coordinate associated to gg.
 
 ```python
 b = b0, b1, b2, b3, b4, b5, b6, b7, b8, b9 = [elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T2m4 ]
@@ -1193,9 +1194,9 @@ assert list(kerb) == ring("[(1, 1/2, 0, -1, 0, -1, 0, 0, 1/2, 0]")
 assert 2 * b0 + b1 - 2 * b3 - 2 * b5 + b8 == 0
 ```
 
-#### Computing projective isomorphism
+#### Computing projective isomorphisms
 
-Let `F` and `G` be the maps whose components form a basis for the 
+Let F and G be the maps whose components form a basis for the 
 monomials of weight (1,0).
 
 ```python
@@ -1203,7 +1204,7 @@ F = [ elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T1m0]
 G = [ elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T1m0]
 ```
 
-We compute the inverse `Q` of the map `G`.
+We compute the inverse Q of the map G.
 
 ```python
 z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
@@ -1228,7 +1229,7 @@ QoG = [QoG[0] / gcd01, QoG[1] / gcd01, QoG[2] / gcd23, QoG[3] / gcd23]
 assert QoG == [y0, y1, y2, y3]
 ```
 
-We compute the composition`QoPoF` of `F` with `P` and `Q`.
+We compute the composition QoPoF of F with P and Q.
 
 ```python
 c = c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12 = [ring( 'c' + str( i ) ) for i in range( 13 )]
@@ -1250,19 +1251,19 @@ QoPoF = 4 [-c0*x1 - c1*x2, -c2*x1 - c3*x2, c2*c4*x0*x1 - c2*c4*x1^2 + c3*c4*x0*x
 
 ```
 
-We create a list `rel_lst` of equations in `c`.
+We create a list rel_lst of equations in c.
 
 ```python
 b = T2m4
 rel_g4m2 = 2 * b[0] + b[1] - 2 * b[3] - 2 * b[5] + b[8]
 rel_g4m2 = rel_g4m2.subs( dctZ ).subs( dctP ).subs( {u[i]:U[i] for i in range( 5 )} )
 rel_lst = []; x = ring( '[x0,x1,x2]' )
-for exp in sage_Compositions( 4 + 3, length = 3 ):
+for exp in sage_Compositions( 4 + 3, length = 3 ): 
     rel_lst += [rel_g4m2.coefficient( {x[i]:exp[i] - 1 for i in range( 3 )} )]
 rel_lst += [ ( c0 * c3 - c1 * c2 ) * c4 * ( c5 * c10 - c9 * c6 ) * ring('t') - 1 ]
 ```
 
-We solve the equations `rel_lst` for `c` by computing a primary decomposition.
+We solve the equations rel_lst for c by computing a primary decomposition.
 
 ```python
 prime_lst = sage_ideal( rel_lst ).elimination_ideal( t ).primary_decomposition()
@@ -1293,7 +1294,7 @@ prime3 = [c8, c7, c6, 2*c5 + c9, c2, c1, c3*c11 - c0*c12, 2*c9*c10 - c11*c12, 2*
 sol3   = {c10: r15, c12: -4*r14*r15/r16, c6: 0, c8: 0, c2: 0, c4: r13, c0: 1/2*r16/r13, c11: r16, c7: 0, c9: -2*r14, c3: -2*r14*r15/(r13*r16), c5: r14, c1: 0} 
 ```
 
-After normalization we may assume that some of the nonzero `c` is equal to 1. 
+After normalization we may assume that some of the nonzero c is equal to 1. 
 We add the corresponding equations in order to simplify the solutions.
 
 ```python
@@ -1327,9 +1328,8 @@ sol2 = {c0:0, c1:1, c2:-r0*r1, c3:0     , c4:1, c5:r0, c6:0 , c7:0, c8:0, c9:-2*
 sol3 = {c0:1, c1:0, c2:0     , c3:-r0*r1, c4:1, c5:r0, c6:0 , c7:0, c8:0, c9:-2*r0, c10:r1   , c11:2       , c12:-2*r0*r1}
 sol_lst = [sol0, sol1, sol2, sol3]
 ```
-
 For each of the four solutions we compose the corresponding
-compatible reparametrization with `gg`. Notice that after 
+compatible reparametrization with gg. Notice that after 
 we substitute a solution the components have a non-trivial 
 greatest common divisor.
 
@@ -1350,7 +1350,7 @@ r0^2*r1^3*x0^2*x1^2 - 2*r0^2*r1^3*x0*x1^3 + r0^2*r1^3*x1^4 - 2*r0^2*r1^3*x0*x1^2
 r0^2*r1^3*x0^2*x2^2 - 2*r0^2*r1^3*x0*x1*x2^2 + r0^2*r1^3*x1^2*x2^2 - 2*r0^2*r1^3*x0*x2^3 + 2*r0^2*r1^3*x1*x2^3 + r0^2*r1^3*x2^4 
 ```
 
-In order to test our result we compute the implicit equations for the image Y of `gg`. 
+In order to test our result we compute the implicit equations for the image Y of gg. 
 However, this is not required for computing the projective isomorphisms between X and Y.
 
 ```python
@@ -1364,9 +1364,9 @@ Output:
 igg = [z1*z8 - z8^2 + z2*z9, z6*z7 + z0*z8 - z2*z8 - z3*z8 + z5*z8 - z8^2 + z2*z9 - z4*z9 + z5*z9 - z6*z9, z5*z7 + z2*z8 - z4*z8 - z5*z9, z4*z7 + z0*z8 - z8^2 + z2*z9 - z4*z9, z3*z7 + z0*z8 - z2*z8 + z4*z8 - z8^2 + z2*z9 - z3*z9 - z4*z9 + z5*z9, z2*z7 - z0*z8 + z8^2 - z2*z9, z1*z7 - z7*z8 + z0*z9 - z1*z9, z0*z7 + z7*z8 - z0*z9, z4*z5 - z5^2 - z0*z6 + z2*z6 - z4*z8 + z5*z8 + z3*z9 - z6*z9, z2*z5 - z2*z8 - z6*z8 + z5*z9, z1*z5 - z5^2 + z2*z6, z0*z5 - z2*z8 - z3*z8 + z5*z9, z4^2 - z5^2 + z2*z6, z3*z4 + z3*z5 - z4*z6, z2*z4 - z2*z8 - z3*z8 + z5*z9, z1*z4 - z5^2 + z2*z6 - z4*z8 + z5*z8 + z3*z9 - z6*z9, z0*z4 - z2*z8 + z5*z9, z2*z3 - z0*z6 - z4*z8 + z5*z8 + z3*z9 - z6*z9, z1*z3 - z3*z5 - z1*z6 + z4*z6, z0*z3 + z4*z8 - z5*z8 - z3*z9 + z6*z9, z2^2 - z5*z8, z1*z2 - z2*z8 + z5*z9, z0*z2 - z4*z8, z1^2 - z5^2 + z2*z6 + z5*z8 - z8^2 + z2*z9 - z6*z9, z0*z1 - z0*z8 + z4*z9, z0^2 - z8^2 + z2*z9, z5^2*z8 - z2*z6*z8 - z5*z8^2 + z2*z8*z9 + z6*z8*z9 - z5*z9^2, z3*z5*z8 - z4*z6*z8 - z3*z8^2 + z6*z8^2 + z0*z6*z9 - z2*z6*z9 + z4*z8*z9 - z5*z8*z9 - z3*z9^2 + z6*z9^2, z3^2*z8 + 2*z0*z6*z8 - z2*z6*z8 + 2*z4*z8^2 - 2*z5*z8^2 - 2*z3*z5*z9 + z5*z6*z9 - 2*z3*z8*z9 + 2*z6*z8*z9, 2*z3*z5^2 - z5^2*z6 - 2*z0*z6^2 + z2*z6^2 - 4*z4*z6*z8 + 3*z5*z6*z8 - 2*z3*z8^2 + 2*z6*z8^2 - z3^2*z9 + 2*z0*z6*z9 - 2*z2*z6*z9 + 4*z3*z6*z9 - 3*z6^2*z9 + 2*z4*z8*z9 - 2*z5*z8*z9 - 2*z3*z9^2 + 2*z6*z9^2] 
 ```
 
-For each `gr` in `gr_lst` we recover 
+For each gr in gr_lst we recover 
 the corresponding projective isomorphism between X and Y
-in terms of a parametrized matrix `U`.
+in terms of a parametrized matrix U.
  
 ```python
 # compute the coefficient matrix of ff and its kernel

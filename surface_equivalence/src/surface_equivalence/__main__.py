@@ -914,25 +914,22 @@ def usecase_B5():
     # solve for ci and put the solutions in dictionary form
     prime_lst = sage_ideal( rel_lst ).elimination_ideal( t ).primary_decomposition()
     SETools.p( 'prime_lst =', len( prime_lst ) )
-    for prime in prime_lst:
-        SETools.p( '\t', prime.gens() )
     for gen_lst in [prime.gens() for prime in prime_lst]:
         sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
-        SETools.p( '\t sol_dct =', sol_dct )
         assert len( sol_dct ) == 1
+        SETools.p( '\t gen_lst =', gen_lst )
+        SETools.p( '\t sol_dct =', sol_dct[0] )
     prime_lst2 = []
     prime_lst2 += [prime_lst[0].gens() + [c0 - 1, c4 - 1]]
     prime_lst2 += [prime_lst[1].gens() + [c1 - 1, c4 - 1]]
     prime_lst2 += [prime_lst[2].gens() + [c1 - 1, c4 - 1]]
     prime_lst2 += [prime_lst[3].gens() + [c0 - 1, c4 - 1]]
     SETools.p( 'Added equations to prime_lst to simplify solutions:' )
-    for prime in prime_lst2:
-        SETools.p( '\t', prime )
-    SETools.p( 'Simplified solutions:' )
     for gen_lst in prime_lst2:
         sol_dct = sage_solve( [sage_SR( gen ) for gen in gen_lst], [sage_SR( elt ) for elt in c], solution_dict = True )
-        SETools.p( '\t sol_dct =', sol_dct )
         assert len( sol_dct ) == 1
+        SETools.p( '\t gen_lst =', gen_lst )
+        SETools.p( '\t sol_dct =', sol_dct[0] )
     r0, r1 = ring( 'r0,r1' )
     sol0 = {c0:1, c1:0, c2:0, c3:-r0 * r1, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:2, c12:-2 * r0 * r1}
     sol1 = {c0:0, c1:1, c2:-r0 * r1, c3:0, c4:1, c5:0, c6:r0, c7:0, c8:0, c9:r1, c10:-2 * r0, c11:-2 * r0 * r1, c12:2}
@@ -951,8 +948,9 @@ def usecase_B5():
         gr = [ comp.subs( {y[i]:QoPoF[i] for i in range( 4 )} ).subs( sol ) for comp in gg ]
         SETools.p( '\t gr =', gr )
         gcd_gr = sage_gcd( gr )
-        SETools.p( '\t\tgcd_gr =', gcd_gr )
+        SETools.p( '\t\t gcd_gr    =', gcd_gr )
         gr_lst += [[ comp / gcd_gr for comp in gr ]]
+        SETools.p( '\t\t gr/gcd_gr =', gr_lst[-1] )
     SETools.p( 'gr_lst =', len( gr_lst ) )
     for gr in gr_lst:
         SETools.p( '\t gr =', gr )
@@ -968,7 +966,7 @@ def usecase_B5():
     z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
     y = ring( 'y0,y1,y2,y3' )
     igg = SERing.R.ideal( [ z[i] - gg[i] for i in range( 10 )  ] ).elimination_ideal( [y[i] for i in range( 4 )] )
-    SETools.p( 'igg =', igg )
+    SETools.p( 'igg =', list( igg.gens() ) )
 
     # Compute isomorphisms for each gr
     SETools.p( 'Compute projective isomorphism for each gr in gr_lst:' )
@@ -1060,12 +1058,12 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    # usecase_B1()
-    # usecase_B1_P1xP1()
-    # usecase_B2()
-    # usecase_B4()
+    usecase_B1()
+    usecase_B1_P1xP1()
+    usecase_B2()
+    usecase_B4()
     usecase_B5()
-    # usecase_invert_map()
+    usecase_invert_map()
 
     #########################################
     #                                       #

@@ -314,7 +314,8 @@ g = [-54908/37845*y0^2*y2^2 + 18683/870*y0*y1*y2^2 + 106/5*y1^2*y2^2 + 13606207/
 We will now recover the projective automorphism defined by the matrix `matU` from only f and g.
 
 ```python
-# Superset of compatible reparametrizations P^1xP^1--->P^1xP^1 consists of two families r0 and r1 parametrized by c.
+# Superset of compatible reparametrizations P^1xP^1--->P^1xP^1 consists of 
+# two families r0 and r1 parametrized by c.
 # Notice that r1 flips the factors of P^1xP^1.
 y = [ring( 'y' + str( i ) ) for i in range( 4 )]
 c = [ring( 'c' + str( i ) ) for i in range( 8 )]
@@ -393,7 +394,7 @@ assert gb_lst == [1]
 
 We compute the projective isomorphisms between two projective surfaces
 that are adjoint to double ruled quadrics.
-For an explanation of the code we refer to [Example 14](https://arxiv.org/abs/).
+For an explanation of the code we refer to [(Example 14, arxiv????)](https://arxiv.org/abs/).
 
 We start by importing the required libraries and declaring parameters.
 
@@ -441,34 +442,34 @@ Output:
 
 ```
 bf = 
-	{ 4, <<x^2*z^6, x^5*y^2*z, x^3*y^5, x*y^2*z^5 + 2*y^3*z^5>>, QQ[x, y, z] }
-	chart=z, depth=0, mult=2, sol=(0, 0), { 4, <<x^2, x^5*y^2, x^3*y^5, x*y^2 + 2*y^3>>, QQ[x, y] }
-	    chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<x^2, x^5*y^5, x^3*y^6, x*y + 2*y>>, QQ[x, y] }
-	        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x, x^9*y^5, x^8*y^6, x*y + 2*y>>, QQ[x, y] }
-	chart=x, depth=0, mult=3, sol=(0, 0), { 4, <<z^6, y^2*z, y^5, 2*y^3*z^5 + y^2*z^5>>, QQ[y, z] }
-	    chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<z^3, y^2, y^5*z^2, 2*y^3*z^5 + y^2*z^4>>, QQ[y, z] }
-	        chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<z, y^2, y^5*z^5, 2*y^3*z^6 + y^2*z^4>>, QQ[y, z] }
-	            chart=s, depth=3, mult=1, sol=(0, 0), { 4, <<z, y, y^9*z^5, 2*y^8*z^6 + y^5*z^4>>, QQ[y, z] }
-	    chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<y^3*z^6, z, y^2, 2*y^5*z^5 + y^4*z^5>>, QQ[y, z] }
-	        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<y^8*z^6, z, y, 2*y^9*z^5 + y^8*z^5>>, QQ[y, z] }
-	chart=y, depth=0, mult=3, sol=(0, 0), { 4, <<x^2*z^6, x^5*z, x^3, x*z^5 + 2*z^5>>, QQ[x, z] }
-	    chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<x^2*z^5, x^5*z^3, x^3, x*z^3 + 2*z^2>>, QQ[x, z] }
-	        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^5*z^5, x^6*z^3, x, x^2*z^3 + 2*z^2>>, QQ[x, z] }
-	            chart=t, depth=3, mult=1, sol=(0, 0), { 4, <<x^5*z^9, x^6*z^8, x, x^2*z^4 + 2*z>>, QQ[x, z] } 
+{ 4, <<x^2*z^6, x^5*y^2*z, x^3*y^5, x*y^2*z^5 + 2*y^3*z^5>>, QQ[x, y, z] }
+chart=z, depth=0, mult=2, sol=(0, 0), { 4, <<x^2, x^5*y^2, x^3*y^5, x*y^2 + 2*y^3>>, QQ[x, y] }
+    chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<x^2, x^5*y^5, x^3*y^6, x*y + 2*y>>, QQ[x, y] }
+        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x, x^9*y^5, x^8*y^6, x*y + 2*y>>, QQ[x, y] }
+chart=x, depth=0, mult=3, sol=(0, 0), { 4, <<z^6, y^2*z, y^5, 2*y^3*z^5 + y^2*z^5>>, QQ[y, z] }
+    chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<z^3, y^2, y^5*z^2, 2*y^3*z^5 + y^2*z^4>>, QQ[y, z] }
+        chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<z, y^2, y^5*z^5, 2*y^3*z^6 + y^2*z^4>>, QQ[y, z] }
+            chart=s, depth=3, mult=1, sol=(0, 0), { 4, <<z, y, y^9*z^5, 2*y^8*z^6 + y^5*z^4>>, QQ[y, z] }
+    chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<y^3*z^6, z, y^2, 2*y^5*z^5 + y^4*z^5>>, QQ[y, z] }
+        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<y^8*z^6, z, y, 2*y^9*z^5 + y^8*z^5>>, QQ[y, z] }
+chart=y, depth=0, mult=3, sol=(0, 0), { 4, <<x^2*z^6, x^5*z, x^3, x*z^5 + 2*z^5>>, QQ[x, z] }
+    chart=t, depth=1, mult=2, sol=(0, 0), { 4, <<x^2*z^5, x^5*z^3, x^3, x*z^3 + 2*z^2>>, QQ[x, z] }
+        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^5*z^5, x^6*z^3, x, x^2*z^3 + 2*z^2>>, QQ[x, z] }
+            chart=t, depth=3, mult=1, sol=(0, 0), { 4, <<x^5*z^9, x^6*z^8, x, x^2*z^4 + 2*z>>, QQ[x, z] } 
 bg = 
-	{ 4, <<x^3*y^2*v^5, x^3*y^2*v^5 + y^5*v^3*w^2, x^2*y^3*w^5, x^4*y*v^3*w^2 + x^5*v^2*w^3 + x^2*y^3*w^5>>, QQ[x, y, v, w] }
-	chart=xv, depth=0, mult=2, sol=(0, 0), { 4, <<y^2, y^5*w^2 + y^2, y^3*w^5, y^3*w^5 + y*w^2 + w^3>>, QQ[y, w] }
-	    chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<y^2, y^5*w^5 + y^2, y^3*w^6, y^3*w^6 + y*w + w>>, QQ[y, w] }
-	        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<y, y^9*w^5 + y, y^8*w^6, y^8*w^6 + y*w + w>>, QQ[y, w] }
-	chart=xw, depth=0, mult=2, sol=(0, 0), { 4, <<y^2*v^5, y^5*v^3 + y^2*v^5, y^3, y*v^3 + y^3 + v^2>>, QQ[y, v] }
-	    chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<y^5*v^5, y^5*v^5 + y^6*v^3, y, y^2*v^3 + v^2 + y>>, QQ[y, v] }
-	        chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<y^5*v^9, y^6*v^8 + y^5*v^9, y, y^2*v^4 + y + v>>, QQ[y, v] }
-	chart=yv, depth=0, mult=2, sol=(0, 0), { 4, <<x^3, x^3 + w^2, x^2*w^5, x^5*w^3 + x^2*w^5 + x^4*w^2>>, QQ[x, w] }
-	    chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<x, w^2 + x, x^5*w^5, x^5*w^5 + x^6*w^3 + x^4*w^2>>, QQ[x, w] }
-	        chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<x, x + w, x^5*w^9, x^6*w^8 + x^5*w^9 + x^4*w^5>>, QQ[x, w] }
-	chart=yw, depth=0, mult=2, sol=(0, 0), { 4, <<x^3*v^5, x^3*v^5 + v^3, x^2, x^5*v^2 + x^4*v^3 + x^2>>, QQ[x, v] }
-	    chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<x^3*v^6, x^3*v^6 + v, x^2, x^5*v^5 + x^4*v^5 + x^2>>, QQ[x, v] }
-	        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^8*v^6, x^8*v^6 + v, x, x^9*v^5 + x^8*v^5 + x>>, QQ[x, v] }
+{ 4, <<x^3*y^2*v^5, x^3*y^2*v^5 + y^5*v^3*w^2, x^2*y^3*w^5, x^4*y*v^3*w^2 + x^5*v^2*w^3 + x^2*y^3*w^5>>, QQ[x, y, v, w] }
+chart=xv, depth=0, mult=2, sol=(0, 0), { 4, <<y^2, y^5*w^2 + y^2, y^3*w^5, y^3*w^5 + y*w^2 + w^3>>, QQ[y, w] }
+    chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<y^2, y^5*w^5 + y^2, y^3*w^6, y^3*w^6 + y*w + w>>, QQ[y, w] }
+        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<y, y^9*w^5 + y, y^8*w^6, y^8*w^6 + y*w + w>>, QQ[y, w] }
+chart=xw, depth=0, mult=2, sol=(0, 0), { 4, <<y^2*v^5, y^5*v^3 + y^2*v^5, y^3, y*v^3 + y^3 + v^2>>, QQ[y, v] }
+    chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<y^5*v^5, y^5*v^5 + y^6*v^3, y, y^2*v^3 + v^2 + y>>, QQ[y, v] }
+        chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<y^5*v^9, y^6*v^8 + y^5*v^9, y, y^2*v^4 + y + v>>, QQ[y, v] }
+chart=yv, depth=0, mult=2, sol=(0, 0), { 4, <<x^3, x^3 + w^2, x^2*w^5, x^5*w^3 + x^2*w^5 + x^4*w^2>>, QQ[x, w] }
+    chart=s, depth=1, mult=1, sol=(0, 0), { 4, <<x, w^2 + x, x^5*w^5, x^5*w^5 + x^6*w^3 + x^4*w^2>>, QQ[x, w] }
+        chart=t, depth=2, mult=1, sol=(0, 0), { 4, <<x, x + w, x^5*w^9, x^6*w^8 + x^5*w^9 + x^4*w^5>>, QQ[x, w] }
+chart=yw, depth=0, mult=2, sol=(0, 0), { 4, <<x^3*v^5, x^3*v^5 + v^3, x^2, x^5*v^2 + x^4*v^3 + x^2>>, QQ[x, v] }
+    chart=t, depth=1, mult=1, sol=(0, 0), { 4, <<x^3*v^6, x^3*v^6 + v, x^2, x^5*v^5 + x^4*v^5 + x^2>>, QQ[x, v] }
+        chart=s, depth=2, mult=1, sol=(0, 0), { 4, <<x^8*v^6, x^8*v^6 + v, x, x^9*v^5 + x^8*v^5 + x>>, QQ[x, v] }
 ```
 
 #### Computing implicit equations for testing purposes
@@ -575,13 +576,13 @@ PolyRing.reset_base_field()
 bpt = BasePointTree()
 bpt.add( 'y', ( 0, 0 ) , 1 )
 pen1 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
-SETools.p( 'pen1 =', pen1 )
+print( 'pen1 =', pen1 )
 assert set( [x[0], x[1]] ) == set( pen1 )
 # thus the first pencil defines a map pen1: (x0:x1:x2) |--> (x0:x1)
 bpt = BasePointTree()
 bpt.add( 'x', ( 0, 0 ) , 1 )
 pen2 = SERing.conv( LinearSeries.get( [1], bpt ).pol_lst )
-SETools.p( 'pen2 =', pen2 )
+print( 'pen2 =', pen2 )
 assert set( [x[0], x[2]] ) == set( pen2 )
 # thus the second pencil defines a map pen2: (x0:x1:x2) |--> (x0:x2)
 # We find that
@@ -611,7 +612,7 @@ assert Mf.dimensions() == (4, 45)
 assert Kf.dimensions() == (45, 41)
 ```
 
-#### r0
+#### Compatible reparametrization r0
 
 We first consider the reparametrization r0 and we find the coefficient matrix Mgr00.
 
@@ -640,7 +641,7 @@ assert set( [gen.subs( sol01 ) for gen in prime0_lst[1].gens()] ) == set( [0] )
 gcd00 = sage_gcd( [ comp.subs( sol00 ) for comp in gr0] )
 assert gcd00 == x[0] * x[0]
 gr00 = [ comp.subs( sol00 ) / gcd00 for comp in gr0]
-SETools.p( 'gr00 =', len( gr00 ), gcd00, gr00 )
+print( 'gr00 =', len( gr00 ), gcd00, gr00 )
 assert SERing.get_degree( gr00 ) == 8
 Mgr00 = SERing.get_matrix_P2( gr00 )
 assert Mgr00.dimensions() == ( 4, 45 )
@@ -655,7 +656,7 @@ print( 'Mgr00 =', Mgr00.dimensions(), list( Mgr00 ) )
 gcd01 = sage_gcd( [ comp.subs( sol01 ) for comp in gr0] )
 assert gcd01 == x[0] * x[0]
 gr01 = [ comp.subs( sol01 ) / gcd01 for comp in gr0]
-SETools.p( 'gr01 =', len( gr01 ), gcd01, gr01 )
+print( 'gr01 =', len( gr01 ), gcd01, gr01 )
 assert SERing.get_degree( gr01 ) == 8
 assert [] == sage_ideal( ( SERing.get_matrix_P2( gr01 ) * Kf ).list() + [ring( 'c2*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
 # --> no solution
@@ -671,7 +672,7 @@ gr00 = 4 x0^2 [c3^2*x0^6*x1^2, c3^5*c7^2*x0*x1^5*x2^2 + c3^2*x0^6*x1^2, c3^3*c7^
 Mgr00 = (4, 45) [(0, 0, 0, c3^2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, c3^2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4*c3^7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32*c3^8, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0, 4*c3^3, 8*c3^3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32*c3^8, 0, 0, 0)] 
 ```
 
-#### r1
+#### Compatible reparmatrization r1
 
 We do the same for the reparametrization r1, but here we do not find a solution.
 
@@ -687,7 +688,7 @@ assert SERing.get_degree( f ) == 8
 # find conditions on c so that gr1 has the same basepoints as f
 eqn1_lst = usecase_B2_helper_bp( gr1 )
 eqn1_lst += [ ring( '(c0*c3-c1*c2)*(c4*c7-c5*c6)*t-1' ) ]
-SETools.p( 'eqn1_lst =', len( eqn1_lst ), eqn1_lst )
+print( 'eqn1_lst =', len( eqn1_lst ), eqn1_lst )
 prime1_lst = sage_ideal( eqn1_lst ).elimination_ideal( ring( 't' ) ).primary_decomposition()
 for prime1 in prime1_lst: print( '\t', prime1.gens() )
 sol10 = {c[0]:0, c[3]:0, c[5]:0, c[6]:0, c[1]:1, c[4]:1}  # notice that wlog c1=c4=1
@@ -728,7 +729,6 @@ gr11 = 4 x0^2 [c3^2*x0*x1^5*x2^2, c3^5*c6^2*x1^3*x2^5 + c3^2*x0*x1^5*x2^2, c3^3*
 #### Computing projective isomorphisms
 
 We recover from Mgr00 the projective isomorphisms in terms of a parametrized matrix U.
-
 
 ```python
 Mgr = Mgr00
@@ -802,8 +802,7 @@ print( LinearSeries( SERing.conv( f ), PolyRing( 'x,y,z', True ) ).get_bp_tree()
 Output:
 ```
 ```
-
-We compute the generators of bigraded Cox rings associated to `f`.
+We compute the generators of bigraded Cox rings associated to f.
     
 ```python
 PolyRing.reset_base_field()
@@ -1018,7 +1017,7 @@ ff = ring("[-x0^2*x1^2 + x1^4, x1^3*x2, -x0^2*x1^2 + x0*x1^3, x1^2*x2^2, x0*x1^2
 gg = ring("[y0^2*y1^2*y2*y3, y0*y1^3*y3^2, y0^2*y1^2*y2^2, y1^4*y2*y3 - y1^4*y3^2, y0*y1^3*y2*y3, y0*y1^3*y2^2, y1^4*y2^2 - y1^4*y3^2, y0^3*y1*y2*y3 - y0^2*y1^2*y3^2, y0^3*y1*y2^2, y0^4*y2^2 - y0^2*y1^2*y3^2]")
 ```
 
-#### Graded coordinate ring associated to `ff`
+#### Graded coordinate ring associated to ff
 
 ```python
 print( LinearSeries( SERing.conv( ff ), PolyRing( 'x,y,v,w' ) ).get_bp_tree() )

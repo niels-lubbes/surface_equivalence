@@ -501,7 +501,69 @@ eqf = [z0^12*z1^6*z2^8 + 8192*z0^13*z2^13 - 53248*z0^12*z1*z2^12*z3 + 159744*z0^
 eqg = [z0^18*z2^8 - 6*z0^17*z1*z2^8 + 15*z0^16*z1^2*z2^8 - 20*z0^15*z1^3*z2^8 + 15*z0^14*z1^4*z2^8 - 6*z0^13*z1^5*z2^8 + z0^12*z1^6*z2^8 + z1^13*z2^13 + 13*z0*z1^12*z2^12*z3 - 13*z1^13*z2^12*z3 + 78*z0^2*z1^11*z2^11*z3^2 - 156*z0*z1^12*z2^11*z3^2 + 78*z1^13*z2^11*z3^2 + 286*z0^3*z1^10*z2^10*z3^3 - 858*z0^2*z1^11*z2^10*z3^3 + 858*z0*z1^12*z2^10*z3^3 - 286*z1^13*z2^10*z3^3 + 715*z0^4*z1^9*z2^9*z3^4 - 2860*z0^3*z1^10*z2^9*z3^4 + 4290*z0^2*z1^11*z2^9*z3^4 - 2860*z0*z1^12*z2^9*z3^4 + 715*z1^13*z2^9*z3^4 + 1287*z0^5*z1^8*z2^8*z3^5 - 6435*z0^4*z1^9*z2^8*z3^5 + 12870*z0^3*z1^10*z2^8*z3^5 - 12870*z0^2*z1^11*z2^8*z3^5 + 6435*z0*z1^12*z2^8*z3^5 - 1287*z1^13*z2^8*z3^5 + 1716*z0^6*z1^7*z2^7*z3^6 - 10296*z0^5*z1^8*z2^7*z3^6 + 25740*z0^4*z1^9*z2^7*z3^6 - 34320*z0^3*z1^10*z2^7*z3^6 + 25740*z0^2*z1^11*z2^7*z3^6 - 10296*z0*z1^12*z2^7*z3^6 + 1716*z1^13*z2^7*z3^6 + 1716*z0^7*z1^6*z2^6*z3^7 - 12012*z0^6*z1^7*z2^6*z3^7 + 36036*z0^5*z1^8*z2^6*z3^7 - 60060*z0^4*z1^9*z2^6*z3^7 + 60060*z0^3*z1^10*z2^6*z3^7 - 36036*z0^2*z1^11*z2^6*z3^7 + 12012*z0*z1^12*z2^6*z3^7 - 1716*z1^13*z2^6*z3^7 + 1287*z0^8*z1^5*z2^5*z3^8 - 10296*z0^7*z1^6*z2^5*z3^8 + 36036*z0^6*z1^7*z2^5*z3^8 - 72072*z0^5*z1^8*z2^5*z3^8 + 90090*z0^4*z1^9*z2^5*z3^8 - 72072*z0^3*z1^10*z2^5*z3^8 + 36036*z0^2*z1^11*z2^5*z3^8 - 10296*z0*z1^12*z2^5*z3^8 + 1287*z1^13*z2^5*z3^8 + 715*z0^9*z1^4*z2^4*z3^9 - 6435*z0^8*z1^5*z2^4*z3^9 + 25740*z0^7*z1^6*z2^4*z3^9 - 60060*z0^6*z1^7*z2^4*z3^9 + 90090*z0^5*z1^8*z2^4*z3^9 - 90090*z0^4*z1^9*z2^4*z3^9 + 60060*z0^3*z1^10*z2^4*z3^9 - 25740*z0^2*z1^11*z2^4*z3^9 + 6435*z0*z1^12*z2^4*z3^9 - 715*z1^13*z2^4*z3^9 + 286*z0^10*z1^3*z2^3*z3^10 - 2860*z0^9*z1^4*z2^3*z3^10 + 12870*z0^8*z1^5*z2^3*z3^10 - 34320*z0^7*z1^6*z2^3*z3^10 + 60060*z0^6*z1^7*z2^3*z3^10 - 72072*z0^5*z1^8*z2^3*z3^10 + 60060*z0^4*z1^9*z2^3*z3^10 - 34320*z0^3*z1^10*z2^3*z3^10 + 12870*z0^2*z1^11*z2^3*z3^10 - 2860*z0*z1^12*z2^3*z3^10 + 286*z1^13*z2^3*z3^10 + 78*z0^11*z1^2*z2^2*z3^11 - 858*z0^10*z1^3*z2^2*z3^11 + 4290*z0^9*z1^4*z2^2*z3^11 - 12870*z0^8*z1^5*z2^2*z3^11 + 25740*z0^7*z1^6*z2^2*z3^11 - 36036*z0^6*z1^7*z2^2*z3^11 + 36036*z0^5*z1^8*z2^2*z3^11 - 25740*z0^4*z1^9*z2^2*z3^11 + 12870*z0^3*z1^10*z2^2*z3^11 - 4290*z0^2*z1^11*z2^2*z3^11 + 858*z0*z1^12*z2^2*z3^11 - 78*z1^13*z2^2*z3^11 + 13*z0^12*z1*z2*z3^12 - 156*z0^11*z1^2*z2*z3^12 + 858*z0^10*z1^3*z2*z3^12 - 2860*z0^9*z1^4*z2*z3^12 + 6435*z0^8*z1^5*z2*z3^12 - 10296*z0^7*z1^6*z2*z3^12 + 12012*z0^6*z1^7*z2*z3^12 - 10296*z0^5*z1^8*z2*z3^12 + 6435*z0^4*z1^9*z2*z3^12 - 2860*z0^3*z1^10*z2*z3^12 + 858*z0^2*z1^11*z2*z3^12 - 156*z0*z1^12*z2*z3^12 + 13*z1^13*z2*z3^12 + z0^13*z3^13 - 13*z0^12*z1*z3^13 + 78*z0^11*z1^2*z3^13 - 286*z0^10*z1^3*z3^13 + 715*z0^9*z1^4*z3^13 - 1287*z0^8*z1^5*z3^13 + 1716*z0^7*z1^6*z3^13 - 1716*z0^6*z1^7*z3^13 + 1287*z0^5*z1^8*z3^13 - 715*z0^4*z1^9*z3^13 + 286*z0^3*z1^10*z3^13 - 78*z0^2*z1^11*z3^13 + 13*z0*z1^12*z3^13 - z1^13*z3^13] 
 
 ```
+### Computing reductions of f and g
 
+We first compute the r0 reductions of the rational maps f and g.  
+
+```python
+hf = LinearSeries.get( [8], bf )
+hg = LinearSeries.get( [5, 5], bg )
+assert len( hf.pol_lst ) == len( hg.pol_lst ) == 16
+print( len( hf.pol_lst ), SERing.conv( hf.pol_lst ) )
+print( len( hg.pol_lst ), SERing.conv( hg.pol_lst ) )
+
+```
+Output:
+```
+usecase_B2(422): 16 [x0*x1^5*x2^2, x0*x1^4*x2^3, x0^2*x1^4*x2^2, x1^3*x2^5, x0*x1^3*x2^4, x0^2*x1^3*x2^3, x0^3*x1^3*x2^2, x0^4*x1^3*x2, x0^2*x1^2*x2^4, x0^3*x1^2*x2^3, x0^4*x1^2*x2^2, x0^5*x1^2*x2, x0^6*x1^2, x0^4*x1*x2^3, x0^5*x1*x2^2, x0^5*x2^3] 
+usecase_B2(423): 16 [y0^5*y2^2*y3^3, y0^4*y1*y2^3*y3^2, y0^4*y1*y2^2*y3^3, y0^3*y1^2*y2^5, y0^3*y1^2*y2^4*y3, y0^3*y1^2*y2^3*y3^2, y0^3*y1^2*y2^2*y3^3, y0^3*y1^2*y2*y3^4, y0^2*y1^3*y2^4*y3, y0^2*y1^3*y2^3*y3^2, y0^2*y1^3*y2^2*y3^3, y0^2*y1^3*y2*y3^4, y0^2*y1^3*y3^5, y0*y1^4*y2^3*y3^2, y0*y1^4*y2^2*y3^3, y1^5*y2^3*y3^2] 
+```
+
+Next we compute r1 reductions of the output maps.  
+
+```python
+hft = BasePointTree()
+hft.add( 'x', ( 0, 0 ) , 2 ).add( 't', ( 0, 0 ), 1 )
+hft.add( 'y', ( 0, 0 ) , 2 ).add( 't', ( 0, 0 ), 1 )
+hft.add( 'z', ( 0, 0 ) , 1 )
+hf = LinearSeries.get( [5], hft )
+hgt = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
+hgt.add( 'xv', ( 0, 0 ) , 1 )
+hgt.add( 'xw', ( 0, 0 ) , 1 )
+hgt.add( 'yv', ( 0, 0 ) , 1 )
+hgt.add( 'yw', ( 0, 0 ) , 1 )
+hg = LinearSeries.get( [3, 3], hgt )
+SETools.p( len( hf.pol_lst ), SERing.conv( hf.pol_lst ) )
+SETools.p( len( hg.pol_lst ), SERing.conv( hg.pol_lst ) )
+assert len( hf.pol_lst ) == len( hg.pol_lst ) == 12
+
+```
+Output:
+```
+12 [x1^3*x2^2, x0*x1^3*x2, x1^2*x2^3, x0*x1^2*x2^2, x0^2*x1^2*x2, x0^3*x1^2, x0*x1*x2^3, x0^2*x1*x2^2, x0^3*x1*x2, x0^4*x1, x0^3*x2^2, x0^4*x2] 
+12 [y0^3*y2^2*y3, y0^3*y2*y3^2, y0^2*y1*y2^3, y0^2*y1*y2^2*y3, y0^2*y1*y2*y3^2, y0^2*y1*y3^3, y0*y1^2*y2^3, y0*y1^2*y2^2*y3, y0*y1^2*y2*y3^2, y0*y1^2*y3^3, y1^3*y2^2*y3, y1^3*y2*y3^2] 
+```
+Next again compute r1 reductions of the output maps.  
+
+```python
+hft = BasePointTree()
+hft.add( 'x', ( 0, 0 ) , 1 )
+hft.add( 'y', ( 0, 0 ) , 1 )
+hf = LinearSeries.get( [2], hft )
+hg = LinearSeries( ['x', 'y', 'v', 'w' ], PolyRing( 'x,y,v,w' ) )
+SETools.p( len( hf.pol_lst ), SERing.conv( hf.pol_lst ) )
+SETools.p( len( hg.pol_lst ), SERing.conv( hg.pol_lst ) )
+assert len( hf.pol_lst ) == len( hg.pol_lst ) == 4
+
+```
+Output:
+```
+4 [x1*x2, x0*x1, x0*x2, x0^2] 
+4 [y0, y1, y2, y3] 
+```
+    
+The above output maps are the (r0,r1,r2)-reductions of the rational maps f and g.    
+    
 #### Declare method for enforcing basepoints
 
 We declare a method which takes as input a map gr with parameters c

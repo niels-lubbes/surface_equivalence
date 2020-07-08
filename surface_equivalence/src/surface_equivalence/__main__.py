@@ -416,6 +416,47 @@ def usecase_B2():
     bg = LinearSeries( SERing.conv( g ), PolyRing( 'x,y,v,w', True ) ).get_bp_tree()
     SETools.p( 'bg =', bg )
 
+    ###################################################
+    # Computing compatible reductions of f and g      #
+    ###################################################
+
+    # r0-reduction of f and g
+    hf = LinearSeries.get( [8], bf )
+    hg = LinearSeries.get( [5, 5], bg )
+    SETools.p( len( hf.pol_lst ), SERing.conv( hf.pol_lst ) )
+    SETools.p( len( hg.pol_lst ), SERing.conv( hg.pol_lst ) )
+    assert len( hf.pol_lst ) == len( hg.pol_lst ) == 16
+
+    # r1-reduction of hf and hg
+    hft = BasePointTree()
+    hft.add( 'x', ( 0, 0 ) , 2 ).add( 't', ( 0, 0 ), 1 )
+    hft.add( 'y', ( 0, 0 ) , 2 ).add( 't', ( 0, 0 ), 1 )
+    hft.add( 'z', ( 0, 0 ) , 1 )
+    hf = LinearSeries.get( [5], hft )
+    hgt = BasePointTree( ['xv', 'xw', 'yv', 'yw'] )
+    hgt.add( 'xv', ( 0, 0 ) , 1 )
+    hgt.add( 'xw', ( 0, 0 ) , 1 )
+    hgt.add( 'yv', ( 0, 0 ) , 1 )
+    hgt.add( 'yw', ( 0, 0 ) , 1 )
+    hg = LinearSeries.get( [3, 3], hgt )
+    SETools.p( len( hf.pol_lst ), SERing.conv( hf.pol_lst ) )
+    SETools.p( len( hg.pol_lst ), SERing.conv( hg.pol_lst ) )
+    assert len( hf.pol_lst ) == len( hg.pol_lst ) == 12
+
+    # second r1-reduction of hf and hg
+    hft = BasePointTree()
+    hft.add( 'x', ( 0, 0 ) , 1 )
+    hft.add( 'y', ( 0, 0 ) , 1 )
+    hf = LinearSeries.get( [2], hft )
+    hg = LinearSeries( ['x', 'y', 'v', 'w' ], PolyRing( 'x,y,v,w' ) )
+    SETools.p( len( hf.pol_lst ), SERing.conv( hf.pol_lst ) )
+    SETools.p( len( hg.pol_lst ), SERing.conv( hg.pol_lst ) )
+    assert len( hf.pol_lst ) == len( hg.pol_lst ) == 4
+
+    ###################################################
+    # Computing the projective isomorphisms           #
+    ###################################################
+
     # we compute maps to P1xP1 from two pencils
     PolyRing.reset_base_field()
     bpt = BasePointTree()
@@ -1058,12 +1099,12 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    usecase_B1()
-    usecase_B1_P1xP1()
+    # usecase_B1()
+    # usecase_B1_P1xP1()
     usecase_B2()
-    usecase_B4()
-    usecase_B5()
-    usecase_invert_map()
+    # usecase_B4()
+    # usecase_B5()
+    # usecase_invert_map()
 
     #########################################
     #                                       #

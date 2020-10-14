@@ -7,7 +7,6 @@ https://python-packaging.readthedocs.io/en/latest/minimal.html
 https://pypi.python.org/pypi?%3Aaction=list_classifiers
 '''
 
-
 from setuptools import setup
 
 
@@ -17,7 +16,7 @@ def readme():
 
 
 setup( name = 'surface_equivalence',
-       version = '1.0',
+       version = '2.0',
        description = 'Finding surface equivalences',
        long_description = readme(),
        classifiers = [
@@ -41,5 +40,4 @@ setup( name = 'surface_equivalence',
       include_package_data = True,
       zip_safe = False
       )
-
 

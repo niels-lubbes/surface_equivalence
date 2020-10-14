@@ -15,7 +15,7 @@ The underlying theory for these for these algorithm was developed by
 [Bert Jüttler](http://www.ag.jku.at/), 
 [Niels Lubbes](https://nielslubbes.com) and 
 [Josef Schicho](https://www3.risc.jku.at/people/jschicho/).
-We refer to [arxiv:](https://arxiv.org/abs/) for more information.
+We refer to the accompanying article [arxiv:](https://arxiv.org/abs/) for more information.
 
 This library depends on [SageMath](https://SageMath.org) libraries. 
 From some parts we use functionality of [Maple](https://www.maplesoft.com) 

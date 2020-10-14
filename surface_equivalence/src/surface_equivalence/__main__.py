@@ -15,21 +15,16 @@ from surface_equivalence.class_se_ring import SERing
 from linear_series.class_poly_ring import PolyRing
 from linear_series.class_base_points import BasePointTree
 from linear_series.class_linear_series import LinearSeries
-from linear_series.class_ls_tools import LSTools
 
 from surface_equivalence.sage_interface import sage_QQ
 from surface_equivalence.sage_interface import sage_matrix
 from surface_equivalence.sage_interface import sage_vector
 from surface_equivalence.sage_interface import sage_gcd
 from surface_equivalence.sage_interface import sage_PolynomialRing
-from surface_equivalence.sage_interface import sage_FractionField
 from surface_equivalence.sage_interface import sage_ideal
-from surface_equivalence.sage_interface import sage__eval
 from surface_equivalence.sage_interface import sage_Compositions
 from surface_equivalence.sage_interface import sage_solve
 from surface_equivalence.sage_interface import sage_SR
-from surface_equivalence.sage_interface import sage_lcm
-from surface_equivalence.sage_interface import sage_denominator
 from surface_equivalence.sage_interface import sage_identity_matrix
 from surface_equivalence.sage_interface import sage_diff
 from surface_equivalence.sage_interface import sage_maple
@@ -131,7 +126,6 @@ def usecase_B1_P1xP1( case = 1 ):
     # We first create random parametrizations f and g                    #
     ######################################################################
 
-
     # f is of bidegree (d1, d2) with coefficent matrix matf.
     # The image of f is a surface in P^m.
     # g is constructed as the composition U o f o P
@@ -163,7 +157,6 @@ def usecase_B1_P1xP1( case = 1 ):
         matU = sage_matrix( sage_QQ, ring( '[( 1, -31 / 6, 19, 4 / 5 ), ( 2, 0, 2, 9 / 19 ), ( 6, 1 / 5, -1 / 2, 1 / 2 ), ( 1, -1, 0, 1 / 12 )]' ) )
         L = ring( '[2, -1/3, -5, 1/3]' )
         R = ring( '[0, 10, -3, 0]' )
-
 
     mon_lst = SERing.get_mon_P1xP1( d1, d2, vars = 'y0,y1,y2,y3' )  # basis for monomials
     y = [ring( 'y' + str( i ) ) for i in range( 4 )]
@@ -224,13 +217,13 @@ def usecase_B1_P1xP1( case = 1 ):
         ec_lst = ( Mgr * Kf ).list() + ring( '[(c0*c3-c1*c2)*t-1, (c4*c7-c5*c6)*t-1]' )
         SETools.p( '\t Computing elimination ideal...' )
         try:
-            sage_maple.eval( '1 + 1' )
+            sage_maple.eval( '1 + 1' )  # @UndefinedVariable
         except:
             SETools( '\t Aborting, since Maple is not installed...' )
             return
-        sage_maple.eval( 'with(Groebner);' )
-        sage_maple.eval( 'gb := Basis( ' + str( ec_lst ) + ', plex(' + str( c )[1:-1] + ', t) );' )
-        gb_lst = ring( sage_maple.eval( 'lprint(gb);' ) )
+        sage_maple.eval( 'with(Groebner);' )  # @UndefinedVariable
+        sage_maple.eval( 'gb := Basis( ' + str( ec_lst ) + ', plex(' + str( c )[1:-1] + ', t) );' )  # @UndefinedVariable
+        gb_lst = ring( sage_maple.eval( 'lprint(gb);' ) )  # @UndefinedVariable
         SETools.p( '\t gb_lst =', gb_lst )
         if gb_lst == [1]:
             continue
@@ -537,7 +530,6 @@ def usecase_B2():
     assert [] == sage_ideal( ( SERing.get_matrix_P2( gr01 ) * Kf ).list() + [ring( 'c2*c6*t-1' )] ).elimination_ideal( ring( 't' ) ).primary_decomposition()
     # --> no solution
 
-
     ###################################################
     # reparametrization r1                            #
     ###################################################
@@ -688,9 +680,9 @@ def usecase_B4():
     # compute the inverse Q of F
     t = ring( 't' )
     x = ring( 'x0,x1,x2' )
-    id = [ F[i] * z[0] - z[i] * F[0] for i in range( 5 ) ] + [t * F[0] - 1]
-    I1 = sage_ideal( id ).elimination_ideal( [t, x[2] ] ).gens()
-    I2 = sage_ideal( id ).elimination_ideal( [t, x[1] ] ).gens()
+    ide = [ F[i] * z[0] - z[i] * F[0] for i in range( 5 ) ] + [t * F[0] - 1]
+    I1 = sage_ideal( ide ).elimination_ideal( [t, x[2] ] ).gens()
+    I2 = sage_ideal( ide ).elimination_ideal( [t, x[1] ] ).gens()
     I1 = [ elt for elt in I1 if elt.degree( x[0] ) == 1 and elt.degree( x[1] ) == 1 ][0]
     I2 = [ elt for elt in I2 if elt.degree( x[0] ) == 1 and elt.degree( x[2] ) == 1 ][0]
     Q0 = I1.coefficient( x[1] )
@@ -767,49 +759,49 @@ def usecase_B5():
     # 0f+p = e0-e1
     PolyRing.reset_base_field()
     bp_tree = BasePointTree()
-    bp = bp_tree.add( 'z', p1, 1 )
+    bp_tree.add( 'z', p1, 1 )
     f0p1 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
     SETools.p( 'f0p1 =', len( f0p1 ), f0p1 )
 
     # 1f-3p = e0+e1-e2-e3
     bp_tree = BasePointTree()
-    bp = bp_tree.add( 'z', p2, 1 )
-    bp = bp_tree.add( 'z', p3, 1 )
+    bp_tree.add( 'z', p2, 1 )
+    bp_tree.add( 'z', p3, 1 )
     f1m3 = SERing.conv( LinearSeries.get( [1], bp_tree ).pol_lst )
     SETools.p( 'f1m3 =', len( f1m3 ), f1m3 )
 
     # 1f-2p = 2e0-e2-e3
     bp_tree = BasePointTree()
-    bp = bp_tree.add( 'z', p2, 1 )
-    bp = bp_tree.add( 'z', p3, 1 )
+    bp_tree.add( 'z', p2, 1 )
+    bp_tree.add( 'z', p3, 1 )
     f1m2 = SERing.conv( LinearSeries.get( [2], bp_tree ).pol_lst )
     SETools.p( 'f1m2 =', len( f1m2 ), f1m2 )
 
     # 1f-1p = 3e0-e1-e2-e3
     bp_tree = BasePointTree()
-    bp = bp_tree.add( 'z', p1, 1 )
-    bp = bp_tree.add( 'z', p2, 1 )
-    bp = bp_tree.add( 'z', p3, 1 )
+    bp_tree.add( 'z', p1, 1 )
+    bp_tree.add( 'z', p2, 1 )
+    bp_tree.add( 'z', p3, 1 )
     f1m1 = SERing.conv( LinearSeries.get( [3], bp_tree ).pol_lst )
     SETools.p( 'f1m1 =', len( f1m1 ), f1m1 )
 
     # 1f-0p = 4e0-2e1-e2-e3
     bp_tree = BasePointTree()
-    bp = bp_tree.add( 'z', p1, 2 )
-    bp = bp_tree.add( 'z', p2, 1 )
-    bp = bp_tree.add( 'z', p3, 1 )
+    bp_tree.add( 'z', p1, 2 )
+    bp_tree.add( 'z', p2, 1 )
+    bp_tree.add( 'z', p3, 1 )
     f1m0 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
     SETools.p( 'f1m0 =', len( f1m0 ), f1m0 )
 
     # 2f-4p = 4e0-2e2-2e3
     bp_tree = BasePointTree()
-    bp = bp_tree.add( 'z', p2, 2 )
-    bp = bp_tree.add( 'z', p3, 2 )
+    bp_tree.add( 'z', p2, 2 )
+    bp_tree.add( 'z', p3, 2 )
     f2m4 = SERing.conv( LinearSeries.get( [4], bp_tree ).pol_lst )
     SETools.p( 'f2m4 =', len( f2m4 ), f2m4 )
 
     # by inspection we recover the generators of graded ring of ff
-    U = U0, U1, U2, U3, U4 = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
+    U = ring( 'x1' ), ring( 'x2' ), ring( 'x1+x2-x0' ), ring( 'x1*x2' ), ring( '(x1+x2-x0)^2' )
 
     # compute bidegree (2,d) in order to find a relation between the generators
     u = u0, u1, u2, u3, u4 = ring( 'u0,u1,u2,u3,u4' )
@@ -825,7 +817,7 @@ def usecase_B5():
     SETools.p( 'T1m0 =', T1m0 )
 
     # find linear relation for f2m4
-    a = a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 = [elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T2m4 ]
+    a = a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 = [elt.subs( {u[i]:U[i] for i in range( 5 )} ) for elt in T2m4 ]  # @UnusedVariable
     mata = sage_matrix( sage_QQ, SERing.get_matrix_P2( a ) )
     kera = mata.transpose().right_kernel().matrix()
     SETools.p( 'kera =', kera )
@@ -884,10 +876,10 @@ def usecase_B5():
     SETools.p( 'g2m4 =', len( g2m4 ), g2m4 )
 
     # by inspection we recover the generators of graded ring of gg
-    V = V0, V1, V2, V3, V4 = ring( 'y0' ), ring( 'y1' ), ring( 'y0*y2^2+y1*y2^2-y1*y2*y3' ), ring( 'y0*y1*y2^2' ), ring( 'y0^2*y2^2+y1^2*y2^2-y1^2*y3^2' )
+    V = ring( 'y0' ), ring( 'y1' ), ring( 'y0*y2^2+y1*y2^2-y1*y2*y3' ), ring( 'y0*y1*y2^2' ), ring( 'y0^2*y2^2+y1^2*y2^2-y1^2*y3^2' )
 
     # find linear relation for g2m4
-    b = b0, b1, b2, b3, b4, b5, b6, b7, b8, b9 = [elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T2m4 ]
+    b = b0, b1, b2, b3, b4, b5, b6, b7, b8, b9 = [elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T2m4 ]  # @UnusedVariable
     matb = sage_matrix( sage_QQ, SERing.get_matrix_P1xP1( b ) )
     kerb = matb.transpose().right_kernel().matrix()
     SETools.p( 'kerb =', kerb )
@@ -898,9 +890,9 @@ def usecase_B5():
     G = [ elt.subs( {u[i]:V[i] for i in range( 5 )} ) for elt in T1m0]
     z = ring( 'z0,z1,z2,z3,z4,z5,z6,z7,z8,z9' )
     t = ring( 't' )
-    id = [ G[i] * z[0] - z[i] * G[0] for i in range( 10 ) ] + [t * G[0] - 1]
-    I01 = sage_ideal( id ).elimination_ideal( [t, y2, y3 ] ).gens()
-    I23 = sage_ideal( id ).elimination_ideal( [t, y0, y1 ] ).gens()
+    ide = [ G[i] * z[0] - z[i] * G[0] for i in range( 10 ) ] + [t * G[0] - 1]
+    I01 = sage_ideal( ide ).elimination_ideal( [t, y2, y3 ] ).gens()
+    I23 = sage_ideal( ide ).elimination_ideal( [t, y0, y1 ] ).gens()
     I01 = [ elt for elt in I01 if elt.degree( y0 ) == 1 and elt.degree( y1 ) == 1 ][0]
     I23 = [ elt for elt in I23 if elt.degree( y2 ) == 1 and elt.degree( y3 ) == 1 ][0]
     Q0 = I01.coefficient( y1 )
@@ -1030,7 +1022,6 @@ def usecase_B5():
         assert iggs.is_zero()
 
 
-
 def usecase_invert_map():
     '''
     Inversion of maps using Groebner basis.
@@ -1044,7 +1035,7 @@ def usecase_invert_map():
     f2 = 2 * x0 * x2
     f3 = 2 * x0 * x3
     f4 = d - x0 ** 2
-    eq = -z0 ** 2 + z1 ** 2 + z2 ** 2 + z3 ** 2 + z4 ** 2
+    # implicit equation: -z0 ** 2 + z1 ** 2 + z2 ** 2 + z3 ** 2 + z4 ** 2
 
     g = [ f1 * z0 - z1 * f0,
           f2 * z0 - z2 * f0,
@@ -1099,12 +1090,12 @@ if __name__ == '__main__':
     #                                       #
     #########################################
 
-    # usecase_B1()
-    # usecase_B1_P1xP1()
+    usecase_B1()
+    usecase_B1_P1xP1()
     usecase_B2()
-    # usecase_B4()
-    # usecase_B5()
-    # usecase_invert_map()
+    usecase_B4()
+    usecase_B5()
+    usecase_invert_map()
 
     #########################################
     #                                       #
@@ -1114,12 +1105,4 @@ if __name__ == '__main__':
 
     SETools.end_timer()
     SETools.p( 'The End' )
-
-
-
-
-
-
-
-
 

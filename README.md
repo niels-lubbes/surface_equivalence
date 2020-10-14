@@ -80,7 +80,7 @@ might be informative for how to call each function.
 ### Example 1: Projective automorphisms of a Roman surface (case B1)
 
 For an explanation of the underlying theory behind the code we refer to
-[(Example 3, arxiv????)](https://arxiv.org/abs/).
+[(Example 5, arxiv????)](https://arxiv.org/abs/).
 
 We start by importing the required libraries and initialize parameters.
 
@@ -403,7 +403,7 @@ assert gb_lst == [1]
 
 We compute the projective isomorphisms between two projective surfaces
 that are adjoint to double ruled quadrics.
-For an explanation of the code we refer to [(Example 14, arxiv????)](https://arxiv.org/abs/).
+For an explanation of the code we refer to [(Example 10, arxiv????)](https://arxiv.org/abs/).
 
 We start by importing the required libraries and declaring parameters.
 

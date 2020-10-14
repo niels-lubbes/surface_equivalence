@@ -3,7 +3,14 @@
 
 ## Introduction
 
-Surface-Equivalence is a library for computing projective isomorphisms between surfaces, if such isomorphisms exists.
+Surface-Equivalence is a library for computing projective isomorphisms between 
+rational surfaces that are given in terms of their parametrizations.
+The main idea is to reduce the computation of such projective isomorphisms
+to five base cases by modifying the parametric maps such that 
+the components of the resulting maps have lower degree.
+Our method can be used to compute
+affine, Euclidean and Moebius isomorphisms between surfaces. 
+
 The underlying theory for these for these algorithm was developed by 
 [Bert Jüttler](http://www.ag.jku.at/), 
 [Niels Lubbes](https://nielslubbes.com) and 

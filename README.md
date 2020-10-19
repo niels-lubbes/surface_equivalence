@@ -15,7 +15,7 @@ The underlying theory for these for these algorithm was developed by
 [Bert Jüttler](http://www.ag.jku.at/), 
 [Niels Lubbes](https://nielslubbes.com) and 
 [Josef Schicho](https://www3.risc.jku.at/people/jschicho/).
-We refer to the accompanying article [arxiv:](https://arxiv.org/abs/) for more information.
+We refer to the accompanying article [arxiv:2010.08393](https://arxiv.org/abs/2010.08393) for more information.
 
 This library depends on [SageMath](https://SageMath.org) libraries. 
 From some parts we use functionality of [Maple](https://www.maplesoft.com) 
@@ -80,7 +80,7 @@ might be informative for how to call each function.
 ### Example 1: Projective automorphisms of a Roman surface (case B1)
 
 For an explanation of the underlying theory behind the code we refer to
-[(Example 5, arxiv????)](https://arxiv.org/abs/).
+[(Example 5, arxiv:2010.08393)](https://arxiv.org/abs/2010.08393).
 
 We start by importing the required libraries and initialize parameters.
 
@@ -403,7 +403,7 @@ assert gb_lst == [1]
 
 We compute the projective isomorphisms between two projective surfaces
 that are adjoint to double ruled quadrics.
-For an explanation of the code we refer to [(Example 10, arxiv????)](https://arxiv.org/abs/).
+For an explanation of the code we refer to [(Example 10, arxiv:2010.08393)](https://arxiv.org/abs/2010.08393).
 
 We start by importing the required libraries and declaring parameters.
 

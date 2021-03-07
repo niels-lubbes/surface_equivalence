@@ -18,9 +18,12 @@ The underlying theory for these for these algorithm was developed by
 We refer to the accompanying article [arxiv:2010.08393](https://arxiv.org/abs/2010.08393) for more information.
 
 This library depends on [SageMath](https://SageMath.org) libraries. 
-From some parts we use functionality of [Maple](https://www.maplesoft.com) 
-and [Mathematica](https://www.wolfram.com/mathematica/).
-
+For the Gröbner basis computation we use [Maple](https://www.maplesoft.com) 
+as for our examples it was faster than the one called by Sage by default.
+In Examples 5 and 6 we access [Mathematica](https://www.wolfram.com/mathematica/).
+However, our methods can in principle be implemented in 
+any computer algebra system that can compute the Gröbner basis 
+and primary decomposition of ideals in a polynomial ring.
 
 ## Installation
 
